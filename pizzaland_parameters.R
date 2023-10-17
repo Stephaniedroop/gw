@@ -7,12 +7,6 @@
 
 library(stringi)
 library(data.table)
-
-# Use a stepwise selection package from somebody else
-# install.packages("remotes")
-library(remotes)
-# remotes::install_github("timnewbold/StatisticalModels")
-library(StatisticalModels)
 library(tidyverse)
 
 rm(list = ls())
@@ -46,7 +40,7 @@ pizpar$long_vis_norm <- pizpar$long_vis/pizpar$row_sum
 pizpar$short_inv_norm <- pizpar$short_inv/pizpar$row_sum
 pizpar$long_inv_norm <- pizpar$long_inv/pizpar$row_sum
 
-# New smaller df
+# New smaller df with columns we need
 pizpar2 <- pizpar %>% select(mindsCode, subjectGroup, stim1, rowNo, note1, short_vis_norm, long_vis_norm, short_inv_norm, long_inv_norm)
 
 # Set columns for what the condition tags actually mean
@@ -55,13 +49,34 @@ pizpar2 <- pizpar2 %>% mutate(Preference = if_else(grepl("F", note1), 'Hot dogs'
 pizpar2 <- pizpar2 %>% mutate(Character = if_else(grepl("L", note1), 'Lazy', 'Sporty'))
 pizpar2 <- pizpar2 %>% mutate(Start = if_else(grepl("A", stim1), 'Hot dogs visible', 'Pizza visible'))
 
-pizpar2$prob_short <- rowSums(pizpar2[ , c(6, 8)])
-
-
-# Split out to 4 instead of 4 (eg prob_short_hotdog, etc)
+# When we had two separate prediction models (one for path and one for food, for Jan-Jul 2023 conferences) probabilities are:
+# 1) Probability of taking the short path
+pizpar2$prob_short <- rowSums(pizpar2[ , c(6, 8)]) # 
+# 2) Probability of choosing hotdog
 pizpar2 <- pizpar2 %>% 
   mutate(prob_hotdog = if_else(pizpar2$Start=="Hot dogs visible", 
-         rowSums(pizpar2[ , c(6, 7)]), rowSums(pizpar2[ , c(8, 9)])))
+                               rowSums(pizpar2[ , c(6, 7)]), rowSums(pizpar2[ , c(8, 9)])))
+
+# After Oct23, split out to 4 following CLucas advice
+pizpar2 <- pizpar2 %>% 
+  mutate(prob_short_hotdog = if_else(pizpar2$Start=="Hot dogs visible", 
+                               short_vis_norm, short_inv_norm))
+
+pizpar2 <- pizpar2 %>% 
+  mutate(prob_long_hotdog = if_else(pizpar2$Start=="Hot dogs visible", 
+                                     long_vis_norm, long_inv_norm))
+
+pizpar2 <- pizpar2 %>% 
+  mutate(prob_short_pizza = if_else(pizpar2$Start=="Hot dogs visible", 
+                                     short_inv_norm, short_vis_norm))
+
+pizpar2 <- pizpar2 %>% 
+  mutate(prob_long_pizza = if_else(pizpar2$Start=="Hot dogs visible", 
+                                     long_inv_norm, long_vis_norm))
+
+# Column for check they sum to 1
+pizpar2$check <- rowSums(pizpar2[ , c(16:19)])
+
 
 # Set as factors for the regressions
 pizpar2$Knowledge <- factor(pizpar2$Knowledge, levels = c('Does not know area', 'Knows area'), labels = c('No', 'Yes'))
@@ -69,27 +84,31 @@ pizpar2$Character <- factor(pizpar2$Character, levels = c('Lazy', 'Sporty'), lab
 pizpar2$Preference <- factor(pizpar2$Preference, levels = c('Absent', 'Hot dogs'),labels = c('Absent', 'Hot dogs'))
 pizpar2$Start <- factor(pizpar2$Start, levels = c('Hot dogs visible', 'Pizza visible'), labels = c('Hot dogs visible', 'Pizza visible'))
 
+# And put a numerical tag to know the condition
+pizpar2 <- pizpar2 %>% 
+  mutate(Z = if_else(pizpar2$Preference=="Absent", "0", "1"),
+         Y = if_else(pizpar2$Knowledge=="Knows area", "1", "0"),
+         X = if_else(pizpar2$Character=="Sporty", "1", "0"),
+         Q = if_else(pizpar2$Start=="Hot dogs visible", "0", "1"))
+         
+# And concatenate
+pizpar2 <- pizpar2 %>%
+  unite("situTag", Z:Q, sep= "", 
+        remove = TRUE)
 
+# Streamline the data again to keep only what we want
+pizpar3 <- pizpar2 %>% select(mindsCode, situTag, Preference, Knowledge, Character, Start, 
+                              prob_short_hotdog, prob_long_hotdog, prob_short_pizza, prob_long_pizza)
 
-save(file = 'processed_data.rdata', df)
+# Save file
+save(file = 'exp1processed_wide.rdata', pizpar2) # For the old stepwise model selection
 
-# This goes to new script where head clears ws, loads liba, then loads rdata from before 
-# Now run model for PROB_SHORT using his syntax
-m_new_short <- GLMERSelect(pizpar2,"prob_short","binomial",fixedFactors=c("Preference","Character","Knowledge","Start")
-            ,randomStruct="(1|mindsCode)",
-                     fitInteractions=TRUE,
-                     verbose=TRUE,saveVars=character(0),
-                     optimizer="bobyqa",maxIters=10000)
+# Longer data for glmulti
+pizpar3_long <- pizpar3 %>% pivot_longer(
+  cols = prob_short_hotdog:prob_long_pizza,
+  names_to = "outcome",
+  values_to = "probability"
+)
 
-summary(m_new_short$model) 
-
-# Now run model for PROB_HOTDOG using his syntax
-m_new_hd <- GLMERSelect(pizpar2,"prob_hotdog","binomial",fixedFactors=c("Preference","Character","Knowledge","Start")
-                           ,randomStruct="(1|mindsCode)",
-                           fitInteractions=TRUE,
-                           verbose=TRUE,saveVars=character(0),
-                           optimizer="bobyqa",maxIters=10000)
-
-summary(m_new_hd$model)
-
-# This gives regression betas which are taken into script 'worldsetup.R' to give prob of each action
+# Save file
+save(file = 'exp1processed_long.rdata', pizpar3_long)
