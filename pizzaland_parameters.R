@@ -4,15 +4,18 @@
 # Experiment run on Testable mid January 2023, to get ppt intuitions of likeliness of outcomes
 # To inform modelling of results from other gridworld task.
 
-library(tidyverse)
+
 library(stringi)
 library(data.table)
 
 # Use a stepwise selection package from somebody else
-install.packages("remotes")
+# install.packages("remotes")
 library(remotes)
-remotes::install_github("timnewbold/StatisticalModels")
+# remotes::install_github("timnewbold/StatisticalModels")
 library(StatisticalModels)
+library(tidyverse)
+
+rm(list = ls())
 
 # Read in data downloaded as long from testable
 pizpar <- read.csv("params_data_Jan23.csv") # 1456 obs of 41 vars
@@ -54,6 +57,8 @@ pizpar2 <- pizpar2 %>% mutate(Start = if_else(grepl("A", stim1), 'Hot dogs visib
 
 pizpar2$prob_short <- rowSums(pizpar2[ , c(6, 8)])
 
+
+# Split out to 4 instead of 4 (eg prob_short_hotdog, etc)
 pizpar2 <- pizpar2 %>% 
   mutate(prob_hotdog = if_else(pizpar2$Start=="Hot dogs visible", 
          rowSums(pizpar2[ , c(6, 7)]), rowSums(pizpar2[ , c(8, 9)])))
@@ -65,6 +70,10 @@ pizpar2$Preference <- factor(pizpar2$Preference, levels = c('Absent', 'Hot dogs'
 pizpar2$Start <- factor(pizpar2$Start, levels = c('Hot dogs visible', 'Pizza visible'), labels = c('Hot dogs visible', 'Pizza visible'))
 
 
+
+save(file = 'processed_data.rdata', df)
+
+# This goes to new script where head clears ws, loads liba, then loads rdata from before 
 # Now run model for PROB_SHORT using his syntax
 m_new_short <- GLMERSelect(pizpar2,"prob_short","binomial",fixedFactors=c("Preference","Character","Knowledge","Start")
             ,randomStruct="(1|mindsCode)",
