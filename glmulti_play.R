@@ -11,6 +11,8 @@ rm(list = ls())
 library(glmulti)
 library(tidyverse)
 
+load('exp1processed_long.rdata', verbose = T) # 5760 obs of 8 vars
+
 # Example syntax from https://yuzar-blog.netlify.app/posts/2022-05-31-glmulti/
 # test_g <- glmulti(mpg ~ hp + drat + wt + qsec + gear, 
 #                   data   = mtcars, 
@@ -30,21 +32,21 @@ library(tidyverse)
                   # fitfunction = glm,  # Type of model (LM, GLM, GLMER etc.)
                   # confsetsize = 100)  # Keep 100 best models
 
-# TO DO 18 Oct- load newly-longly-saved data and try these models on it:
 
-# Once the data is ready, rewrite this to put in our y and predictors
-glmer.glmulti<-function(formula, data, random = "", ...){
+# Wrapper function to allow fitting mixed effects models from glmer inside glmulti
+# lifted from https://yuzar-blog.netlify.app/posts/2022-05-31-glmulti/ probably not to modify
+glmer.glmulti <- function(formula, data, random = "", ...){
   glmer(paste(deparse(formula),random),
-        data    = data, REML = F, ...)
+        data    = data, ...)
 }
 
 mixed_model <- glmulti(
-  y = response ~ predictor_1 + predictor_2 + predictor_3,
-  random  = "+(1|random_effect)",
+  y = outcome ~ Preference + Knowledge + Character + Start,
+  random  = c("+(1|mindsCode)",("+1|situTag")),
   crit    = aicc,
-  data    = data,
+  data    = pizpar3_long,
   family  = binomial,
-  method  = "h",
+  method  = "g",
   fitfunc = glmer.glmulti,
   marginality = F,
   level   = 2 )

@@ -110,5 +110,11 @@ pizpar3_long <- pizpar3 %>% pivot_longer(
   values_to = "probability"
 )
 
+# Make it factors
+pizpar3_long$outcome <- factor(pizpar3_long$outcome, levels = c('prob_short_hotdog', 'prob_long_hotdog',
+                                                         'prob_short_pizza', 'prob_long_pizza'), 
+                               labels = c('psh', 'plh', 'psp', 'plp'))
+
+
 # Save file
 save(file = 'exp1processed_long.rdata', pizpar3_long)

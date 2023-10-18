@@ -11,7 +11,7 @@ library(remotes)
 # remotes::install_github("timnewbold/StatisticalModels")
 library(StatisticalModels)
 
-load('exp2processed.rdata', verbose = T) # 1440 obs of 20 vars
+load('exp1processed.rdata', verbose = T) # 1440 obs of 20 vars
 
 # Model for PROB_SHORT using his syntax
 
