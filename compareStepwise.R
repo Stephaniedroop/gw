@@ -14,14 +14,14 @@ rm(list = ls())
 
 library(tidyverse)
 
-# Exp1 ppt crowdsourced probabilities
-load('exp1processed_long.rdata', verbose = T) # 5760 obs of 8 vars
+
 # Stepwise model outputs processed and calculated for the 64 worlds
 load('worlds.rdata', verbose = T) 
 
+# Exp1 ppt crowdsourced probabilities
+load('exp1processed_wide.rdata', verbose = T) # loads pizpar2, 1440 obs of 12 vars
 
 
-# Now need a df allowing a plot
 
 # Take the first 4 digits of the 64-world ID to make the 16-situation ID
 pChoice$situTag <- str_sub(pChoice$numtag, 1, -3)
@@ -36,19 +36,26 @@ df1 <- df1 %>% pivot_longer(
   values_to = "probability"
 )
 
-# Merge the two dfs
-df2 <- merge(pizpar3_long, df1, by="situTag")
+# Now from pizpar we don't need the 4-way, only the 2-way. Note the probs won't sum to 1 now
+df3 <- pizpar2 %>% select(-(prob_short_hotdog:prob_long_pizza))
+# Then pivot longer
+df3 <- df3 %>% pivot_longer(
+  cols = prob_short:prob_hotdog,
+  names_to = "outcome",
+  values_to = "probability"
+)
 
-# Set of boxplots
+# df3 is ppt data for boxplots, facets are the 16 situs
 p1 <- ggplot() +
-  geom_boxplot(data = pizpar3_long, aes(x=situTag, y=probability, fill=outcome)) +
+  geom_boxplot(data = df3, aes(x=situTag, y=probability, fill=outcome)) +
   facet_wrap(~situTag, scale = "free")
-  
-p1
 
+p1 
 
+# Then overlay horizontal lines for the model predictions
 p2 <- p1 +
   geom_hline(data = df1, aes(yintercept = probability, colour=outcome))
 
 p2
 ggsave('~/Documents/GitHub/gw/comp.pdf', width = 7, height = 5, units = 'in')
+

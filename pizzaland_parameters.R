@@ -87,7 +87,7 @@ pizpar2$Start <- factor(pizpar2$Start, levels = c('Hot dogs visible', 'Pizza vis
 # And put a numerical tag to know the condition
 pizpar2 <- pizpar2 %>% 
   mutate(Z = if_else(pizpar2$Preference=="Absent", "0", "1"),
-         Y = if_else(pizpar2$Knowledge=="Knows area", "1", "0"),
+         Y = if_else(pizpar2$Knowledge=="Yes", "1", "0"),
          X = if_else(pizpar2$Character=="Sporty", "1", "0"),
          Q = if_else(pizpar2$Start=="Hot dogs visible", "0", "1"))
          
@@ -97,7 +97,12 @@ pizpar2 <- pizpar2 %>%
         remove = TRUE)
 
 # Streamline the data again to keep only what we want
+# A new version to make long
 pizpar3 <- pizpar2 %>% select(mindsCode, situTag, Preference, Knowledge, Character, Start, 
+                              prob_short_hotdog, prob_long_hotdog, prob_short_pizza, prob_long_pizza)
+
+# Streamlined for wide version
+pizpar2 <- pizpar2 %>% select(mindsCode, situTag, Preference, Knowledge, Character, Start, prob_short, prob_hotdog,
                               prob_short_hotdog, prob_long_hotdog, prob_short_pizza, prob_long_pizza)
 
 # Save file
