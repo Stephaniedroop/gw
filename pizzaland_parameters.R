@@ -25,6 +25,8 @@ pizpar <- pizpar %>%
 pizpar$flipped2 <- pizpar$flipped
 
 # Split out the response column and remove delimiter |
+# These names are needed due to the different starting points of the agents, different food was visible
+# Later we can know which relates to which by eg. `if_else Start=='hotdog"`
 pizpar <- separate(data = pizpar, col = flipped2, into = c("short_inv", "long_inv", "short_vis", "long_vis"), sep = "\\|")
 
 # The convention of eg. 'short path to visible food' was used for this part of the project, self contained. Was then abandoned.
@@ -44,14 +46,14 @@ pizpar$long_inv_norm <- pizpar$long_inv/pizpar$row_sum
 pizpar2 <- pizpar %>% select(mindsCode, subjectGroup, stim1, rowNo, note1, short_vis_norm, long_vis_norm, short_inv_norm, long_inv_norm)
 
 # Set columns for what the condition tags actually mean
-pizpar2 <- pizpar2 %>% mutate(Knowledge = if_else(grepl("K", note1), 'Knows area', 'Does not know area'))
 pizpar2 <- pizpar2 %>% mutate(Preference = if_else(grepl("F", note1), 'Hot dogs', 'Absent'))
+pizpar2 <- pizpar2 %>% mutate(Knowledge = if_else(grepl("K", note1), 'Knows area', 'Does not know area'))
 pizpar2 <- pizpar2 %>% mutate(Character = if_else(grepl("L", note1), 'Lazy', 'Sporty'))
 pizpar2 <- pizpar2 %>% mutate(Start = if_else(grepl("A", stim1), 'Hot dogs visible', 'Pizza visible'))
 
 # When we had two separate prediction models (one for path and one for food, for Jan-Jul 2023 conferences) probabilities are:
 # 1) Probability of taking the short path
-pizpar2$prob_short <- rowSums(pizpar2[ , c(6, 8)]) # 
+pizpar2$prob_long <- rowSums(pizpar2[ , c(7, 9)]) # THIS CHANGED OCT23 - USED TO BE PROB_SHORT
 # 2) Probability of choosing hotdog
 pizpar2 <- pizpar2 %>% 
   mutate(prob_hotdog = if_else(pizpar2$Start=="Hot dogs visible", 
@@ -79,34 +81,29 @@ pizpar2$check <- rowSums(pizpar2[ , c(16:19)])
 
 
 # Set as factors for the regressions
+pizpar2$Preference <- factor(pizpar2$Preference, levels = c('Absent', 'Hot dogs'),labels = c('Absent', 'Hot dogs'))
 pizpar2$Knowledge <- factor(pizpar2$Knowledge, levels = c('Does not know area', 'Knows area'), labels = c('No', 'Yes'))
 pizpar2$Character <- factor(pizpar2$Character, levels = c('Lazy', 'Sporty'), labels = c('Lazy', 'Sporty'))
-pizpar2$Preference <- factor(pizpar2$Preference, levels = c('Absent', 'Hot dogs'),labels = c('Absent', 'Hot dogs'))
-pizpar2$Start <- factor(pizpar2$Start, levels = c('Hot dogs visible', 'Pizza visible'), labels = c('Hot dogs visible', 'Pizza visible'))
+pizpar2$Start <- factor(pizpar2$Start, levels = c('Pizza visible', 'Hot dogs visible'), labels = c('Pizza visible', 'Hot dogs visible'))
 
 # And put a numerical tag to know the condition
 pizpar2 <- pizpar2 %>% 
   mutate(Z = if_else(pizpar2$Preference=="Absent", "0", "1"),
          Y = if_else(pizpar2$Knowledge=="Yes", "1", "0"),
          X = if_else(pizpar2$Character=="Sporty", "1", "0"),
-         Q = if_else(pizpar2$Start=="Hot dogs visible", "0", "1"))
+         Q = if_else(pizpar2$Start=="Hot dogs visible", "1", "0"))
          
 # And concatenate
 pizpar2 <- pizpar2 %>%
   unite("situTag", Z:Q, sep= "", 
         remove = TRUE)
 
-# Streamline the data again to keep only what we want
-# A new version to make long
-pizpar3 <- pizpar2 %>% select(mindsCode, situTag, Preference, Knowledge, Character, Start, 
-                              prob_short_hotdog, prob_long_hotdog, prob_short_pizza, prob_long_pizza)
-
-# Streamlined for wide version
-pizpar2 <- pizpar2 %>% select(mindsCode, situTag, Preference, Knowledge, Character, Start, prob_short, prob_hotdog,
+# Streamline the data again to keep only what we want - 1440 OBS OF 12 VARS
+pizpar3 <- pizpar2 %>% select(mindsCode, situTag, Preference, Knowledge, Character, Start, prob_long, prob_hotdog,
                               prob_short_hotdog, prob_long_hotdog, prob_short_pizza, prob_long_pizza)
 
 # Save file
-save(file = 'exp1processed_wide.rdata', pizpar2) # For the old stepwise model selection
+save(file = 'exp1processed_wide.rdata', pizpar3) # For the old stepwise model selection
 
 # Longer data for glmulti
 pizpar3_long <- pizpar3 %>% pivot_longer(
@@ -116,9 +113,9 @@ pizpar3_long <- pizpar3 %>% pivot_longer(
 )
 
 # Make it factors
-pizpar3_long$outcome <- factor(pizpar3_long$outcome, levels = c('prob_short_hotdog', 'prob_long_hotdog',
-                                                         'prob_short_pizza', 'prob_long_pizza'), 
-                               labels = c('psh', 'plh', 'psp', 'plp'))
+pizpar3_long$outcome <- factor(pizpar3_long$outcome, levels = c('prob_short_pizza', 'prob_long_pizza',
+                                                         'prob_short_hotdog', 'prob_long_hotdog'), 
+                               labels = c('shortPizza', 'longPizza', 'shortHotdog', 'longHotdog'))
 
 
 # Save file

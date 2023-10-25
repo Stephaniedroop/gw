@@ -50,3 +50,9 @@ mixed_model <- glmulti(
   fitfunc = glmer.glmulti,
   marginality = F,
   level   = 2 )
+
+
+# Problem in knowing how to format data. Try a binomial first..
+
+bin1 <- lmer(probability ~ outcome + Preference + Knowledge + Character + 
+               Start + (1|mindsCode) + (1|situTag), data = pizpar3_long)
