@@ -117,8 +117,6 @@ pChoice <- pChoice %>%
          shortPizza = (1-p_long)*(1-p_hotdog)
   )
 
-
-
 # save df for later use by models
 write.csv(pChoice, "pChoice.csv")
 save(file = 'worlds.rdata', pChoice)

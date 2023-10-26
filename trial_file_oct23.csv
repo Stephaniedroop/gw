@@ -1,0 +1,78 @@
+type,stim1,stim2,stim3,stim4,tag,stimFormat,ITI,ISI,presTime,stimPos,responseType,responseOptions,head,button1,trialText,trialTextPos,title,content,subjectGroup,random
+practice,PIS1,,,,,.png,,,,,,,,NEXT,,,,,,
+practice,PIS2,,,,,.png,,,,,,,,I CONSENT TO TAKE PART,,,,,,
+instructions,,,,,,,,,,,,,,NEXT,,,Instructions,"In this study, you will first see a short biography of a character.  You then see the path they take around a neighbourhood, ending at one of two food trucks serving either hot dogs or pizza.  You are then asked to type what you think best explains their chosen path.  This will be repeated 8 times.  When you are ready, please press the button below to see an example of the character's path.",,
+practice,intro bio,introduction 1,,,,.png,,,,0 -250; 0 0,,,,NEXT,"In each trial, you will first be shown a short biography about a character and a bird's eye image that shows their starting position.  Importantly, the houses in the middle obstruct the character's initial view of the food trucks.  For instance, in the example below, the character can initially see the hot dog stand but <i>cannot</i> see the pizza stand. Even if they are almost at the corner, they still can't see round the corner. They have to be on the same side as the truck to see it.",above,,,,
+practice,intro bio,introduction 2,,,,.png,,,,0 -250; 0 0,,,,NEXT,"After a few seconds, you will then be shown the character's chosen path indicated by a red arrow, as shown below.  You are to assume that the character will eat at the food truck that they arrive at.",above,,,,
+practice,text box,,,,,.png,,,,0 -250,,,,NEXT,"At this point, you will be presented with a text box to type what you think is the <b><i>single</i></b> best explanation for their chosen path.  For example, you may write: ""They go to the pizza stand because it's their favourite"", <i>or</i> ""They don't know the pizza stand is around the corner"", <i>or</i> ""They wanted to take the long route because they are sporty"", etc. ",below,,,,
+instructions,,,,,,,,,,,,,,NEXT,,,,"<p><b>Remember there are no right or wrong answers; just give your best judgement.</b></p> <p>When you are ready, please click NEXT to begin the experiment.</p>",,
+test,FDS,A start,FDS,APL end,t101111,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,1,1
+test,FDL,A start,FDL,APS end,t100110,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,1,1
+test,FKS,B start,FKS,BNS end,t111000,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,1,1
+test,FKL,A start,FKL,ANL end,t110101,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,1,1
+test,ADS,B start,ADS,BNL end,t001001,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,1,1
+test,ADL,A start,ADL,ANS end,t000100,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,1,1
+test,AKS,B start,AKS,BPS end,t011010,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,1,1
+test,AKL,B start,AKL,BPL end,t010011,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,1,1
+test,FDS,A start,FDS,APS end,t101110,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,2,2
+test,FDL,A start,FDL,ANL end,t100101,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,2,2
+test,FKS,A start,FKS,APL end,t111111,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,2,2
+test,FKL,A start,FKL,ANS end,t110100,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,2,2
+test,ADS,B start,ADS,BNS end,t001000,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,2,2
+test,ADL,B start,ADL,BPL end,t000011,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,2,2
+test,AKS,B start,AKS,BNL end,t011001,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,2,2
+test,AKL,B start,AKL,BPS end,t010010,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,2,2
+test,FDS,A start,FDS,ANL end,t101101,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,3,3
+test,FDL,A start,FDL,ANS end,t100100,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,3,3
+test,FKS,A start,FKS,APS end,t111110,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,3,3
+test,FKL,B start,FKL,BPL end,t110011,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,3,3
+test,ADS,A start,ADS,APL end,t001111,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,3,3
+test,ADL,B start,ADL,BPS end,t000010,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,3,3
+test,AKS,B start,AKS,BNS end,t011000,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,3,3
+test,AKL,B start,AKL,BNL end,t010001,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,3,3
+test,FDS,A start,FDS,ANS end,t101100,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,4,4
+test,FDL,B start,FDL,BPL end,t100011,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,4,4
+test,FKS,A start,FKS,ANL end,t111101,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,4,4
+test,FKL,B start,FKL,BPS end,t110010,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,4,4
+test,ADS,A start,ADS,APS end,t001110,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,4,4
+test,ADL,B start,ADL,BNL end,t000001,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,4,4
+test,AKS,A start,AKS,APL end,t011111,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,4,4
+test,AKL,B start,AKL,BNS end,t010000,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,4,4
+test,FDS,B start,FDS,BPL end,t101011,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,5,5
+test,FDL,B start,FDL,BPS end,t100010,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,5,5
+test,FKS,A start,FKS,ANS end,t111100,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,5,5
+test,FKL,B start,FKL,BNL end,t110001,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,5,5
+test,ADS,A start,ADS,ANL end,t001101,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,5,5
+test,ADL,B start,ADL,BNS end,t000000,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,5,5
+test,AKS,A start,AKS,APS end,t011110,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,5,5
+test,AKL,A start,AKL,APL end,t010111,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,5,5
+test,FDS,B start,FDS,BPS end,t101010,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,6,6
+test,FDL,B start,FDL,BNL end,t100001,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,6,6
+test,FKS,B start,FKS,BPL end,t111011,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,6,6
+test,FKL,B start,FKL,BNS end,t110000,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,6,6
+test,ADS,A start,ADS,ANS end,t001100,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,6,6
+test,ADL,A start,ADL,APL end,t000111,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,6,6
+test,AKS,A start,AKS,ANL end,t011101,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,6,6
+test,AKL,A start,AKL,APS end,t010110,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,6,6
+test,FDS,B start,FDS,BNL end,t101001,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,7,7
+test,FDL,B start,FDL,BNS end,t100000,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,7,7
+test,FKS,B start,FKS,BPS end,t111010,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,7,7
+test,FKL,A start,FKL,APL end,t110111,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,7,7
+test,ADS,B start,ADS,BPL end,t001011,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,7,7
+test,ADL,A start,ADL,APS end,t000110,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,7,7
+test,AKS,A start,AKS,ANS end,t011100,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,7,7
+test,AKL,A start,AKL,ANL end,t010101,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,7,7
+test,FDS,B start,FDS,BNS end,t101000,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,8,8
+test,FDL,A start,FDL,APL end,t100111,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,8,8
+test,FKS,B start,FKS,BNL end,t111001,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,8,8
+test,FKL,A start,FKL,APS end,t110110,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,8,8
+test,ADS,B start,ADS,BPS end,t001010,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,8,8
+test,ADL,A start,ADL,ANL end,t000101,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,8,8
+test,AKS,B start,AKS,BPL end,t011011,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,8,8
+test,AKL,A start,AKL,ANS end,t010100,.png,800,;0,6000;,0 -300; 0 0; 0 -300; 0 0,comment,,,,What do you think is the single best explanation for the person's chosen path?,below,,,8,8
+instructions,,,,,,,,,,,,,,NEXT,,,,"<p>Thank you for completing the assessment portion of this experiment.  The aim of the experiment was to find out how people make inferences when they see other people's behaviours, especially when the actions do not seem to be rational. <p/>
+
+<p>Please press the button below to proceed to a short post-experiment questionnaire.<p/>",,
+form,,,,,,,,,,,dropdown,Male;Female;Prefer not say,To which gender do you most identify?,,,,,,,
+form,,,,,,,,,,,box,,Please state your age in the text box below.,,,,,,,
+form,,,,,,,,,,,comment,,Do you have any comments or feedback regarding the experiment?,,,,,,,

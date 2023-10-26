@@ -98,25 +98,12 @@ pizpar2 <- pizpar2 %>%
   unite("situTag", Z:Q, sep= "", 
         remove = TRUE)
 
+# Make it a factor
+pizpar2$situTag <- factor(pizpar2$situTag)
+
 # Streamline the data again to keep only what we want - 1440 OBS OF 12 VARS
 pizpar3 <- pizpar2 %>% select(mindsCode, situTag, Preference, Knowledge, Character, Start, prob_long, prob_hotdog,
                               prob_short_hotdog, prob_long_hotdog, prob_short_pizza, prob_long_pizza)
 
 # Save file
-save(file = 'exp1processed_wide.rdata', pizpar3) # For the old stepwise model selection
-
-# Longer data for glmulti
-pizpar3_long <- pizpar3 %>% pivot_longer(
-  cols = prob_short_hotdog:prob_long_pizza,
-  names_to = "outcome",
-  values_to = "probability"
-)
-
-# Make it factors
-pizpar3_long$outcome <- factor(pizpar3_long$outcome, levels = c('prob_short_pizza', 'prob_long_pizza',
-                                                         'prob_short_hotdog', 'prob_long_hotdog'), 
-                               labels = c('shortPizza', 'longPizza', 'shortHotdog', 'longHotdog'))
-
-
-# Save file
-save(file = 'exp1processed_long.rdata', pizpar3_long)
+save(file = 'exp1processed_wide.rdata', pizpar3) # Used for stepwise model selection
