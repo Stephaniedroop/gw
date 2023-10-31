@@ -70,35 +70,50 @@ p1
 
 ggsave('~/Documents/GitHub/gw/comp.pdf', width = 7, height = 5, units = 'in')
 
-# TO DO - add models preds, get axis labels vertical
-#axis.title.x = element_blank(),
-#axis.text.x = element_blank(),
-#axis.ticks.x = element_blank()
+# Then, to make predictions w/o model 
+# New vars are just the complement of the existing
+pizpar3$prob_short <- 1 - pizpar3$prob_long
+pizpar3$prob_pizza <- 1 - pizpar3$prob_hotdog
+
+# Now to remultiply these existing ones
+pizpar3 <- pizpar3 %>% mutate(
+  predShortPizza = prob_short*prob_pizza,
+  predLongPizza = prob_long*prob_pizza,
+  predShortHotdog = prob_short*prob_hotdog,
+  predLongHotdog = prob_long*prob_hotdog)
+
+# Column for check they sum to 1
+pizpar3$check <- rowSums(pizpar3[ , c(15:18)])
+
+# Now pull out the relevant bits and make it long
+# df3 <- pizpar3 %>% select(situTag, predShortPizza:predLongHotdog)
+
+df3 <- pizpar3 %>% pivot_longer(
+  cols = predShortPizza:predLongHotdog,
+  names_to = "outcome",
+  values_to = "probability"
+)
+
+df3$outcome <- factor(df3$outcome, levels = c('predShortPizza', 'predLongPizza',
+                                              'predShortHotdog', 'predLongHotdog'), 
+                      labels = c('shortPizza', 'longPizza', 'shortHotdog', 'longHotdog'))
 
 
-# THIS IS THE OLD WAY - BOXPLOTS WITH HLINE OVERLAID FOR MODEL PRED
-# p1 <- ggplot() +
-#   geom_boxplot(data = df2, aes(x=situTag, y=probability, fill=outcome)) +
-#   facet_wrap(~situTag, scale = "free")
-# 
-# p1
-# 
-# # Then overlay horizontal lines for the model predictions
-# p2 <- p1 +
-#   geom_hline(data = df1, aes(yintercept = probability, colour=outcome))
-# 
-# p2
-# ggsave('~/Documents/GitHub/gw/comp.pdf', width = 7, height = 5, units = 'in')
+# Now redo diagram
+p2 <- ggplot(df2, aes(x = outcome, y = probability,
+                      fill = outcome)) +
+  facet_wrap(~situTag, scale = "free") +
+  stat_summary(geom='bar', fun='mean', colour = 'black', position = position_dodge(.9)) + #Plots behavioural data mean as bars (here we have 5 categories of rule as x aesthetic and also 2 bars per rule (fill aesthetic))
+  stat_summary(fun.data = 'mean_cl_boot', geom='errorbar', width = .3, position = position_dodge(.9)) +
+  stat_summary(data = df3, aes(x = outcome, y = probability),  fun='mean', colour = '#8d1b1b', 
+               position = position_dodge(.5), size = 0.2) +
+  stat_summary(data = df3, aes(x = outcome, y = probability),  fun.data='mean_cl_boot', geom='errorbar', width = .3, colour = '#8d1b1b', 
+               position = position_dodge(.5), size = 0.2) +
+  theme_bw() +
+  theme(panel.grid = element_blank(),
+        axis.text.x = element_text(angle=270, hjust=1)) +
+  scale_x_discrete(labels = c('00', '01', '10', '11'))
 
-# df2 is ppts; df1 is model preds
+p2
 
-# p3 <- ggplot() +
-#   geom_point 
-# 
-# 
-# p4 <- p3 +
-#   geom_point(data = df1, aes(x=outcome, yintercept = probability, colour=outcome), fill = 'black', shape=2)
-
-
-# ggsave('~/Documents/GitHub/gw/comp3.pdf', width = 7, height = 5, units = 'in')
-
+ggsave('~/Documents/GitHub/gw/comp2.pdf', width = 7, height = 5, units = 'in')
