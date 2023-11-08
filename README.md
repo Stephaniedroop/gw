@@ -6,7 +6,7 @@
  - Tadeg Quillien
  - Christopher Lucas
 
-## Files
+## Files / folders
 
 ### Experiment 1: prediction, obtains parameters for Experiment 2 
 
@@ -27,7 +27,7 @@
  - `worldsetup_mod.R` Modified version of previous file, to recode F4 Start to Hotdog==1, and using prob_long.
  - `worlds.rdata` Static df of the 64 scenarios (16 gridworld setups and 4 possible outcomes for each) with pAction, produced by worldsetup.R.
  - `pChoice.csv` Same as worlds.rdata; the csv it produces.
- - `ecesm_minimal.R` Script to implement Q&L's CESM. Takes `worlds.rdata` as input and calculates how much each outcome depends on each cause across simulated counterfactual worlds. This is a minimal version to see how the model works. Later version [tbd] saves predictions and optimises parameters.
+ 
  
 ### Experiment 2
 
@@ -37,4 +37,10 @@
  - `gw_data.R` Data wrangling script for Experiment 2.
  
 #### Modelling 
+ - `ecesm_minimal.R` Script to implement Q&L's CESM. Takes `worlds.rdata` as input and calculates how much each outcome depends on each cause across simulated counterfactual worlds. This is a minimal version to see how the model works. Later version [tbd] saves predictions and optimises parameters.
  - `tbd` Script to fit the CESM to Exp2 behavioural data.
+ - `Icard` script to implement other causal models eg. Icard 2017, PivotCritical, etc
+ 
+
+### OtherNoCode
+Any project admin, pdfs, docs, setup that found their way into this folder.
