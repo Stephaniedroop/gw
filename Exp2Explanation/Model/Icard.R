@@ -4,6 +4,10 @@
 
 # Script to implement Icard, Kominsky and Knobe 2017
 
+# ------------- DEFINITIONS --------------------------------
+# **Necessity**: if C didn't occur, E didn't occur
+# **Sufficiency**: if C occurred, E occurred
+
 
 # Decisions
 # "They propose that, when evaluating causality, people sample a counterfactual world 
@@ -23,6 +27,8 @@
 # If they sampled a world in which focal = 0, they evaluate whether focal was necessary 
 # (holding all else about the actual world fixed); if they sampled a world in which focal = 1, 
 # they evaluate whether focal is, in general, sufficient (allowing other variables to vary)."
+
+# How to call effects 0,1 when there are 4 effects: do I split them up into path effect and choice effect?
 
 
 
@@ -53,18 +59,27 @@ for (c_ix in 1:64)
                     Start = rep(NA, N_cf),
                     Path = rep(NA, N_cf),
                     Choice = rep(NA, N_cf),
-                    Match = rep(NA, N_cf)) # Til now we can have same as CESM; not clear yet if need this or not
+                    Match = rep(NA, N_cf), # Til now we can have same as CESM; not clear yet if need this or not
+                    N = rep(NA, N_cf), # Add a column for evaluating whether that cause was N and S. No, not enough, need a N and an S for each cause
+                    S = rep(NA, N_cf)) 
   # Generate N counterfactuals
-  for (i in 1:N_cf)
+  for (i in 1:N_cf) # Might not need this loop here - maybe later. 
   {
-    cf_cs <- as.numeric(case[1:4]) # Set of 4 causes from actual world
-    # Now evaluate different cf depending what they sampled
+    cf_cs <- as.numeric(case[1:4]) # Set of 4 causes from actual world. MIGHT NEED THEOUTCOMES TOO
+    effs <- as.numeric(case[5:6]) # Outcomes
+    # Now evaluate different cf depending what they sampled - but this will change as cfs come later
     for (j in 1:cf_cs)
-    {if (j==0) {} # evaluate whether focal was necessary holding all else fixed
-      if (j==1) {} # evaluate whether focal is, in general, sufficient (allowing other variables to vary).
+    {
+      for (k in 1:effs){
+        if (j==0 & k==0) {
+          N <- 1 # 1 if necessary, and 0 otherwise, TO DO that for all causes and effects
+        } 
+      if (j==1 & k==1) {
+        S <-1 # do same as for each N. Going to need a lot of columns and very inefficient
+      } # to evaluate whether focal is, in general, sufficient (allowing other variables to vary).
       }
     
-    
+    }
     
   }
 
