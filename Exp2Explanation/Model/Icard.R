@@ -37,14 +37,20 @@ library(tidyverse)
 library(ggplot2)
 rm(list=ls())
 
+# Tried to do relative filepath but it seems the wd when you git pull the repo is just your user name?!
+load('Documents/GitHub/gw/gwScenarios/worlds.rdata', verbose = T) # 64 obs of 10 vars
+
+
+
+# If you want to set wd each time
+setwd("/Users/stephaniedroop/Documents/GitHub/gw/Exp2Explanation/Model")
+test <- read.csv('../Data/pilot.csv')
+
 load('../../gwScenarios/worlds.rdata', verbose = T) # 64 obs of 10 vars
-
-
-
 
 # ---------------- Sampling model ----------------------------------
 
-N_cf <- 1000 # How many counterfactual samples to draw.
+N_cf <- 100 # How many counterfactual samples to draw.
 
 
 #Loop through cases
@@ -79,7 +85,7 @@ for (c_ix in 1:64)
     causes <- as.numeric(case[1:4]) # Set of 4 causes from actual world. 
     effs <- as.numeric(case[5:6]) # Outcomes from actual world
     # Now evaluate different cf depending what they sampled - but this will change as cfs come later
-    for (focal in 1:cf_cs)
+    for (focal in 1:causes)
     {
       for (k in 1:effs){
         if (focal==0 & k==0) { # any gains to doing it as sum=0 and 2?
