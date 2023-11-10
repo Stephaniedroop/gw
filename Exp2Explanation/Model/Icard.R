@@ -37,15 +37,7 @@ library(tidyverse)
 library(ggplot2)
 rm(list=ls())
 
-# Tried to do relative filepath but it seems the wd when you git pull the repo is just your user name?!
-load('Documents/GitHub/gw/gwScenarios/worlds.rdata', verbose = T) # 64 obs of 10 vars
-
-
-
-# If you want to set wd each time
 setwd("/Users/stephaniedroop/Documents/GitHub/gw/Exp2Explanation/Model")
-test <- read.csv('../Data/pilot.csv')
-
 load('../../gwScenarios/worlds.rdata', verbose = T) # 64 obs of 10 vars
 
 # ---------------- Sampling model ----------------------------------
@@ -53,66 +45,45 @@ load('../../gwScenarios/worlds.rdata', verbose = T) # 64 obs of 10 vars
 N_cf <- 100 # How many counterfactual samples to draw.
 
 
-#Loop through cases
-for (c_ix in 1:64)
+# At the moment this loops through scenarios, but prob want it looping through cfs. So we need to do the cf simulation first 
+
+PathNS <- data.frame(Preference = rep(NA, 64), # Need this for each world. Not each cf
+                     Knowledge = rep(NA, 64),
+                     Character = rep(NA, 64),
+                     Start = rep(NA, 64))
+# Set up empty df to put calculated N and S of each Cause for outcome Choice
+ChoiceNS <- data.frame(Preference = rep(NA, 64), # Need this for each world. Not each cf
+                       Knowledge = rep(NA, 64),
+                       Character = rep(NA, 64),
+                       Start = rep(NA, 64))
+
+# Loops through scenarios and populates the empty NS dfs with whether each cause was N and S for that effect
+# (Is it a problem that due to the factor coding, causes set to OFF (ie 0) are more likely to be necessary 
+# and ON are more likely to be sufficient?? )
+# Actually I think there needs to be an extra step where the simulation is run and whether it did actually cause the effect
+# get added up. So, the same as in before when we filtered the ones that match and sampled according to probability?
+for (c_ix in 1:64) # This part will end up being for the simulated counterfactuals
 {
-  #The current case
   case <- pChoice[c_ix,] 
-  # Empty df of N obs (eg 1000) of 7 vars, to put generated counterfactual setting in
-  cfs <- data.frame(Preference = rep(NA, N_cf),
-                    Knowledge = rep(NA, N_cf),
-                    Character = rep(NA, N_cf),
-                    Start = rep(NA, N_cf),
-                    Path = rep(NA, N_cf),
-                    Choice = rep(NA, N_cf),
-                    Match = rep(NA, N_cf), # Til now we can have same as CESM; not clear yet if need this or not
-                    N = rep(NA, N_cf), # Add a column for evaluating whether that cause was N and S. No, not enough, need a N and an S for each cause
-                    S = rep(NA, N_cf)) 
-  # Set up empty df to put calculated Necessity of each Cause
-  N <- data.frame(Preference = rep(NA, N_cf), # Need this for each cf world?
-                    Knowledge = rep(NA, N_cf),
-                    Character = rep(NA, N_cf),
-                    Start = rep(NA, N_cf))
-  # Set up empty df to put calculated Sufficiency of each Cause
-  S <- data.frame(Preference = rep(NA, N_cf), # Need this for each cf world?
-                       Knowledge = rep(NA, N_cf),
-                       Character = rep(NA, N_cf),
-                       Start = rep(NA, N_cf))
-                    
-  # Generate N counterfactuals
-  for (i in 1:N_cf) # Might not need this loop here - maybe later. 
-  {
-    causes <- as.numeric(case[1:4]) # Set of 4 causes from actual world. 
-    effs <- as.numeric(case[5:6]) # Outcomes from actual world
-    # Now evaluate different cf depending what they sampled - but this will change as cfs come later
-    for (focal in 1:causes)
-    {
-      for (k in 1:effs){
-        if (focal==0 & k==0) { # any gains to doing it as sum=0 and 2?
-          N[focal] <- 1 # 1 if necessary, and 0 otherwise, TO DO that for all causes and effects
-        } 
-        else N[focal] <- 0
-      if (focal==1 & k==1) {
-        S[focal] <-1 # do same as for each N. Need a df for Ss and a df for Ns because they can't be binary.
-        # Does this way still need the same type of cf sampled worlds?
-      }
-        else S[focal] <- 0 # to evaluate whether focal is, in general, sufficient (allowing other variables to vary).
-      }
-    
-    }
-    
-  }
+  causes <- as.numeric(case[1:4])-1 # Set of 4 causes from actual world. Change 1 to 0 and 2 to 1
+  Path <- as.numeric(case[5])-1
+  Choice <- as.numeric(case[6])-1
+  PathNSvec <- causes+Path # Sum==0 means necessary
+  ChoiceNSvec <- causes+Choice
+  # NEXT put them together in a matrix and count up and Ns and Ss ie 0s and 2s
+  PathNS[c_ix,] <- PathNSvec
+  ChoiceNS[c_ix,] <- ChoiceNSvec
+}  # Now we have a 3-way code in each though, instead of binary, and the important numbers are 0 and 2, need to change this
 
-}
+# And only then start simulating cfs
+# Also, this treats outcomes as separate
+# Not clear how to model outcomes as 4 rather than 2x2 because the variables were all binary.
+  
+# Now need to "sample a world in which focal=0 in proportion to prob(not focal)".
 
-
-
-
-
-
-
-
-
+# 
+  
+  
 
 # Refs
 # Icard TF, Kominsky JF, Knobe J. Normality and actual causal strength. Cognition. 2017;161:80–93. pmid:28157584 
