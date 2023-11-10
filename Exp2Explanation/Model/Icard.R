@@ -37,7 +37,7 @@ library(tidyverse)
 library(ggplot2)
 rm(list=ls())
 
-load('worlds.rdata', verbose = T) # 64 obs of 10 vars
+load('../../gwScenarios/worlds.rdata', verbose = T) # 64 obs of 10 vars
 
 
 
@@ -62,21 +62,35 @@ for (c_ix in 1:64)
                     Match = rep(NA, N_cf), # Til now we can have same as CESM; not clear yet if need this or not
                     N = rep(NA, N_cf), # Add a column for evaluating whether that cause was N and S. No, not enough, need a N and an S for each cause
                     S = rep(NA, N_cf)) 
+  # Set up empty df to put calculated Necessity of each Cause
+  N <- data.frame(Preference = rep(NA, N_cf), # Need this for each cf world?
+                    Knowledge = rep(NA, N_cf),
+                    Character = rep(NA, N_cf),
+                    Start = rep(NA, N_cf))
+  # Set up empty df to put calculated Sufficiency of each Cause
+  S <- data.frame(Preference = rep(NA, N_cf), # Need this for each cf world?
+                       Knowledge = rep(NA, N_cf),
+                       Character = rep(NA, N_cf),
+                       Start = rep(NA, N_cf))
+                    
   # Generate N counterfactuals
   for (i in 1:N_cf) # Might not need this loop here - maybe later. 
   {
-    cf_cs <- as.numeric(case[1:4]) # Set of 4 causes from actual world. MIGHT NEED THEOUTCOMES TOO
-    effs <- as.numeric(case[5:6]) # Outcomes
+    causes <- as.numeric(case[1:4]) # Set of 4 causes from actual world. 
+    effs <- as.numeric(case[5:6]) # Outcomes from actual world
     # Now evaluate different cf depending what they sampled - but this will change as cfs come later
-    for (j in 1:cf_cs)
+    for (focal in 1:cf_cs)
     {
       for (k in 1:effs){
-        if (j==0 & k==0) {
-          N <- 1 # 1 if necessary, and 0 otherwise, TO DO that for all causes and effects
+        if (focal==0 & k==0) { # any gains to doing it as sum=0 and 2?
+          N[focal] <- 1 # 1 if necessary, and 0 otherwise, TO DO that for all causes and effects
         } 
-      if (j==1 & k==1) {
-        S <-1 # do same as for each N. Going to need a lot of columns and very inefficient
-      } # to evaluate whether focal is, in general, sufficient (allowing other variables to vary).
+        else N[focal] <- 0
+      if (focal==1 & k==1) {
+        S[focal] <-1 # do same as for each N. Need a df for Ss and a df for Ns because they can't be binary.
+        # Does this way still need the same type of cf sampled worlds?
+      }
+        else S[focal] <- 0 # to evaluate whether focal is, in general, sufficient (allowing other variables to vary).
       }
     
     }
