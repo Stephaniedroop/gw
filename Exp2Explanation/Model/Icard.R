@@ -31,11 +31,29 @@
 # How to call effects 0,1 when there are 4 effects: do I split them up into path effect and choice effect?
 
 
+# Sufficiency 
+# To compute the Sufficiency of 'Sam prefers hot dogs' for 'Sam went to the hot dog place'. *except outcome is 1:3, not 2:2*
+# Take N samples from the causal model, and then only keep those where Sam doesn't prefer hot dogs, 
+# and didn't go to the hot dog place. (ie 0,0)
+# Then in each of these counterfactuals, you make an intervention forcing Sam to like hot dogs, and re-sample the outcome. 
+# **Don't know how to do intervention and resample outcome**
+# The Sufficiency score is the proportion of such counterfactuals in which Sam now goes to the hot dog place.
+
+# So, for 1:3, need to compute sufficiency for each of the 4 causes on each of the 4 outcomes separately
+
+# Need:
+# Function to sample a cf from causal model
+
+# Function to make intervention and resample
+
+
+# USE TADEG'S EXP 1 SCRIPT FORMAT - LOTS OF FUNCTIONS
 
 # ------------------ Prelims ------------------------------
 library(tidyverse)
 library(ggplot2)
 library(data.table)
+library(mltools)
 rm(list=ls())
 
 setwd("/Users/stephaniedroop/Documents/GitHub/gw/Exp2Explanation/Model")
@@ -61,6 +79,40 @@ ChoiceNS <- data.frame(Preference = rep(NA, 64), # Need this for each world. Not
                        Character = rep(NA, 64),
                        Start = rep(NA, 64))
 
+# Function to get outcome from numtag 
+get_outcome_vec <- function(tag) {
+  outcome1 <- substr(tag, nchar(tag)-1, nchar(tag)) # still doesn't work for eg 01 (returns only 1)
+  outcome <- ifelse(outcome1=='00', 'shortPizza',
+                     ifelse(outcome1=='01', 'longPizza',
+                            ifelse(outcome1=='10', 'shortHotdog',
+                                   ifelse(outcome1=='11', 'longHotdog', 'error'))))
+  return(outcome)
+}
+
+# to test the function
+a <- get_outcome_vec(12301)
+
+
+# Also try (Neil's suggestion)
+# if (outcome==‘00’)
+#   outcomevec<-c(TRUE, FALSE, FALSE, FALSE)
+# else if (outcome==‘01’)
+#   outcomevec<-c(….
+
+# Set up df for outcomes?
+outcomes_df <- data.frame(shortPizza = rep(NA, 64), # Need this for each world. Not each cf. Yes each cf. Argh!
+                     longPizza = rep(NA, 64),
+                     shortHotdog = rep(NA, 64),
+                     longHotdog = rep(NA, 64))
+
+# Very pikey way to just get one-hot and later tidy if that is what we need after all
+test <- get_outcome_vec(pChoice$numtag)
+
+outcometest <- as.factor(test)
+
+newoutcometest <- one_hot(as.data.table(outcometest)) # at least now we have a one hot array
+
+
 # Loops through scenarios and populates the empty NS dfs with whether each cause was N and S for that effect
 # (Is it a problem that due to the factor coding, causes set to OFF (ie 0) are more likely to be necessary 
 # and ON are more likely to be sufficient?? ) NO because I have been looping through worlds and in fact I need to loop through cfs
@@ -69,10 +121,21 @@ ChoiceNS <- data.frame(Preference = rep(NA, 64), # Need this for each world. Not
 for (c_ix in 1:64) # This part will end up being for the simulated counterfactuals
 {
   case <- pChoice[c_ix,] 
+  # Outcomes
+  outcome <- case[5:6] # if we want it in words
+  
+  outcomevec <- ifelse(outcome==00, c(TRUE, FALSE, FALSE, FALSE),
+                       ifelse(outcome==01, c(FALSE, TRUE, FALSE, FALSE),
+                              ifelse(outcome==10, c(FALSE, FALSE, TRUE, FALSE),
+                                     ifelse(outcome==11, c(FALSE, FALSE, FALSE, TRUE), 'error'))))
+  #outcomevec <- outcome_from_numtag(outcome)
+  
+  outcomes_df[c_ix,] <- outcomevec
+  
   causes <- as.numeric(case[1:4])-1 # Set of 4 causes from actual world. Change 1 to 0 and 2 to 1
   # NEED A STEP TO GET CFS HERE BECAUSE N AND S ARE ON CF NOT ACTUAL WORLD
-  Path <- as.numeric(case[5])-1 # Pulls out the Path outcome and changes 1 to 0 and 2 to 1
-  Choice <- as.numeric(case[6])-1 # Pulls out the Choice outcome and changes 1 to 0 and 2 to 1
+  Path <- as.numeric(case[6])-1 # Pulls out the Path outcome and changes 1 to 0 and 2 to 1
+  Choice <- as.numeric(case[5])-1 # Pulls out the Choice outcome and changes 1 to 0 and 2 to 1
   PathNSvec <- causes+Path # Sum==0 means necessary; 2 means sufficient
   ChoiceNSvec <- causes+Choice # Sum==0 means necessary; 2 means sufficient
   # NEXT put them together in a matrix and count up and Ns and Ss ie 0s and 2s
@@ -126,31 +189,3 @@ Sfunc <- function(df) {
 
 
 
-# Old - to delete when finished
-
-# Separate out N and S - there must be a better way to do this!?
-# First Path N
-# PathN <- copy(PathNS)
-# PathN[PathN==0] <- "N"
-# PathN[PathN==1] <- 0
-# PathN[PathN==2] <- 0
-# PathN[PathN=="N"] <- 1
-# # Next Path S
-# PathS <- copy(PathNS)
-# PathS[PathS==2] <- "S"
-# PathS[PathS==1] <- 0
-# PathS[PathS==0] <- 0
-# PathS[PathS=="S"] <- 1
-# # Next Choice N
-# ChoiceN <- copy(ChoiceNS)
-# ChoiceN[ChoiceN==0] <- "N"
-# ChoiceN[ChoiceN==1] <- 0
-# ChoiceN[ChoiceN==2] <- 0
-# ChoiceN[ChoiceN=="N"] <- 1
-# # Next Choice S
-# ChoiceS <- copy(ChoiceNS)
-# ChoiceS[ChoiceS==2] <- "S"
-# ChoiceS[ChoiceS==0] <- 0
-# ChoiceS[ChoiceS==1] <- 0
-# ChoiceS[ChoiceS=="S"] <- 1
-# Now we have 4 dfs; both N and S for each outcome
