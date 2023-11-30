@@ -49,6 +49,28 @@
 
 # USE TADEG'S EXP 1 SCRIPT FORMAT - LOTS OF FUNCTIONS
 
+# Define causal power of each var, eg for tadeg it is the causal power of each ball in the urn. For me would it be a list of the beta slopes?
+# power <- c(5.1, 0.74, 14.3, 0.58) # etc - but these lines go separately to each outcome, so need to list several versions? NO
+
+
+# 1. START WITH OUTCOME
+# 
+# we'll prob end up with a relative N and S score? (probabilistic?) (it's the same as pivotality and criticality but NS is later)
+# to decide how to finally merge, it will become clear?
+
+
+# How to merge the points where the coders differ? (Make a decision rule from independent coders, perhaps using clara's?) don't use the pilot data in the final one?
+# only use the real dataset. This is just the way to make the pipeline all the way to resutls table of how to model the data once we get it
+# tadeg and chris have odeas about how model can distribute likelihood over ways a datset can come out but it isnt standard at all
+
+# also means we need to calculate S and N for all subsets of vars as well as for single vars
+# create power set and loop over that but dont do this until you do it for single causes
+
+# For merging the coding: agreement is anything wehre they've all said. For disagreement: conservative 1 is to bin them all in epsilon (everything we failed on)
+# liberal is to take everything anyone ever says as category, but this is not defebnsive in the long run because all the models will end up sucking
+# sparse and confident is a good goal, hedgy is a bad way to be, have to say in appendix how we merged and be proud of it.
+# principled way of having fewer categories is a good way to be
+
 # ------------------ Prelims ------------------------------
 library(tidyverse)
 library(ggplot2)

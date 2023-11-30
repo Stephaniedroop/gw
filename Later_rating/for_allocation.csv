@@ -1,0 +1,65 @@
+"","Preference","Character","Knowledge","Visible","Path","Choice","n"
+"1","Absent","Lazy","Does not know area","Hot dogs visible","Long","Hot dogs",7
+"2","Absent","Lazy","Does not know area","Hot dogs visible","Long","Pizza",9
+"3","Absent","Lazy","Does not know area","Hot dogs visible","Short","Hot dogs",9
+"4","Absent","Lazy","Does not know area","Hot dogs visible","Short","Pizza",8
+"5","Absent","Lazy","Does not know area","Pizza visible","Long","Hot dogs",2
+"6","Absent","Lazy","Does not know area","Pizza visible","Long","Pizza",7
+"7","Absent","Lazy","Does not know area","Pizza visible","Short","Hot dogs",2
+"8","Absent","Lazy","Does not know area","Pizza visible","Short","Pizza",5
+"9","Absent","Lazy","Knows area","Hot dogs visible","Long","Hot dogs",5
+"10","Absent","Lazy","Knows area","Hot dogs visible","Long","Pizza",9
+"11","Absent","Lazy","Knows area","Hot dogs visible","Short","Hot dogs",7
+"12","Absent","Lazy","Knows area","Hot dogs visible","Short","Pizza",9
+"13","Absent","Lazy","Knows area","Pizza visible","Long","Hot dogs",8
+"14","Absent","Lazy","Knows area","Pizza visible","Long","Pizza",2
+"15","Absent","Lazy","Knows area","Pizza visible","Short","Hot dogs",2
+"16","Absent","Lazy","Knows area","Pizza visible","Short","Pizza",7
+"17","Absent","Sporty","Does not know area","Hot dogs visible","Long","Hot dogs",2
+"18","Absent","Sporty","Does not know area","Hot dogs visible","Long","Pizza",5
+"19","Absent","Sporty","Does not know area","Hot dogs visible","Short","Hot dogs",7
+"20","Absent","Sporty","Does not know area","Hot dogs visible","Short","Pizza",7
+"21","Absent","Sporty","Does not know area","Pizza visible","Long","Hot dogs",9
+"22","Absent","Sporty","Does not know area","Pizza visible","Long","Pizza",8
+"23","Absent","Sporty","Does not know area","Pizza visible","Short","Hot dogs",9
+"24","Absent","Sporty","Does not know area","Pizza visible","Short","Pizza",2
+"25","Absent","Sporty","Knows area","Hot dogs visible","Long","Hot dogs",7
+"26","Absent","Sporty","Knows area","Hot dogs visible","Long","Pizza",7
+"27","Absent","Sporty","Knows area","Hot dogs visible","Short","Hot dogs",5
+"28","Absent","Sporty","Knows area","Hot dogs visible","Short","Pizza",9
+"29","Absent","Sporty","Knows area","Pizza visible","Long","Hot dogs",9
+"30","Absent","Sporty","Knows area","Pizza visible","Long","Pizza",2
+"31","Absent","Sporty","Knows area","Pizza visible","Short","Hot dogs",8
+"32","Absent","Sporty","Knows area","Pizza visible","Short","Pizza",2
+"33","Hot dogs","Lazy","Does not know area","Hot dogs visible","Long","Hot dogs",9
+"34","Hot dogs","Lazy","Does not know area","Hot dogs visible","Long","Pizza",2
+"35","Hot dogs","Lazy","Does not know area","Hot dogs visible","Short","Hot dogs",8
+"36","Hot dogs","Lazy","Does not know area","Hot dogs visible","Short","Pizza",2
+"37","Hot dogs","Lazy","Does not know area","Pizza visible","Long","Hot dogs",7
+"38","Hot dogs","Lazy","Does not know area","Pizza visible","Long","Pizza",7
+"39","Hot dogs","Lazy","Does not know area","Pizza visible","Short","Hot dogs",5
+"40","Hot dogs","Lazy","Does not know area","Pizza visible","Short","Pizza",9
+"41","Hot dogs","Lazy","Knows area","Hot dogs visible","Long","Hot dogs",9
+"42","Hot dogs","Lazy","Knows area","Hot dogs visible","Long","Pizza",8
+"43","Hot dogs","Lazy","Knows area","Hot dogs visible","Short","Hot dogs",9
+"44","Hot dogs","Lazy","Knows area","Hot dogs visible","Short","Pizza",2
+"45","Hot dogs","Lazy","Knows area","Pizza visible","Long","Hot dogs",2
+"46","Hot dogs","Lazy","Knows area","Pizza visible","Long","Pizza",5
+"47","Hot dogs","Lazy","Knows area","Pizza visible","Short","Hot dogs",7
+"48","Hot dogs","Lazy","Knows area","Pizza visible","Short","Pizza",7
+"49","Hot dogs","Sporty","Does not know area","Hot dogs visible","Long","Hot dogs",8
+"50","Hot dogs","Sporty","Does not know area","Hot dogs visible","Long","Pizza",2
+"51","Hot dogs","Sporty","Does not know area","Hot dogs visible","Short","Hot dogs",2
+"52","Hot dogs","Sporty","Does not know area","Hot dogs visible","Short","Pizza",7
+"53","Hot dogs","Sporty","Does not know area","Pizza visible","Long","Hot dogs",5
+"54","Hot dogs","Sporty","Does not know area","Pizza visible","Long","Pizza",9
+"55","Hot dogs","Sporty","Does not know area","Pizza visible","Short","Hot dogs",7
+"56","Hot dogs","Sporty","Does not know area","Pizza visible","Short","Pizza",9
+"57","Hot dogs","Sporty","Knows area","Hot dogs visible","Long","Hot dogs",2
+"58","Hot dogs","Sporty","Knows area","Hot dogs visible","Long","Pizza",7
+"59","Hot dogs","Sporty","Knows area","Hot dogs visible","Short","Hot dogs",2
+"60","Hot dogs","Sporty","Knows area","Hot dogs visible","Short","Pizza",5
+"61","Hot dogs","Sporty","Knows area","Pizza visible","Long","Hot dogs",7
+"62","Hot dogs","Sporty","Knows area","Pizza visible","Long","Pizza",9
+"63","Hot dogs","Sporty","Knows area","Pizza visible","Short","Hot dogs",9
+"64","Hot dogs","Sporty","Knows area","Pizza visible","Short","Pizza",8
