@@ -22,7 +22,9 @@ vdat[is.na(vdat)] <- 0
 idat <- idat %>% select(-X)
 
 # Shortened category names that were coded for (eg prefgen = Preference general). These are the colnames of which to make power set
-cats <- c('prefgen', 'prefspec', 'chargen', 'charspec', 'know', 'loc', 'disp', 'sit')
+# The letters are to match with c('prefgen', 'prefspec', 'chargen', 'charspec', 'know', 'loc', 'disp', 'sit')
+# Use the letters to make the 256x256 df less unwieldy
+cats <- c('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h')
 
 colnames(idat) <- c('reponse', cats)
 colnames(vdat) <- c('response', cats)
@@ -33,15 +35,22 @@ idat[ , i] <- apply(idat[ , i], 2,
                     function(x) as.numeric(as.character(x)))
 
 
+
+
 #---------- Set up 2^8 square matrix for putting the counts in -------------------
 
 # Set up power set (2^8) of cats
 ps <- powerSet(cats, m = 8)
+p <- sapply(ps, paste0, collapse = '_')
+reindex <- sort(sapply(p, nchar), index.return = T)$ix
+psnames <- p[reindex]
 
 # Set up empty df with both cols and rows the size of the power set and named so
 df <- data.frame(matrix(nrow = length(ps), ncol = length(ps)))
-colnames(df) <- ps
-rownames(df) <- ps
+colnames(df) <- psnames
+rownames(df) <- psnames
+# Replace NAs with 0s
+df[is.na(df)] <- 0
 
 
 #---------- Loop through V and I data and compare, putting a count in correct cell of df ------------
@@ -58,9 +67,11 @@ for (exp in 1:n_exps)
   irat <- iexp[2:9]
   # need a vector of names of which cols rated 1, to later match with correct place in power set df
   pos <- which(vrat&irat) # This gives positions where v and i gave the same rating
-  name <- cats[pos] # HOW TO BUNDLE THIS INTO A C('') WITH ALL ELEMENTS? so then to index the df by it
-  
-  df
+  name <- cats[pos] 
+  # Now squash name into a string so to later match with the powerset
+  namestring <- paste0(name, collapse = "_")
+  # Now find that place in the powerset and add 1 to it
+  df[namestring,namestring] <- df[namestring,namestring] + 1
 }
 
 
