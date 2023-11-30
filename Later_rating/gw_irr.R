@@ -34,7 +34,15 @@ i <- c(2:9)
 idat[ , i] <- apply(idat[ , i], 2,
                     function(x) as.numeric(as.character(x)))
 
+# A version where any other digit is renamed to 1
+idat2 <- idat
+idat2[idat==2] <- 1
+idat2[idat==3] <- 1
 
+vdat2 <- vdat
+vdat2[vdat==2] <- 1
+vdat2[vdat==3] <- 1
+vdat2[vdat==4] <- 1
 
 
 #---------- Set up 2^8 square matrix for putting the counts in -------------------
@@ -51,7 +59,8 @@ colnames(df) <- psnames
 rownames(df) <- psnames
 # Replace NAs with 0s
 df[is.na(df)] <- 0
-
+# Remove the empty set first row and first column (this was to debug the integer(0) error caused by soemthing else, might not be necessary)
+# df <- df[-1,-1]
 
 #---------- Loop through V and I data and compare, putting a count in correct cell of df ------------
 n_exps <- nrow(idat) # We checked idat and vdat are the same length and order elsewhere so ok to assume it here
@@ -59,49 +68,30 @@ n_exps <- nrow(idat) # We checked idat and vdat are the same length and order el
 for (exp in 1:n_exps)
 {
   # Pull out v and i 's whole rows of their separate ratings for the same explanation
-  vexp <- vdat[exp,]
-  iexp <- idat[exp,]
-  # Add a 1 to cell of df corresponding to row of v and col of i
-  # But first need a way to express vexp's series of 1s in same form as an element of power set
+  vexp <- vdat2[exp,]
+  iexp <- idat2[exp,]
+  # Pull out just the ratings without the text response
   vrat <- vexp[2:9]
   irat <- iexp[2:9]
-  # need a vector of names of which cols rated 1, to later match with correct place in power set df
-  pos <- which(vrat&irat) # This gives positions where v and i gave the same rating
-  name <- cats[pos] 
+  # Get positions where v and i gave the same rating, gives numerical place in vector
+  #pos <- which(vrat&irat) #  NEED A WAY TO CATCH 0s AND MOVE ON
+  # No - get separate positions instead
+  if (any(which(vrat > 0)))
+    {posv <- which(vrat > 0)}
+  if (any(which(irat > 0)))    
+    {posi <- which(irat > 0)}
+  # Turn numerical position into names
+  namev <- cats[posv]
+  namei <- cats[posi]
   # Now squash name into a string so to later match with the powerset
-  namestring <- paste0(name, collapse = "_")
+  namestringv <- paste0(namev, collapse = "_")
+  namestringi <- paste0(namei, collapse = "_")
   # Now find that place in the powerset and add 1 to it
-  df[namestring,namestring] <- df[namestring,namestring] + 1
+  df[namestringv,namestringi] <- df[namestringv,namestringi] + 1
 }
 
+# NEXT TO DO
+# Calculate irr or % of total on the diagonal
 
 
-
-# Now the same for factor
-# j <- c(2:9)
-# idat[ , j] <- apply(idat[ , j], 2,
-#                     function(x) as.factor(as.character(x)))
-# 
-# vdat[ , j] <- apply(vdat[ , j], 2,
-#                     function(x) as.factor(as.character(x)))
-
-
-# A version where any other digit is renamed to 1
-idat2 <- idat
-idat2[idat==2] <- 1
-idat2[idat==3] <- 1
-
-vdat2 <- vdat
-vdat2[vdat==2] <- 1
-vdat2[vdat==3] <- 1
-vdat2[vdat==4] <- 1
-
-
-
-
-idat2 <- idat2 %>% 
-  mutate(across(where(is.character), as.factor))
-
-vdat2 <- vdat2 %>% 
-  mutate(across(where(is.character), as.factor))
 
