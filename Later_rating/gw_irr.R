@@ -56,8 +56,10 @@ for (exp in 1:n_exps)
   # But first need a way to express vexp's series of 1s in same form as an element of power set
   vrat <- vexp[2:9]
   irat <- iexp[2:9]
-  # 
-  which(vexp & iexp)
+  # need a vector of names of which cols rated 1, to later match with correct place in power set df
+  pos <- which(vrat&irat) # This gives positions where v and i gave the same rating
+  name <- cats[pos] # HOW TO BUNDLE THIS INTO A C('') WITH ALL ELEMENTS? so then to index the df by it
+  
   df
 }
 
