@@ -77,11 +77,12 @@ library(mltools)
 rm(list=ls())
 
 setwd("/Users/stephaniedroop/Documents/GitHub/gw/Exp2Explanation/Model")
-load('../../gwScenarios/worlds.rdata', verbose = T) # 64 obs of 10 vars
+load('../../gwScenarios/worlds.rdata', verbose = T) # 64 obs of 10 vars, pChoice
 
 # ---------------- Sampling model ----------------------------------
 
 N_cf <- 100 # How many counterfactual samples to draw.
+n_samp <- 100 # How many samples from causal model, for Sufficiency calc
 
 # Start with big outer loop IMPLEMENTS N - ONLY PSEUDOCODE FOR NOW -- TO CHECK
 #Loop through cases
@@ -118,12 +119,55 @@ for (c_ix in 1:64)
     # 
     Necess_out <- Necess_cfs[Necess_out_ix,1:6] 
     # If outcome is different from in the actual world, this cause was Necessary, so increase N by 1
-    if (Necess_out[5:6] == case[5:6]) {dfN[cause,case] <- dfN[case,case] + 1} 
-  }
-}  
-  
-  
+    if (Necess_out[5:6] != case[5:6]) {dfN[cause,case] <- dfN[case,case] + 1} 
+  }# Then if it all works, rewrite as fucntion
+ 
 
+# Sufficiency 
+  causes <- c('Preference','Knowledge','Character','Start')
+  outcomes <- c('shortPizza', 'longPizza', 'shortHotdog', 'longHotdog')
+
+# Set up empty Sufficiency df  : the 2^4 causes, and for each the 4 outcomes. So 8x16. This is re-presentation of pChoice
+  Suff_df <- data.frame(Preference = rep(NA, 16), 
+                       Knowledge = rep(NA, 16),
+                       Character = rep(NA, 16),
+                       Start = rep(NA, 16),
+                       shortPizza = rep(NA, 16), 
+                       longPizza = rep(NA, 16),
+                       shortHotdog = rep(NA, 16),
+                       longHotdog = rep(NA, 16))
+  
+for (case in Suff_df)
+{
+# 1. Take n samples from causal model (think we need a bigger loop for each C+E pair, for does prefer hotdogs cause to go to hotdog place)
+# 2. Keep those where Sam doesn't prefer hotdogs (C=0) and didn't go tohotdog place (E=0)
+# 3. In each of these, make intervention forcing him to like hotdogs, and resample the outcome
+# 4. S score is the proportion in which sam now goes to hotdog place
+  # Generate N samples from causal model - is this to be biased to actual world, as in case? Or randomly out of the 64?
+  for (i in causes) 
+    {
+    for (j in outcomes) # Same
+      {
+      for (k in 1:n_samp) # to decide - does this go inside the big loop for worlds or not? It isn't biased to actual so maybe not? Instead we want to loop over pairs of C+E
+        {
+        # How to actually sample from causal model... is it 1/64?
+        samp <- sample(pChoice, replace = TRUE)
+        if (samp[i] != case[i] & samp[j] != case[j]) # test this line
+          # Make intervention to flip i 
+        {int <- case
+        int[i] <- !i
+        # Now resample the outcome
+        # But does that mean search pChoice for the case corresponding to this setting? and then taking 1/4 outcomes in proportion to its p?
+        } 
+        }
+    
+      }
+  
+  }
+      
+  
+  
+# ------------ OLD - prob delete?   ------------------
 PathNS <- data.frame(Preference = rep(NA, 64), # Need this for each world. Not each cf. Yes each cf. Argh!
                      Knowledge = rep(NA, 64),
                      Character = rep(NA, 64),
