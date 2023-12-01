@@ -5,9 +5,38 @@
 # Script to implement Icard, Kominsky and Knobe 2017
 
 # ------------- DEFINITIONS --------------------------------
-# **Necessity**: if C didn't occur, E didn't occur. BUT does this mean C is the cause or the cf? (Is it 0 or 1?)
+# **Necessity**: if C didn't occur, E didn't occur. 
 # **Sufficiency**: if C occurred, E occurred
 
+
+
+
+
+# Sufficiency 
+# To compute the Sufficiency of 'Sam prefers hot dogs' for 'Sam went to the hot dog place'. *except outcome is 1:3, not 2:2*
+# Take N samples from the causal model, and then only keep those where Sam doesn't prefer hot dogs, 
+# and didn't go to the hot dog place. (ie 0,0)
+# Then in each of these counterfactuals, you make an intervention forcing Sam to like hot dogs, and re-sample the outcome. 
+# How to do intervention and resample outcome? 'Intervention' just means find the 1/64 where that node is different
+# The Sufficiency score is the proportion of such counterfactuals in which Sam now goes to the hot dog place.
+
+# So, for 1:3, need to compute sufficiency for each of the 4 causes on each of the 4 outcomes separately
+
+# Need:
+# Function to sample a cf from causal model
+
+# Function to make intervention and resample
+
+
+# USE TADEG'S EXP 1 SCRIPT FORMAT - LOTS OF FUNCTIONS
+
+# 1. START WITH OUTCOME
+# 
+# we'll prob end up with a relative N and S score? (probabilistic?) (it's the same as pivotality and criticality but NS is later)
+# to decide how to finally merge, it will become clear?
+
+
+# OLDER NOTES
 
 # Decisions
 # "They propose that, when evaluating causality, people sample a counterfactual world 
@@ -31,45 +60,14 @@
 # How to call effects 0,1 when there are 4 effects: do I split them up into path effect and choice effect?
 
 
-# Sufficiency 
-# To compute the Sufficiency of 'Sam prefers hot dogs' for 'Sam went to the hot dog place'. *except outcome is 1:3, not 2:2*
-# Take N samples from the causal model, and then only keep those where Sam doesn't prefer hot dogs, 
-# and didn't go to the hot dog place. (ie 0,0)
-# Then in each of these counterfactuals, you make an intervention forcing Sam to like hot dogs, and re-sample the outcome. 
-# **Don't know how to do intervention and resample outcome**
-# The Sufficiency score is the proportion of such counterfactuals in which Sam now goes to the hot dog place.
-
-# So, for 1:3, need to compute sufficiency for each of the 4 causes on each of the 4 outcomes separately
-
-# Need:
-# Function to sample a cf from causal model
-
-# Function to make intervention and resample
-
-
-# USE TADEG'S EXP 1 SCRIPT FORMAT - LOTS OF FUNCTIONS
-
-# Define causal power of each var, eg for tadeg it is the causal power of each ball in the urn. For me would it be a list of the beta slopes?
-# power <- c(5.1, 0.74, 14.3, 0.58) # etc - but these lines go separately to each outcome, so need to list several versions? NO
-
-
-# 1. START WITH OUTCOME
-# 
-# we'll prob end up with a relative N and S score? (probabilistic?) (it's the same as pivotality and criticality but NS is later)
-# to decide how to finally merge, it will become clear?
-
-
+# Later notes -- relevant to how to actually later model the rated data. See also script gw_irr in Later_rating folder
 # How to merge the points where the coders differ? (Make a decision rule from independent coders, perhaps using clara's?) don't use the pilot data in the final one?
 # only use the real dataset. This is just the way to make the pipeline all the way to resutls table of how to model the data once we get it
-# tadeg and chris have odeas about how model can distribute likelihood over ways a datset can come out but it isnt standard at all
+# tadeg and chris have ideas about how model can distribute likelihood over ways a datset can come out but it isnt standard at all
 
 # also means we need to calculate S and N for all subsets of vars as well as for single vars
 # create power set and loop over that but dont do this until you do it for single causes
 
-# For merging the coding: agreement is anything wehre they've all said. For disagreement: conservative 1 is to bin them all in epsilon (everything we failed on)
-# liberal is to take everything anyone ever says as category, but this is not defebnsive in the long run because all the models will end up sucking
-# sparse and confident is a good goal, hedgy is a bad way to be, have to say in appendix how we merged and be proud of it.
-# principled way of having fewer categories is a good way to be
 
 # ------------------ Prelims ------------------------------
 library(tidyverse)
@@ -85,11 +83,46 @@ load('../../gwScenarios/worlds.rdata', verbose = T) # 64 obs of 10 vars
 
 N_cf <- 100 # How many counterfactual samples to draw.
 
-
-# At the moment this loops through scenarios, but prob want it looping through cfs. So we need to do the cf simulation first 
-
-# Can the start be same as ecesm? Why generate cfs then sample - can we just sample from a prob dist? But how
-# NEXT TO DO - GENERATE CFS USING P CHOICE. Can use same as ecesm up to cf_out? 
+# Start with big outer loop IMPLEMENTS N - ONLY PSEUDOCODE FOR NOW -- TO CHECK
+#Loop through cases
+for (c_ix in 1:64)
+{
+  #The current case
+  case <- pChoice[c_ix,]
+  # Sample from causal model (this taken from ecesm only without the cf generation and flipping for s)
+  cs <- as.numeric(case[1:4]) # Set of 4 causes from actual world
+  #Pull out the corresponding four outcomes (to see their probabilities) 4 obs of 10 vars
+  poss_outcomes <- pChoice %>% filter(as.numeric(Preference)==cs[1],
+                                 as.numeric(Knowledge)==cs[2],
+                                 as.numeric(Character)==cs[3],
+                                 as.numeric(Start)==cs[4])
+  
+  #Sample one outcome according to its probability
+  out_ix <- sample(x=1:4, size = 1, p=poss_outcomes$p_action)
+  # 
+  out <- poss_outcomes[out_ix,1:6] 
+  
+  # Next, for Necessity, get the situation where C==0 (or is different from the actual setting). Do this for each cause one at a time
+  for (i in cs) # loop over the four cause settings
+  {
+    # Set the 4 causes to be the same only with the operative one flipped
+    Necess_causes <- cs
+    Necess_causes[i] <- !i
+    # Then get the corresponding 4 entries of pChoice
+    Necess_cfs <- pChoice %>% filter(as.numeric(Preference)==Necess_causes[1],
+                                     as.numeric(Knowledge)==Necess_causes[2],
+                                     as.numeric(Character)==Necess_causes[3],
+                                     as.numeric(Start)==Necess_causes[4]) 
+    # Resample the outcome
+    Necess_out_ix <- sample(x=1:4, size = 1, p=Necess_cfs$p_action)
+    # 
+    Necess_out <- Necess_cfs[Necess_out_ix,1:6] 
+    # If outcome is different from in the actual world, this cause was Necessary, so increase N by 1
+    if (Necess_out[5:6] == case[5:6]) {dfN[cause,case] <- dfN[case,case] + 1} 
+  }
+}  
+  
+  
 
 PathNS <- data.frame(Preference = rep(NA, 64), # Need this for each world. Not each cf. Yes each cf. Argh!
                      Knowledge = rep(NA, 64),
@@ -196,15 +229,7 @@ Sfunc <- function(df) {
 
 
 
-# And only then start simulating cfs
-# Also, this treats outcomes as separate
-# Not clear how to model outcomes as 4 rather than 2x2 because the variables were all binary. 1 and 3
-  
-# Now need to "sample a world in which focal=0 in proportion to prob(not focal)".
 
-# 
-  
-# df2 <- df  
 
 # Refs
 # Icard TF, Kominsky JF, Knobe J. Normality and actual causal strength. Cognition. 2017;161:80–93. pmid:28157584 

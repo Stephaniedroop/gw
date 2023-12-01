@@ -1,10 +1,12 @@
 ######################################################################
 ################## IRR etc on V and I's coded pilot gw data ##########
 
+# Notes: to tidy or remove
+# For merging the coding: agreement is anything wehre they've all said. For disagreement: conservative 1 is to bin them all in epsilon (everything we failed on)
+# liberal is to take everything anyone ever says as category, but this is not defebnsive in the long run because all the models will end up sucking
+# sparse and confident is a good goal, hedgy is a bad way to be, have to say in appendix how we merged and be proud of it.
+# principled way of having fewer categories is a good way to be
 
-# New notes and advice
-# Make an empty matrix of 9x9 and loop through each line to add it to the cells. About half should be 0
-# The proportion of the total that lies on the diagonal shows how much they agreed but there should be better measures too
 
 
 # Prelims
@@ -23,18 +25,18 @@ idat <- idat %>% select(-X)
 
 # Shortened category names that were coded for (eg prefgen = Preference general). These are the colnames of which to make power set
 # The letters are to match with c('prefgen', 'prefspec', 'chargen', 'charspec', 'know', 'loc', 'disp', 'sit')
-# Use the letters to make the 256x256 df less unwieldy
+# Use letters to make the 256x256 df less unwieldy
 cats <- c('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h')
 
 colnames(idat) <- c('reponse', cats)
 colnames(vdat) <- c('response', cats)
 
-# Change cols to numeric on idat
+# Change cols to numeric on idat because some had question marks and were stored as chars
 i <- c(2:9)
 idat[ , i] <- apply(idat[ , i], 2,
                     function(x) as.numeric(as.character(x)))
 
-# A version where any other digit is renamed to 1
+# A version where any other digit >1 (ie which denotes subsidiary reasons) is renamed to 1
 idat2 <- idat
 idat2[idat==2] <- 1
 idat2[idat==3] <- 1
