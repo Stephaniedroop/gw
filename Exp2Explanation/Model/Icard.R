@@ -1,6 +1,6 @@
 #########################################################################
 ################ OTHER models for gridworld #############################
-##################         ICARD           #############################
+##################         ICARD NS           ###########################
 
 # Script to implement Icard, Kominsky and Knobe 2017
 
@@ -8,65 +8,6 @@
 # **Necessity**: if C didn't occur, E didn't occur. 
 # **Sufficiency**: if C occurred, E occurred
 
-
-
-
-
-# Sufficiency 
-# To compute the Sufficiency of 'Sam prefers hot dogs' for 'Sam went to the hot dog place'. *except outcome is 1:3, not 2:2*
-# Take N samples from the causal model, and then only keep those where Sam doesn't prefer hot dogs, 
-# and didn't go to the hot dog place. (ie 0,0)
-# Then in each of these counterfactuals, you make an intervention forcing Sam to like hot dogs, and re-sample the outcome. 
-# How to do intervention and resample outcome? 'Intervention' just means find the 1/64 where that node is different
-# The Sufficiency score is the proportion of such counterfactuals in which Sam now goes to the hot dog place.
-
-# So, for 1:3, need to compute sufficiency for each of the 4 causes on each of the 4 outcomes separately
-
-# Need:
-# Function to sample a cf from causal model
-
-# Function to make intervention and resample
-
-
-# USE TADEG'S EXP 1 SCRIPT FORMAT - LOTS OF FUNCTIONS
-
-# 1. START WITH OUTCOME
-# 
-# we'll prob end up with a relative N and S score? (probabilistic?) (it's the same as pivotality and criticality but NS is later)
-# to decide how to finally merge, it will become clear?
-
-
-# OLDER NOTES
-
-# Decisions
-# "They propose that, when evaluating causality, people sample a counterfactual world 
-# ... with probability proportional to how likely that world is." 
-# Does that mean our Exp1's situation model? Yes, it means how likely each action is, given the factors.
-# BUT DOES THAT MEAN THE SAME THING?
-
-# For example, world where chose longHotdog.
-# To evaluate whether Preference=1 is the cause of choosing longHotdog, they sample a world in which
-# Preference=0 in proportion to how often Preference=0
-
-# If assume so, load 64 combinations of factors defined in 'worldsetup.R', weighted by beta slope parameters 
-# obtained from behavioural experiment and saved as pChoice df via worlds.rdata
-
-
-# "Then, crucially, people evaluate a different counterfactual depending on what they sampled. 
-# If they sampled a world in which focal = 0, they evaluate whether focal was necessary 
-# (holding all else about the actual world fixed); if they sampled a world in which focal = 1, 
-# they evaluate whether focal is, in general, sufficient (allowing other variables to vary)."
-
-# How to call effects 0,1 when there are 4 effects: do I split them up into path effect and choice effect?
-
-
-# Later notes -- relevant to how to actually later model the rated data. See also script gw_irr in Later_rating folder
-# How to merge the points where the coders differ? (Make a decision rule from independent coders, perhaps using clara's?) don't use the pilot data in the final one?
-# only use the real dataset. This is just the way to make the pipeline all the way to resutls table of how to model the data once we get it
-# tadeg and chris have ideas about how model can distribute likelihood over ways a datset can come out but it isnt standard at all
-
-# also means we need to calculate S and N for all subsets of vars as well as for single vars
-# create power set and loop over that but dont do this until you do it for single causes
 
 
 # ------------------ Prelims ------------------------------
@@ -84,14 +25,34 @@ load('../../gwScenarios/worlds.rdata', verbose = T) # 64 obs of 10 vars, pChoice
 N_cf <- 100 # How many counterfactual samples to draw.
 n_samp <- 100 # How many samples from causal model, for Sufficiency calc
 
+# Set up empty Necessity df - not in use yet because using same structure as ecesm
+N_df <- data.frame(Preference = rep(NA, 16), 
+                      Knowledge = rep(NA, 16),
+                      Character = rep(NA, 16),
+                      Start = rep(NA, 16),
+                      shortPizza = rep(NA, 16), 
+                      longPizza = rep(NA, 16),
+                      shortHotdog = rep(NA, 16),
+                      longHotdog = rep(NA, 16))
+
+
+# Same structure as cesm
+Ncfs <- data.frame(Preference = rep(NA, N_cf),
+                  Knowledge = rep(NA, N_cf),
+                  Character = rep(NA, N_cf),
+                  Start = rep(NA, N_cf),
+                  Path = rep(NA, N_cf),
+                  Choice = rep(NA, N_cf),
+                  Match = rep(NA, N_cf))
+
 # Start with big outer loop IMPLEMENTS N - ONLY PSEUDOCODE FOR NOW -- TO CHECK
 #Loop through cases
 for (c_ix in 1:64)
 {
   #The current case
   case <- pChoice[c_ix,]
-  # Sample from causal model (this taken from ecesm only without the cf generation and flipping for s)
-  cs <- as.numeric(case[1:4]) # Set of 4 causes from actual world
+  # Sample from causal model (this taken from ecesm only without the step that generates cf and flips for s)
+  cs <- as.numeric(case[1:4]) # Set of 4 causes from actual world. Remember it is still {1,2} not {0,1} so 1 means 0
   #Pull out the corresponding four outcomes (to see their probabilities) 4 obs of 10 vars
   poss_outcomes <- pChoice %>% filter(as.numeric(Preference)==cs[1],
                                  as.numeric(Knowledge)==cs[2],
@@ -100,15 +61,14 @@ for (c_ix in 1:64)
   
   #Sample one outcome according to its probability
   out_ix <- sample(x=1:4, size = 1, p=poss_outcomes$p_action)
-  # 
-  out <- poss_outcomes[out_ix,1:6] 
+  out <- poss_outcomes[out_ix,1:6] # WORKS TO HERE - SAMPLES 1/64 WORLDS
   
   # Next, for Necessity, get the situation where C==0 (or is different from the actual setting). Do this for each cause one at a time
   for (i in cs) # loop over the four cause settings
   {
     # Set the 4 causes to be the same only with the operative one flipped
     Necess_causes <- cs
-    Necess_causes[i] <- !i
+    Necess_causes[i] <- 3-as.numeric(i) # If binary it would be !i
     # Then get the corresponding 4 entries of pChoice
     Necess_cfs <- pChoice %>% filter(as.numeric(Preference)==Necess_causes[1],
                                      as.numeric(Knowledge)==Necess_causes[2],
@@ -119,9 +79,15 @@ for (c_ix in 1:64)
     # 
     Necess_out <- Necess_cfs[Necess_out_ix,1:6] 
     # If outcome is different from in the actual world, this cause was Necessary, so increase N by 1
-    if (Necess_out[5:6] != case[5:6]) {dfN[cause,case] <- dfN[case,case] + 1} 
-  }# Then if it all works, rewrite as fucntion
- 
+    # if (Necess_out[5:6] != case[5:6]) {dfN[cause,case] <- dfN[case,case] + 1} 
+    # OR : to follow ecesm. But can't because we want it for each cause-effect pair separately. This can only look at whole setting
+    Necess_out$Match = Necess_out$Choice==case$Choice & Necess_out$Path==case$Path
+    # Add this now finished assessment of N in one sample to the collection
+    Ncfs[i,] <- Necess_out
+    
+  }
+  # Then if it all works, rewrite as fucntion
+} 
 
 # Sufficiency 
   causes <- c('Preference','Knowledge','Character','Start')
@@ -178,7 +144,7 @@ ChoiceNS <- data.frame(Preference = rep(NA, 64), # Need this for each world. Not
                        Character = rep(NA, 64),
                        Start = rep(NA, 64))
 
-# Function to get outcome from numtag 
+# Function to get outcome from numtag  KEEP THIS FOR ELSEWHERE?
 get_outcome_vec <- function(tag) {
   outcome1 <- substr(tag, nchar(tag)-1, nchar(tag)) # still doesn't work for eg 01 (returns only 1)
   outcome <- ifelse(outcome1=='00', 'shortPizza',
@@ -254,7 +220,7 @@ for (c_ix in 1:64) # This part will end up being for the simulated counterfactua
 
 
 
-# Functions to split NS dfs into N and S
+# Functions to split NS dfs into N and S KEEP FOR LATER
 Nfunc <- function(df) {
   df[df==0] <- NA 
   df[df==1] <- 0
