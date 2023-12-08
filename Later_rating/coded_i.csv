@@ -123,7 +123,7 @@ His favourite food is hotdogs,1,,,,,,,,
 he wanted to take the long route because he is sporty,,,1,,,,,,
 He went to the closest one because he doesn't know the area well,,,,,2,1,,,
 "They were trying to find the hotdog, but did not know the area well and so accidentally took the long route",,,,,1,,,,
-They wanted to eat pizza,,,,,,,,,same as row 115
+They wanted to eat pizza,,,,,,,1,,same as row 115
 He wanted to eat from the closer stand,,,,,,1,2,,
 They wanted to eat pizza and took the long route,,,,,,,1,,same as row 115
 They wanted to take a longer route,,,,,,,1,,
@@ -261,7 +261,7 @@ He chooses the nearest stand.,,,,,,1,,,
 "He does not want to hot dogs this time, so he tries the new food.",,1,,,,,,,
 He does not like pizza.,1,,,,,,,,
 The hotdog stand is closed.,,,,,,,,1,
-He passes the pizza stand until he finds the hot dogs stand.,,,,,,,,,this is just a recall of what they did
+He passes the pizza stand until he finds the hot dogs stand.,,,,,,1,,,this is just a recall of what they did
 His favourite food is hotdog.,1,,,,,,,,
 He is sporty and wanted to do a lap around the town before getting food,,,1,,,,2,,
 Brooklyn doesn't know the area well,,,,,1,,,,

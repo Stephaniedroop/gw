@@ -5,46 +5,41 @@
 # Prelims
 library(tidyverse)
 library(rje)
+library(checkmate)
 
 
 setwd("/Users/stephaniedroop/Documents/GitHub/gw/Later_rating")
 
+# Read in data (processed in `processing_ratings.R`)
+load('ratings.rda', verbose = T) 
 
-#---------- Read in data and get it to standard numerical form ------------------
-idat <- read.csv('coded_i.csv', na.strings=c(""," ","NA"))
-vdat <-  read.csv('coded_v.csv', na.strings=c(""," ","NA"))
-
-# Replace NAs with 0s
-idat[is.na(idat)] <- 0
-vdat[is.na(vdat)] <- 0
-# Remove notes
-idat <- idat %>% select(-X)
-
-# Shortened category names that were coded for (eg prefgen = Preference general). 
+# Shortened category names (eg prefgen = Preference general). 
 # c('prefgen', 'prefspec', 'chargen', 'charspec', 'know', 'loc', 'disp', 'sit')
-# Use letters to make the 256x256 df less unwieldy but match same order as the category names
+# Use letters to make less unwieldy but match same order as the category names
 cats <- c('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h')
 
-colnames(idat) <- c('reponse', cats)
-colnames(vdat) <- c('response', cats)
+# ------------------ IRR - cohen's kappa CAN BE REUSED. ------------------------
 
-# Change cols to numeric on idat because some had question marks and were stored as chars
-i <- c(2:9)
-idat[ , i] <- apply(idat[ , i], 2,
-                    function(x) as.numeric(as.character(x)))
+# Example code from https://www.datanovia.com/en/lessons/cohens-kappa-in-r-for-two-categorical-variables/
 
-# A version where any other digit >1 (ie which denotes subsidiary reasons) is renamed to 1
-idat2 <- idat
-idat2[idat==2] <- 1
-idat2[idat==3] <- 1
+# Function to get kappa from a contingency table
+get_kappa <- function(matrix) {
+  #checkmate::assert_matrix(matrix)
+  stopifnot("input must be single matrix" = is.matrix(matrix))
+  diags <- diag(matrix)
+  N <- sum(matrix)
+  row.marginal.props <- rowSums(matrix)/N
+  col.marginal.props <- colSums(matrix)/N
+  # Compute kappa
+  Po <- sum(diags)/N
+  Pe <- sum(row.marginal.props*col.marginal.props)
+  k <- (Po - Pe)/(1 - Pe)
+}
 
-vdat2 <- vdat
-vdat2[vdat==2] <- 1
-vdat2[vdat==3] <- 1
-vdat2[vdat==4] <- 1
+print(get_kappa(matr))
 
 # ------------ 8x8 matrix with split points ----------------
-# What if we do it 8x8 matrix? and spread each point across the categories covered, a la Neil
+# What if we do it 8x8 matrix? and spread each point across the categories covered
 
 matr <- matrix(nrow = length(cats), ncol = length(cats))
 colnames(matr) <- cats
@@ -69,64 +64,71 @@ for (exp in 1:n_exps)
   vsum <- sum(vrat)
   isum <- sum(irat)
   point <- 1/(vsum*isum) # Not the asymmetric way yet
-  # Now add the divided point to all the places that were mentioned
   # Get positions where v and i gave a rating, giving numerical position in vector
-  if (any(which(vrat > 0)))
-  {posv <- which(vrat > 0)} # still need?
-  if (any(which(irat > 0)))    
-  {posi <- which(irat > 0)}
-  # Turn numerical position into names
-  namev <- cats[posv]
-  namei <- cats[posi]
+  v <- which(vrat!=0) # 2 3 5
+  i <- which(irat!=0) # 2 5
   # Now find that place in the matrice and add point to it 
-  matr[namev,namei] <- matr[namev,namei] + point
+  matr[v, i] <- matr[v, i] + point
 }  
 
 matr <- round(matr, digits = 1)
+# Get kappa using function
+k <- get_kappa(matr)
+print(k)
 
-
-# --------- Loop with asymmetric modification.   ----------------------
+# --------- Loop with asymmetric modification. PROB NOT USE  ----------------------
+# But maybe be useful later for indexing with length of vectors etc
 
 # Repeat almost same procedure for empty matrix
-matr2 <- matrix(nrow = length(cats), ncol = length(cats))
-colnames(matr2) <- cats
-rownames(matr2) <- cats
-# Replace NAs with 0s
-matr2[is.na(matr2)] <- 0
+# matr2 <- matrix(nrow = length(cats), ncol = length(cats))
+# colnames(matr2) <- cats
+# rownames(matr2) <- cats
+# # Replace NAs with 0s
+# matr2[is.na(matr2)] <- 0
+# 
+# 
+# 
+# # Now do almost the same loop but with an asymmetric modification to split the point according to each rater
+# n_exps <- nrow(idat) 
+# 
+# # LOOP 
+# for (exp in 1:n_exps)
+# {
+#   # Pull out v and i's whole rows of their separate ratings for the same explanation
+#   vexp <- vdat2[exp,]
+#   iexp <- idat2[exp,]
+#   # Pull out just the ratings without the text response
+#   vrat <- vexp[2:9]
+#   irat <- iexp[2:9]
+#   # Get indices. Maybe split these out?
+#   v <- which(vrat!=0) # 2 3 5
+#   i <- which(irat!=0) # 2 5
+#   # The two point systems
+#   # **1.** From pov of who rated more. Point allocated over more
+#   # Get lengths of indices
+#   lvini <- length(v %in% i) # eg 2
+#   liinv <- length(i %in% v) # eg 3
+#   # Define the point
+#   point1 <- 1/(2*lvini*liinv)
+#   # Now allocate
+#   matr2[v, i] <- matr2[v, i] + point1 # To allocate over more
+#   # **2.** From pov of who rated less. Point allocated over fewer
+#   # Get lengths of the subset of indices
+#   whvini <- which(v %in% i)
+#   whiinv <- which(i %in% v)
+#   lwhvini <- length(whvini)
+#   lwhiinv <- length(whiinv)
+#   # Define the point
+#   point2 <- 1/(2*lwhvini*lwhiinv) # to allocate over fewer (should be 2*2*length(i))
+#   # Now what to allocate them to
+#   vwhvini <- v[whvini]
+#   iwhiinv <- i[whiinv]
+#   # Now allocate
+#   matr2[vwhvini, iwhiinv] <- matr2[vwhvini, iwhiinv] + point2 # to allocate over fewer
+# }  
+# 
+# matr2 <- round(matr2, digits = 1)
 
-# Now do almost the same loop but with an asymmetric modification to split the point according to each rater
-n_exps <- nrow(idat) 
-# LOOP 
-for (exp in 1:n_exps)
-{
-  # Pull out v and i's whole rows of their separate ratings for the same explanation
-  vexp <- vdat2[exp,]
-  iexp <- idat2[exp,]
-  # Pull out just the ratings without the text response
-  vrat <- vexp[2:9]
-  irat <- iexp[2:9]
-  # Get total in vrat row and irat row. The point for each explanation will be divided by this
-  vsum <- sum(vrat)
-  isum <- sum(irat)
-  # There are two sets of 1/2 points, but unclear each time who has more, so call it max and min 
-  point1 <- 1/(2*(max(vsum,isum)*min(vsum,isum))) # max * min
-  point2 <- 1/(2*(min(vsum,isum)*min(vsum,isum))) # min * min
-  # Now add the divided point to all the places that were mentioned
-  # Get positions where v and i gave a rating, giving numerical position in vector
-  if (any(which(vrat > 0)))
-  {posv <- which(vrat > 0)} 
-  if (any(which(irat > 0)))    
-  {posi <- which(irat > 0)}
-  # Turn numerical position into names
-  namev <- cats[posv]
-  namei <- cats[posi]
-  # Now find that place in the matrice and add point to it, easy for the first one (max*min)
-  matr2[namev,namei] <- matr2[namev,namei] + point1
-  # But not clear how to spread for the second one (min*min??)
-  matr2[xxx, xxx] <- matr2[xxx, xxx] + point2
-}  
-
-matr2 <- round(matr2, digits = 1)
 
 
 #---------- Set up 2^8 square matrix for putting the counts in -------------------
@@ -171,10 +173,6 @@ for (exp in 1:n_exps)
   mat[namestringv,namestringi] <- mat[namestringv,namestringi] + 1
 }
 
-# % agreement of diagonals over totals
-diags <- diag(mat)
-totals <- colSums(mat)
-
-# How much is on the diagonal?
-agree <- sum(diags) / sum(totals) # 0.52 , i.e. 52% is on the diagonal, not enough. But the raters did agree to redo better
+matk <- get_kappa(mat)
+print(matk)
 
