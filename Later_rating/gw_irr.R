@@ -1,6 +1,11 @@
 ######################################################################
 ################## IRR etc on V and I's coded pilot gw data ##########
 
+# Script with a function to calculate cohen's kappa on a contingency table matrix
+# Then
+# Calculates kappa on both a 256*256 power set matrix and a 8*8 matrix where, for each explanation rating,
+# a point was allocated across all the categories each rater mentioned to make a confusion matrix of their agreement
+
 
 # Prelims
 library(tidyverse)
@@ -47,7 +52,7 @@ rownames(matr) <- cats
 # Replace NAs with 0s
 matr[is.na(matr)] <- 0
 
-# Now any loop through idat and vdat has to count the number of ratings and divide a point by that
+# Now any loop through idat2 and vdat2 has to count the number of ratings and divide a point by that
 
 #---------- Loop without asymmetric modification.    ------------
 n_exps <- nrow(idat) # How many explanations. We checked idat and vdat are the same length and order elsewhere so ok to assume it here

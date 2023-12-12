@@ -1,6 +1,9 @@
 ######################################################################
 ################# Merge the raters' ratings to actually use ##########
 
+# This script merges the two raters' ratings into one df by taking the intersection, 
+# and adds a catch-all column 'unclear' for ratings where they disagreed
+# Later TO DO make it a generalisable function not depending on the individual raters or documents
 
 # Prelims
 library(tidyverse)

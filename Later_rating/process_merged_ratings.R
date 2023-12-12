@@ -6,12 +6,10 @@ load('to_go.rdata', verbose = T)
 # Take a copy in case need to go back...
 rat_summ <- ratings 
 
-# Decisions to be made: is Preference just General prference or both General and Specific?
-
 # Use vector here
 # c('prefgen', 'prefspec', 'chargen', 'charspec', 'know', 'loc', 'disp', 'sit')
 # cats <- c('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h')
-# Remember there is also now unc
+# Remember there is also now unc (for unclear, which is a catch-all bin for all ratings where raters disagreed)
 
 # To get tags back in
 tags <- read.csv('../Exp2Explanation/Data/tags.csv', stringsAsFactors = TRUE)
@@ -19,15 +17,16 @@ tags <- tags %>% unite("numtag", Z:U, sep= "",
                        remove = TRUE)
 tags <- tags %>% select(tag, numtag)
 
-
+# Read in actual ppt data from undergrad pilot experiment
 ugdata <- read.csv('../Exp2Explanation/Data/ugdata.csv')
 ugdata <- ugdata %>% select(X, tag, response)
 
+# Merge the ppt data and the tags. For real exp this not needed as the tag should be present from the trial file
 forchart <- merge(x = ugdata, y = tags, all.y = T)
 forchart <- forchart %>% select(-tag) 
 forchart <- forchart %>% arrange(X)
 
-# Now merge with ratings - this ok as they are in same order
+# Now merge with ratings - ok to cbind as they are in same order
 forchart2 <- cbind(ratings, forchart)
 # Then remove the repeat response after checking by eye it is the same all the way down
 forchart2 <- forchart2 %>% select(-response, -X)
@@ -39,34 +38,17 @@ forchart3 <- forchart2 %>%
 
 forchart3 <- forchart3 %>% filter(count==1)
 
-# Now group by
+# Now group
 forchart3 <- forchart3 %>% group_by(numtag, cat) %>% summarise(n=n())
 forchart3$numtag <- as.factor(forchart3$numtag) 
 
-p1 <- ggplot(data = forchart3, aes(y=cat, fill))
-
-
+# And plot
 p1 <- ggplot(forchart3, aes(x=cat, y=n, fill=n)) +
   geom_col() +
   facet_wrap(~numtag)
 
 
-p1
-
-ggsave('for_neil.svg', width = 15, height = 10) 
-  
-  # stat_summary(geom='bar', fun='mean', colour="black", position = position_dodge(0.7)) + 
-  # stat_summary(fun.data = 'mean_cl_normal', geom='errorbar', position = position_dodge(0.7),
-  #              fun.args = list(mult = 1), width = .5) +
-  # geom_point(data = df2, aes(y=mp), colour = 'red') +
-  # facet_wrap(.~numtag))
-#   theme(axis.text.x = element_text(angle=45, hjust=1, size = 10)) +
-#   labs(y ='Proportion participants mentioned / Model probability')
-# # geom_text(aes(label = count())) + # I never did manage to get n=n() in each facet with annotate
-#aes(x = fct_reorder(tag.f, congs$Cong, .desc = T)) +
-
-
-#------ Later - squeeze
+#------ Later - squeeze to ofit in old model categories ??? -----------------------------
 
 # Squeeze 1 to just the columns we modelled in ecesm
 rat_summ$PreferenceRat <- as.numeric(rat_summ$a) 
