@@ -11,19 +11,19 @@ rm(list = ls())
 set.seed(88)
 
 # Set of vars used
-a
-b
-aexog
-bexog
+A
+B
+epsA
+epsB
 
 # Define strength of a and b. These are independent and don't need to sume to 1. Later we'll do a whole range 
-ast <- .9 
-bst <- .2
+Ast <- .9 
+Bst <- .2
 
 # Define strength of exogenous noise nodes. 
 # These DO need to sum to 1 with their respective nodes because they handle the noise
-aexogstr <- 1-ast
-bexogstr <- 1-bst
+epsAstr <- 1-Ast
+epsBstr <- 1-Bst
 
 # Define some vars to help simulate outcomes
 N <- 100 # number of samples, low for now, change later
@@ -31,21 +31,20 @@ N <- 100 # number of samples, low for now, change later
 # structure <- c('Conjunctive', 'Disjunctive') # Might not need this as only doing conjunctive structure
 
 # Sampling from uniform distribution for strength of nodes
-vals_a <- runif(N) # A vector of N random samples 0:1 for node a
-vals_b <- runif(N) # Same for node b
+Aran <- runif(N) # A vector of N random samples 0:1 for node A
+Bran <- runif(N) # Same for node B
 # Indicator function turns it to 1 if within the strength of node and 0 if outwith
-vals_a2 <- 0 + (vals_a <= ast)
-vals_b2 <- 0 + (vals_b <= bst)
+Avals <- 0 + (Aran <= Ast)
+Bvals <- 0 + (Bran <= Bst)
 
 # Now do we do the same for the noise nodes??
-vals_aexog <- runif(N) # A vector of N random samples 0:1 for node aexog
-vals_bexog <- runif(N) # A vector of N random samples 0:1 for node aexog
-vals_aexog2 <- 0 + (vals_aexog <= aexogstr)
-vals_bexog2 <- 0 + (vals_bexog <= bexogstr)
+epsAran <- runif(N) # A vector of N random samples 0:1 for node epsA
+epsBran <- runif(N) # A vector of N random samples 0:1 for node epsB
+epsAvals <- 0 + (epsAran <= epsAstr)
+epsBvals <- 0 + (epsBran <= epsBstr)
 
-# Vector for the joint conjunctive effect: 1 if both a and b are on; 0 otherwise. 
-# (Does not take account of exogenous noise vars yet)
-effect <- vals_a2 * vals_b2
+# Vector for the joint conjunctive effect: 1 if all four of A,B, epsA and epsB are on; 0 otherwise. 
+E <- (Avals * epsAvals) * (Bvals * epsBvals)
 
 # Later TO DO
 # Set up dataframe of all the variables we need and the possible values they can take
@@ -53,4 +52,13 @@ effect <- vals_a2 * vals_b2
                                        #b = c(0,1),
                                        #aexog = c(0,1),
                                        #bexog = c(0,1), structure))) %>% mutate(effect = NA) # 
+
+# NEXT STEPS
+# 1. Generate counterfactuals and do the causal selection 
+#       (can earlier script be repackaged? Do it in functions? Like tadeg's functions?) utils script? functions within fucntions?
+# 2. Try with different strength and base rates (ours is set to 0.5 so less important). But where in this collider is 0.5
+#       could repurpose K Oneil sampling increments
+# Then:
+# 3. Use the toy case to get good understanding of Tadeg's and Icard's models as we know what they predict because there is so much work on them
+# 4. Expand to more fiddly cases
 
