@@ -1,4 +1,4 @@
-# Project on Social Explanations
+# Social Explanations in gridworlds
 
 ## Authors
 
@@ -7,7 +7,11 @@
 - Tadeg Quillien
 - Christopher Lucas
 
-## Files / folders
+## Update at February 2024 - WIP fao Neil
+
+- `collider.R` Script to test toy example of collider, with exogenous noise variables
+
+## Files / folders --- all folders below from Autumn 2023 and before
 
 ### Experiment 1: prediction, obtains parameters for Experiment 2
 
