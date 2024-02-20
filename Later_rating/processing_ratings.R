@@ -6,14 +6,24 @@
 
 
 #---------- Read in data and get it to standard numerical form ------------------
-idat <- read.csv('coded_i.csv', na.strings=c(""," ","NA"))
-vdat <-  read.csv('coded_v.csv', na.strings=c(""," ","NA"))
+idat <- read.csv('coded_s.csv', na.strings=c(""," ","NA")) 
+vdat <-  read.csv('coding_valtteri_finished.csv', na.strings=c(""," ","NA")) # REPLACE CSV WITH WHAT YOU NEED
+
+# vdat cut off last two columns; idat merge last two to be same as v's third last one 'Unclear'
+# Q: the merging script puts Unclear any where the raters disagree. 
+# For that then think we ignore any called Unclear to begin with? To decide
 
 # Replace NAs with 0s
 idat[is.na(idat)] <- 0
 vdat[is.na(vdat)] <- 0
-# Remove notes
-idat <- idat %>% select(-X)
+# Remove notes, Random, Unclear etc
+idat <- idat %>% select(-c(10,11))
+vdat <- vdat %>% select(-c(10,11,12))
+
+# Remove after row 2064; it is not data
+idat <- idat[-2065,]
+vdat <- vdat[-c(2065:2071),]
+
 
 # Shortened category names that were coded for (eg prefgen = Preference general). 
 # c('prefgen', 'prefspec', 'chargen', 'charspec', 'know', 'loc', 'disp', 'sit')

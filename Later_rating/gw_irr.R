@@ -41,7 +41,6 @@ get_kappa <- function(matrix) {
   k <- (Po - Pe)/(1 - Pe)
 }
 
-print(get_kappa(matr))
 
 # ------------ 8x8 matrix with split points ----------------
 # What if we do it 8x8 matrix? and spread each point across the categories covered
@@ -79,7 +78,8 @@ for (exp in 1:n_exps)
 matr <- round(matr, digits = 1)
 # Get kappa using function
 k <- get_kappa(matr)
-print(k)
+print(k) # It is 0.611 for the real data of me and Valtteri
+
 
 # --------- Loop with asymmetric modification. PROB NOT USE  ----------------------
 # But maybe be useful later for indexing with length of vectors etc

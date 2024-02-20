@@ -16,20 +16,68 @@ B
 epsA
 epsB
 
-# Define strength of a and b. These are independent and don't need to sume to 1. Later we'll do a whole range 
-Ast <- .9 
-Bst <- .2
+# Define strength of vars. Just pick some to get it working then do full range later 
+p_A <- c(.1,.9) # ie A usually has value 1...
+p_epsA <- c(.7,.3) #... but the 1's edge is weak
+p_B <- c(.8,.2) # B rarely fires 1... 
+p_epsB <- c(.3,.7) # but when it does it is strong
 
-# Define strength of exogenous noise nodes. 
-# These DO need to sum to 1 with their respective nodes because they handle the noise
-epsAstr <- 1-Ast
-epsBstr <- 1-Bst
+
+# Define prior probabilities
+# Set up dataframe of all the variables we need and the possible values they can take
+# (Would this be collider equivalent of pChoice?)
+df <- data.frame(expand.grid(list(A = c(0,1),
+                                  B = c(0,1),
+                                  epsA = c(0,1),
+                                  epsB = c(0,1),
+                                  E = c(0,1))))
+                                  #,structure=structure
+# ))) %>% mutate(p = NA) # need it 0 and 1
+
+# Prior - it sums to 1. Before any observations. Prior just repeats for the setup values, regardless of Effect 0/1
+# need the +1 as otherwise it thinks '1' is the lefthand (first) index position as it starts from 1 not 0
+df <- df %>% mutate(P = p_A[df$A+1] *
+                      p_B[df$B+1] *
+                      p_epsA[df$epsA+1] *
+                      p_epsB[df$epsB+1]) 
+
+write.csv(df, 'colliderprior.csv', row.names = F) # Remove rownames=F if you want the 1:nrow numbered
+
+
+# Once I have the prior... what to do? Get the equivalent of pAction by running conjunctive or disjunctive?
+
+# Function for conjunctive condition
+conj_twovars_exognoise <- function(var1, eps1, var2, eps2) {
+  (var1 & eps1) & (var2 & eps2)
+}
+
+# Function for disjunctive condition CHECK THIS - CAN IT DEF NOT BE BOTH SIDES ALL ON AT ONCE?
+disj_twovars_exognoise <- function(var1, eps1, var2, eps2) {
+  (var1 & eps1) | (var2 & eps2)
+}
+
+# Apply this function over df
+df$disj <- disj_twovars_exognoise(df$A, df$epsA, df$B, df$epsB)
+
+# Multiply by prior? Or by E to get what actually happened.
+df$effect <- df$P*df$disj
+
+# NEXT AT 20 FEB --- HOW TO USE PRIOR OF OBS? HOW TO ADD UP CF WORLDS
+
 
 # Define some vars to help simulate outcomes
 N <- 100 # number of samples, low for now, change later
 # n <- 1:N         # number of samples
-# structure <- c('Conjunctive', 'Disjunctive') # Might not need this as only doing conjunctive structure
+structure <- c('Conjunctive', 'Disjunctive') # Might not need this as only doing conjunctive structure
 
+
+# WHAT NEXT?? START THE GENERIC ECESM CF SIMULATION TO DO CAUSAL SELECTION OVER OBSERVED OUTCOMES??
+
+
+
+
+
+######## OLD ##############
 # Sampling from uniform distribution for strength of nodes
 Aran <- runif(N) # A vector of N random samples 0:1 for node A
 Bran <- runif(N) # Same for node B
@@ -43,15 +91,22 @@ epsBran <- runif(N) # A vector of N random samples 0:1 for node epsB
 epsAvals <- 0 + (epsAran <= epsAstr)
 epsBvals <- 0 + (epsBran <= epsBstr)
 
-# Vector for the joint conjunctive effect: 1 if all four of A,B, epsA and epsB are on; 0 otherwise. 
-E <- (Avals * epsAvals) * (Bvals * epsBvals)
 
-# Later TO DO
-# Set up dataframe of all the variables we need and the possible values they can take
-# collider <- data.frame(expand.grid(list(a = c(0,1),
-                                       #b = c(0,1),
-                                       #aexog = c(0,1),
-                                       #bexog = c(0,1), structure))) %>% mutate(effect = NA) # 
+
+
+
+
+# do it w both maths and simulation to get clear on how it works, see it comes out the same
+# (1-base rate) for 0; base rate for 1s. Then THIS is the equivalent of pchoice to then feed to cf function
+
+# Neil's hint: eps is never observed; (?..?). BUT they can be imputed in our example
+
+
+# --------------- Now run minimal version of ecesm on this collider --------------------
+# Idea to see what is transferable across the two and maybe later make a function 
+# which could be applied to any set of causes
+
+
 
 # NEXT STEPS
 # 1. Generate counterfactuals and do the causal selection 
