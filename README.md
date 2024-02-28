@@ -7,11 +7,11 @@
 - Tadeg Quillien
 - Christopher Lucas
 
-## Update at February 2024 - WIP fao Neil
+## Update / WIP -- a temporary place for scripts in progress for review **most current**
 
-- `collider.R` Script to test toy example of collider, with exogenous noise variables
+- `general_cesm.R` Script for general counterfactual model. A function takes arguments of causal variables with prior strengths, loops over observations and calculates causal responsibility of each variable across counterfactual worlds.
 
-## Files / folders --- all folders below from Autumn 2023 and before
+## Files / folders
 
 ### Experiment 1: prediction, obtains parameters for Experiment 2
 

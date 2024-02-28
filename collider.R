@@ -16,65 +16,56 @@ B
 epsA
 epsB
 
-# Define strength of vars. Just pick some to get it working then do full range later 
-p_A <- c(.1,.9) # ie A usually has value 1...
-p_epsA <- c(.7,.3) #... but the 1's edge is weak
-p_B <- c(.8,.2) # B rarely fires 1... 
-p_epsB <- c(.3,.7) # but when it does it is strong
-
-
-# Define prior probabilities
-# Set up dataframe of all the variables we need and the possible values they can take
-# (Would this be collider equivalent of pChoice?)
-df <- data.frame(expand.grid(list(A = c(0,1),
-                                  B = c(0,1),
-                                  epsA = c(0,1),
-                                  epsB = c(0,1),
-                                  E = c(0,1))))
-                                  #,structure=structure
-# ))) %>% mutate(p = NA) # need it 0 and 1
-
-# Prior - it sums to 1. Before any observations. Prior just repeats for the setup values, regardless of Effect 0/1
-# need the +1 as otherwise it thinks '1' is the lefthand (first) index position as it starts from 1 not 0
-df <- df %>% mutate(P = p_A[df$A+1] *
-                      p_B[df$B+1] *
-                      p_epsA[df$epsA+1] *
-                      p_epsB[df$epsB+1]) 
-
-write.csv(df, 'colliderprior.csv', row.names = F) # Remove rownames=F if you want the 1:nrow numbered
-
-
-# Once I have the prior... what to do? Get the equivalent of pAction by running conjunctive or disjunctive?
-
 # Function for conjunctive condition
 conj_twovars_exognoise <- function(var1, eps1, var2, eps2) {
   (var1 & eps1) & (var2 & eps2)
 }
 
-# Function for disjunctive condition CHECK THIS - CAN IT DEF NOT BE BOTH SIDES ALL ON AT ONCE?
+# Function for disjunctive condition 
 disj_twovars_exognoise <- function(var1, eps1, var2, eps2) {
   (var1 & eps1) | (var2 & eps2)
 }
 
-# Apply this function over df
-df$disj <- disj_twovars_exognoise(df$A, df$epsA, df$B, df$epsB)
+# Define strength of vars. Just pick some to get it working then do full range later 
+p_A <- c(.1,.9) # ie A usually has value 1...
+p_epsA <- c(.7,.3) #... but the 1's edge is weak
+p_B <- c(.8,.2) # B rarely fires 1... 
+p_epsB <- c(.3,.7) # but when it does it is strong
+prior <- rbind(p_A, p_B, p_epsA, p_epsB)
 
-# Multiply by prior? Or by E to get what actually happened.
-df$effect <- df$P*df$disj
 
-# NEXT AT 20 FEB --- HOW TO USE PRIOR OF OBS? HOW TO ADD UP CF WORLDS
+# Define prior probabilities
+# Set up dataframe of all the variables we need and the possible values they can take
+# (Would this be collider equivalent of pChoice?)
+df <- data.frame(expand.grid(list(A = c(0,1), # 16 obs of 4 vars
+                                  B = c(0,1),
+                                  epsA = c(0,1),
+                                  epsB = c(0,1))))
+                                  #E = c(0,1))))
+                                  #,structure=structure
+# ))) %>% mutate(p = NA) # need it 0 and 1
 
+# Prior - it sums to 1. Before any observations. 
+# need the +1 as otherwise it thinks '1' is the lefthand (first) index position as it starts from 1 not 0
+df <- df %>% mutate(Pr = p_A[df$A+1] *
+                      p_B[df$B+1] *
+                      p_epsA[df$epsA+1] *
+                      p_epsB[df$epsB+1],
+                    pOutcome = 1) 
+
+# Also add column for pOutcome, for us here is will be deterministic but it won't always be
+
+# Now save two different dfs, one for conjunctive condition and one for disjunctive
+dfD <- df %>% mutate(E = disj_twovars_exognoise(df$A, df$epsA, df$B, df$epsB))
+dfC <- df %>% mutate(E = conj_twovars_exognoise(df$A, df$epsA, df$B, df$epsB))
+
+# Next unclear whether to export or do this whole thing inside the generic cesm function...
+write.csv(df, 'colliderprior.csv', row.names = F) # Remove rownames=F if you want the 1:nrow numbered
 
 # Define some vars to help simulate outcomes
 N <- 100 # number of samples, low for now, change later
 # n <- 1:N         # number of samples
 structure <- c('Conjunctive', 'Disjunctive') # Might not need this as only doing conjunctive structure
-
-
-# WHAT NEXT?? START THE GENERIC ECESM CF SIMULATION TO DO CAUSAL SELECTION OVER OBSERVED OUTCOMES??
-
-
-
 
 
 ######## OLD ##############
