@@ -15,22 +15,24 @@
 
 # ------- Prelims -----------
 library(tidyverse)
-library(ggplot2)
-library(Rfast)
-library(lme4)
+#library(ggplot2)
+# library(Rfast)
+# library(lme4)
 rm(list=ls())
 
 # ----------- Define an example prior df -------------------------
 # Here define two causal vars and an exogenous noise variable for each (i.e. var epsilon A goes with A)
-p_A <- c(.1,.9) # ie A usually has value 1...
-p_epsA <- c(.7,.3) #... but the 1's edge is weak
+# in the exp setting this is 0.5
+p_A <- c(.1,.9) # ie A usually has value 1... base rate for cause
+p_epsA <- c(.7,.3) #... most of the time the noise var for a doesn't occur. for a to work it needs a and exp a. a is usually present but ogten doesnt work cos of noise term not working
 p_B <- c(.8,.2) # B rarely fires 1... 
 p_epsB <- c(.3,.7) # but when it does it is strong
 # And wrap them into a df called prior. Later the function should take dfs of this format:
 # i.e. any number of causes as the rows, and the probs of them taking 0 and 1 as cols
-prior <- data.frame(rbind(p_A, p_epsA, p_B, p_epsB))
-colnames(prior) <- c(0,1)
+params <- data.frame(rbind(p_A, p_epsA, p_B, p_epsB))
+colnames(params) <- c(0,1)
 
+# N's 'p-example' strengths are equiv of esp a,b
 
 # Other values set outside for now 
 N_cf <- 1000L # How many counterfactual samples to draw
@@ -39,53 +41,54 @@ s <- .7 # Stability
 # ------------- CESM FUNCTION ----------------------------
 
 generic_cesm <- function(prior, structure) { 
-  n_causes <- nrow(prior)
-  causes <- rownames(prior)
+  n_causes <- nrow(params)
+  causes <- rownames(params)
   # Make a df of all combinations of variable settings
   df <- expand.grid(rep(list(c(0,1)),n_causes), KEEP.OUT.ATTRS = F)
   # ... with variables as the column names
   colnames(df) <- causes
   worlds <- nrow(df)
   
-  # Next section calculates EFFECT (E) depending on whether structure is disjunctive or conjunctive
+  # Calculate EFFECT (E) depending on whether structure is disjunctive or conjunctive
   if (structure=="conjunctive") { 
     df$E <- as.numeric((df[1] & df[2]) & (df[3] & df[4])) # Let's handle causes!=4 later
   }
   if (structure=="disjunctive") { 
     df$E <- as.numeric((df[1] & df[2]) | (df[3] & df[4])) 
   }
-  # Can replace with this - if rename 
+  # Can replace with this - if rename - it is deterministic - literally gives specific outcome for set 3 causes, needs actual input. mechanical tell syou whether effects occurred given setting
   # df$effect <- max( c(min(c1,e1), min(c2,e2), min(c3, e3), min(c2*c3, e23))) # BUT SAME PROBLEM - HOW TO AUTOMATICALLY DEAL WITH ANY NUMBER OF CAUSES?
+  mat <- as.matrix(df[,1:4])
+  # Replace every cell with the relevant indexed edge strength from params
+  for (k in 1:worlds){
+    for (cause in causes) {
+      a <- params[cause,df[k,cause]+1] # It needs the '+1' because r indexes from 1 not 0
+      mat[k,cause] <- a 
+    }
+  }
+  # For each row of df, the parameter is now the product of the same row of the intermediate mat
+  df$Pr <- apply(mat, 1, prod) # This is how likely that setting of causes is
   
+  # Make same shape df to put the effect size / correlations in - it doesn't have to be empty because the values will be overwritten
+  mp <- df[,1:4]
   
-  # NEW BIT USING NEIL'S
-  # NOISY-OR for probabilistic behaviour - this always takes p(p==1) but when cause==0 the term becomes 0 anyway so doesn't matter
-  df$test <- as.numeric(unlist(1 - ((1 - prior[1,2] * df[1]) * (1 - prior[2,2] * df[2]) * (1 - prior[3,2] * df[3]) * (1 - prior[4,2] * df[4]))))
-  
-  # FIND WAY TO RENAME because can't find way to get rid of out out.attrs
-  #names(df)[6] <- "test"
-  #names(df)[names(df) == 'test$p_A'] <- 'test'
-  
-  # Then loop to calculate cfs and assign causal responsibility
-  # Loop through possible world settings 
+  # From here on we assign responsibility to the causes by simulating cfs and counting in how many of them the outcome happened the same
+  # First, loop through possible world settings 
   for (c_ix in 1:worlds)
   {
-    # The current case
+    # Take the current case
     case <- df[c_ix,]
-    
-    # Below here was working end Feb 2024
-    # Make an empty df to put the generated counterfactual settings in. 
+    # Make an empty df to put the generated counterfactual settings in 
     cfs <- data.frame(matrix(NA, nrow = N_cf, ncol = ncol(df))) 
     colnames(cfs) <- colnames(df)
     cfs$Match <- rep(NA, N_cf)
-    
-    # Generate N counterfactuals
+    # Then, generate N counterfactuals
     for (i in 1:N_cf)
     {
       cf_cs <- as.numeric(case[1:n_causes]) # Set of causes from the current world
       # Now resample what needs to be resampled
       resample <- runif(n_causes) > s # Picks the ones to be resampled, the ones that are not within 'stability'
-      p <- prior[,2] # The second column, ie the p_eachvar==1
+      p <- params[,2] # The second column, ie. the p_eachvar==1
       cf_cs[resample] <- runif(sum(resample)) > p[resample] # Resamples for T ones, and replaces the cf value
       # Pull out the possible worlds that match these outcomes
       idx = c(1:nrow(df)) # The index starts with everything
@@ -98,7 +101,7 @@ generic_cesm <- function(prior, structure) {
       n_outcomes <- nrow(cf_cases)
       #Sample one outcome according to its probability - for us now this is deterministic so comment out and find a more general way
       cf_out_ix <- sample(x=1:n_outcomes, size = 1, p=cf_cases$pOutcome)
-      cf <- cf_cases[cf_out_ix,] # got to here - change this
+      cf <- cf_cases[cf_out_ix,] 
       # Check if it matches the true outcome; adds column T/F
       cf$Match = cf$E==case$E
       # Add the current now-finished case of N to the collection of cfs
@@ -110,19 +113,25 @@ generic_cesm <- function(prior, structure) {
     for (cause in 1:n_causes)
     {
       # Calculate correlation - commented part sets correlation negative when cause not present, and positive when present
-      cor_sizes[cause] <- cor(cfs[[causes[cause]]], cfs$Match) * (c(-1,1)[as.numeric(case[[causes[cause]]])]) 
-      # FIX REPLACEMENT LENGTH ZERO ERROR
-      # Will be nice to do regression across each - do we need to count the results though?
-      #est[cause] <- glmer(Match ~ 1 + cause, data = cfs, family = "binomial")
+      cor_sizes[cause] <- cor(cfs[[causes[cause]]], cfs$Match) * (c(-1,1)[as.numeric(case[[causes[cause]]]+1)]) 
     }
+    mp[c_ix,1:4] <- cor_sizes
     cat(c_ix, cor_sizes, '\n') 
   }
+  write.csv(mp, paste0("mp_", structure,".csv"))
 }
+
+# That was assuming full observation of all causes
+# we now turn to unobserved u vars (which can take two possible values)
+# keep df the same but do marginalisation over them
+# ie sum and average rows of the whole thing
+# using prior prob of u node being on
+
 
 
 # Notes
-# Example function call, will print out 16 rows of 4 numbers, some negative 
-generic_cesm(prior = prior, structure = 'disjunctive')
+# Example function call, will print out 16 rows of 4 numbers and save a csv 
+generic_cesm(prior = params, structure = 'disjunctive')
 
 
 
