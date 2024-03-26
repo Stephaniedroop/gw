@@ -39,7 +39,7 @@ effect<- max( c(min(c1,e1), min(c2,e2), min(c3, e3), min(c2*c3, e23)))
 #So here the effect occurs, and is "actually caused" by the action of c1 and also by c3
 
 
-#What is the probabilistic behaviour of this? I think its a noisy OR (see cheng's work from causal cognitio)
+#What is the probabilistic behaviour of this? I think its a noisy OR (see cheng's work from causal cognition)
 test<-1-(1-Pe1*c1)*(1-Pe2*c2)*(1-Pe3*c3)*(1-Pe23*c2*c3)
   
 #We can check this through simulation: effect should be occur 92.8% of the time for this set of causes
@@ -52,3 +52,20 @@ for (i in 1:1000)
                               min(c2*c3, as.numeric(runif(1)<Pe23))))
 }
 mean(effects) #seems to work!
+
+
+#Disjunctive collider:
+
+disjunctive_collider<-function(A, Ae, B, Be)
+{
+  (A & Ae) | (B & Be)
+}
+
+pw<-expand.grid(list(c(F,T), c(F,T), c(F,T), c(F,T)))
+
+names(pw)<-c('A','Ae','B','Be')
+
+for(i in 1:nrow(possible_worlds))
+{
+  pw$E[i]<-disjunctive_collider(pw[i,1], pw[i,2], pw[i,3], pw[i,4])
+}
