@@ -1,7 +1,7 @@
 ##################################################################
 ################### GW - general CESM ############################
 
-# A script to play with intuitions of unobserved u vars
+# A script to test intuitions of unobserved u vars in a collider, both disjunctive and conjunctive
 
 # ------- Prelims -----------
 
