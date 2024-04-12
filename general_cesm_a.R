@@ -12,7 +12,7 @@
 # 1) cause variables, assuming these happen either 0,1 and their strengths, assuming in a vector of prob 0, prob 1
 # 2) causal structure, whether disjunctive or conjunctive
 
-# NOW AFTER TADEG'S HALPERN ACTUAL CAUSATION POINT, THERE IS A VERSION 2 WHERE WE WEED OUT OBVIOUS NON-CAUSES
+# NOW AFTER TADEG'S HALPERN ACTUAL CAUSATION POINT, THIS IS VERSION..._a WHERE WE WEED OUT OBVIOUS NON-CAUSES
 
 # ------- Prelims -----------
 #library(tidyverse)

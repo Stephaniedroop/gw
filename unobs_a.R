@@ -5,7 +5,7 @@
 
 # This is script 2/3, in a series where 1) is `general_cesm.r`, 3) is `collider_plot.r`
 
-# NOW AFTER TADEG'S HALPERN ACTUAL CAUSATION POINT, THERE IS A VERSION 2 WHERE WE WEED OUT OBVIOUS NON-CAUSES
+# NOW AFTER TADEG'S HALPERN ACTUAL CAUSATION POINT, THIS IS VERSION..._a WHERE WE WEED OUT OBVIOUS NON-CAUSES
 
 # ------- Prelims -----------
 
