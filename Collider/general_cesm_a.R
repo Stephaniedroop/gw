@@ -22,7 +22,7 @@ rm(list=ls())
 # Here define two causal vars and an exogenous noise variable for each (i.e. var epsilon A goes with A)
 # Change these values manually and rerun the series of 3 scripts. Just keep a note of what params
 pA <- c(0.5,0.5) # 
-peA <- c(0.5,0.5) #... most of the time the noise var for a doesn't occur. for a to work it needs a and exp a. 
+peA <- c(0.1,0.9) #... most of the time the noise var for a doesn't occur. for a to work it needs a and exp a. 
 pB <- c(0.1,0.9) #  
 peB <- c(0.5,0.5) # Note for toy version we can't have extreme values because sometimes all resample is false and then sd is zero
 # And wrap them into a df called params. 
@@ -147,5 +147,5 @@ mp1c <- generic_cesm(params = params, df = dfc)
 
 
 # Now save outputs and params for use in `unobs.R` 
-save(params, dfd, dfc, mp1c, mp1d, file='collider10.Rdata') # ie collider 1 is with pA and pB base rate .5,.5
+save(params, dfd, dfc, mp1c, mp1d, file='collider9.Rdata') # ie collider 1 is with pA and pB base rate .5,.5
 

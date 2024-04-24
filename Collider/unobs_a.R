@@ -10,16 +10,16 @@
 # ------- Prelims -----------
 
 rm(list=ls())
-library(tidyverse)
+#library(tidyverse)
 
 
 # Load params of 4 cause vars, the world combos in disjunctive and conjunctive collider settings, 
 # and model predictions for each from the `general_cesm` function in `general_cesm.R`
-load('collider10.rdata', verbose = T) 
+load('collider9.rdata', verbose = T) 
 
 # Key point: If peA and peB are unobserved, what can we say about them for each row?
 
-# ---------- Get conditional probabilities ---------------
+# ---------- Get conditional probabilities for each observed world ---------------
 # DISJUNCTIVE
 
 # Set empty df of the size we need
@@ -62,135 +62,140 @@ for (x in 1:nrow(observedc)) {
   newdfc <- rbind(newdfc, poss)
 }
 
+# ------- Get model preds ready for plotting and remove non-actual causes ------------------
 
-
-# ------- Next, find marginal counterfactual effect size ------------------
-
+# Want a bar of weighted average cesm, but ggplot itself will sum the parts. If we ever need weighted average elsewhere, will need to calculate   
 
 # DISJUNCTIVE
-# 1. Get counterfactual effect size of each causal variable in each of these possible conditions 
-# 2. Computes the weighted average - a single row for each case
 
 # Merge model predictions with df of normalised conditional probabilities
 alld <- merge(x = mp1d, y = newdfd, by = c('index')) # 16 obs of 13 vars
 
+# Many cols need simpler names
 alld <- alld %>% rename(A = 2, Au = 3, B = 4, Bu = 5, vA = 6, vAe = 7, vB = 8, vBe = 9)
 
-# For each variable, if its setting does not equal the effect, then its setting can't have contributed to the outcome. 
-# So set it to 0. Do this separately for each of the 4 vars as we can't find a quicker simpler way to do it.
+# For each variable, under *actual causation*, if its setting does not equal the effect, 
+# then its setting can't have contributed to the outcome. So set it to 0. 
+# Do this manually for each of the 4 vars as we can't find a quicker simpler way to do it.
 
 alld$A[alld$vA!=alld$E] <- 0
 alld$Au[alld$vAe!=alld$E] <- 0
 alld$B[alld$vB!=alld$E] <- 0
 alld$Bu[alld$vBe!=alld$E] <- 0
 
+# Multiply effect sizes by cond.prob for what will make up what we're calling 'weighted average'
+alld[,14:17] <- alld[,2:5]*alld$cond 
 
-# Back to normal to get the wa
+# To pivot_longer two sets of columns, rename them in two groups
+alld <- alld %>% rename(A_cp = 2, Au_cp = 3, B_cp = 4, Bu_cp = 5, 
+                        A_wa = 14, Au_wa = 15, B_wa = 16, Bu_wa = 17)
 
-# Multiply effect sizes by cond.prob
-alld[,14:17] <- alld[,2:5]*alld$cond # 16 obs of 17 vars
+# At least now we have the values we need on the same df - cp is the conditional cesm, and wa is that * con.probs
+alld <- alld %>% pivot_longer(cols = -c(index, vA:group), names_to = c('node', '.value'),
+                              names_sep = '_')
 
-alld <- alld %>% rename(mpA = 14, mpAe = 15, mpB = 16, mpBe = 17)
+# Get a tag of the unobserved variables' settings. Then we can group data by this for plotting
+alld <- alld %>% unite("uAuB", vAe,vBe, sep= "", remove = FALSE)
 
-# --------  Get weighted average by group -------------
-# Here we need to rename the intermediate wa cols the same as the original cesm sizes, 
-# because later to get them all on the same plot we need both a prediction and a wa value for each var(A,B etc).
-wa_cesm_d <- alld %>% select(!(2:5)) %>% group_by(group) %>% 
-  summarise(A = mean(mpA), 
-            Au0 = mean(mpAe[vAe=='0']), 
-            Au1 = mean(mpAe[vAe=='1']), 
-            B = mean(mpB), 
-            Bu0 = mean(mpBe[vBe=='0']), 
-            Bu1 = mean(mpBe[vBe=='1']))
+# The unobserved variables have different explanatory role depending what we presume their value to be.
+# So we need to split them out.
+alld$node2 <- alld$node
+alld$node[alld$vAe=='0' & alld$node2=="Au"] <- 'Au=0'
+alld$node[alld$vAe=='1' & alld$node2=="Au"] <- 'Au=1'
+alld$node[alld$vBe=='0' & alld$node2=="Bu"] <- 'Bu=0'
+alld$node[alld$vBe=='1' & alld$node2=="Bu"] <- 'Bu=1'
 
-wa_cesm_d[is.na(wa_cesm_d)] <- 0
 
-wa_cesm_d <- wa_cesm_d %>% pivot_longer(
-  cols = A:Bu1,
-  names_to = "node",
-  values_to = "wa"
-)
 
 # CONJUNCTIVE
 
-# 1. Get counterfactual effect size of each causal variable in each of these possible conditions 
-# 2. Computes the weighted average - a single row for each case
 
-# Need to filter df again - should I attach an observation number so we know what rows go together? Or just filter again
+# Merge model predictions with df of normalised conditional probabilities
 allc <- merge(x = mp1c, y = newdfc, by = c('index')) # 16 obs of 13 vars
 
-allc <- allc %>% rename(A = 2, Au = 3, B = 4, Bu = 5)
+# Many cols need simpler names
+allc <- allc %>% rename(A = 2, Au = 3, B = 4, Bu = 5, vA = 6, vAe = 7, vB = 8, vBe = 9)
 
-# For each variable, if its setting does not equal the effect, then its setting can't have contributed to the outcome. 
-# So set it to 0. Do this separately for each of the 4 vars as we can't find a quicker simpler way to do it.
-allc$A[allc$pA.y!=allc$E] <- 0
-allc$Au[allc$peA.y!=allc$E] <- 0
-allc$B[allc$pB.y!=allc$E] <- 0
-allc$Bu[allc$peB.y!=allc$E] <- 0
+# For each variable, under *actual causation*, if its setting does not equal the effect, 
+# then its setting can't have contributed to the outcome. So set it to 0. 
+# Do this manually for each of the 4 vars as we can't find a quicker simpler way to do it.
 
-# Multiply effect sizes by cond.prob
-allc[,14:17] <- allc[,2:5]*allc$cond # 16 obs of 17 vars
+allc$A[allc$vA!=allc$E] <- 0
+allc$Au[allc$vAe!=allc$E] <- 0
+allc$B[allc$vB!=allc$E] <- 0
+allc$Bu[allc$vBe!=allc$E] <- 0
 
-allc <- allc %>% rename(mpA = 14, mpAe = 15, mpB = 16, mpBe = 17)
+# Multiply effect sizes by cond.prob for what will make up what we're calling 'weighted average'
+allc[,14:17] <- allc[,2:5]*allc$cond 
 
-# Sum by group -- BUT still to solve the issue of what it means to sum -/+ 
-wa_cesm_c <- allc %>% select(!(2:5)) %>% group_by(group) %>% 
-  summarise(A = mean(mpA), Au = mean(mpAe), B = mean(mpB), Bu = mean(mpBe))
+# To pivot_longer two sets of columns, rename them in two groups
+allc <- allc %>% rename(A_cp = 2, Au_cp = 3, B_cp = 4, Bu_cp = 5, 
+                        A_wa = 14, Au_wa = 15, B_wa = 16, Bu_wa = 17)
 
-wa_cesm_c <- wa_cesm_c %>% pivot_longer(
-  cols = A:Bu,
-  names_to = "node",
-  values_to = "wa"
-)
-  
-# ----------- Merging etc ---------------
-# Now put together effect sizes and the world variable settings, for all the observable settings
-worlds_effectsizes_d <- merge(x = wa_cesm_d, y = observedd, by = c('group'))
-worlds_effectsizes_c <- merge(x = wa_cesm_c, y = observedc, by = c('group'))
+# At least now we have the values we need on the same df - cp is the conditional cesm, and wa is that * con.probs
+allc <- allc %>% pivot_longer(cols = -c(index, vA:group), names_to = c('node', '.value'),
+                              names_sep = '_')
 
-# For plotting
-summd <- alld %>% select(1:5,7,9,13) %>% pivot_longer(
-  cols = A:Bu,
-  names_to = "node",
-  values_to = "pred"
-)
+# Get a tag of the unobserved variables' settings. Then we can group data by this for plotting
+allc <- allc %>% unite("uAuB", vAe,vBe, sep= "", remove = FALSE)
 
-summd$node2 <- summd$node
-
-summd$node[summd$vAe=='0' & summd$node2=="Au"] <- 'Au0'
-summd$node[summd$vAe=='1' & summd$node2=="Au"] <- 'Au1'
-summd$node[summd$vBe=='0' & summd$node2=="Bu"] <- 'Bu0'
-summd$node[summd$vBe=='1' & summd$node2=="Bu"] <- 'Bu1'
+# The unobserved variables have different explanatory role depending what we presume their value to be.
+# So we need to split them out.
+allc$node2 <- allc$node
+allc$node[allc$vAe=='0' & allc$node2=="Au"] <- 'Au=0'
+allc$node[allc$vAe=='1' & allc$node2=="Au"] <- 'Au=1'
+allc$node[allc$vBe=='0' & allc$node2=="Bu"] <- 'Bu=0'
+allc$node[allc$vBe=='1' & allc$node2=="Bu"] <- 'Bu=1'
 
 
-summc <- allc %>% select(1:5,7,9,13) %>% pivot_longer(
-  cols = A:Bu,
-  names_to = "node",
-  values_to = "pred"
-)
 
-# To take - 2 x 64 obs of 10
-forplotc <- merge(x = summc, y = worlds_effectsizes_c, by = c('group', 'node')) %>% 
-  unite("uAuB", peA.y:peB.y, sep= "", remove = TRUE)
-forplotd <- merge(x = summd, y = worlds_effectsizes_d, by = c('group', 'node')) %>% 
-  unite("uAuB", vAe:vBe, sep= "", remove = TRUE)
 
-# THERE MUST BE AN EASIER WAY - AND TO GET 6 COLS FOR NEIL'S POINT - but at what point?
+# ---------- Now actually take the data for plotting --------------
+forplotd <- alld
+forplotc <- allc
 
-# Now save for use in next script 
-save(forplotd, params, file='unobsforplot10.Rdata') # ie collider 1 is with pA and pB base rate .5,.5
+# ------------ RENAME SOME CELLS FOR PRETTIER CHARTS -----------------
+# DISJ
+# Copy column in case mess it up
+forplotd$grp <- forplotd$group
+# Replace values according to conditions
+forplotd$grp[forplotd$grp=="1"] <- 'A=0, B=0, | E=0'
+forplotd$grp[forplotd$grp=="2"] <- 'A=0, B=1, | E=0'
+forplotd$grp[forplotd$grp=="3"] <- 'A=0, B=1, | E=1'
+forplotd$grp[forplotd$grp=="4"] <- 'A=1, B=0, | E=0'
+forplotd$grp[forplotd$grp=="5"] <- 'A=1, B=0, | E=1'
+forplotd$grp[forplotd$grp=="6"] <- 'A=1, B=1, | E=0'
+forplotd$grp[forplotd$grp=="7"] <- 'A=1, B=1, | E=1'
+# And copy this column
+forplotd$uAuB2 <- forplotd$uAuB
+# And replace these values
+forplotd$uAuB2[forplotd$uAuB2=='00'] <- 'Au=0, Bu=0'
+forplotd$uAuB2[forplotd$uAuB2=='01'] <- 'Au=0, Bu=1'
+forplotd$uAuB2[forplotd$uAuB2=='10'] <- 'Au=1, Bu=0'
+forplotd$uAuB2[forplotd$uAuB2=='11'] <- 'Au=1, Bu=1'
 
-#--------  Notes ------------
-# Notes:
-# - find someone who has unreliable disjunctive (noisy-or) in causal explanation (ie the community which assumed sem). 
-# (There is some in structure learning but they assumed the pearl 1.3 noisy or style)
+# CONJ
+# Copy column in case mess it up
+forplotc$grp <- forplotc$group
+# Replace values according to conditions
+forplotc$grp[forplotc$grp=="1"] <- 'A=0, B=0, | E=0'
+forplotc$grp[forplotc$grp=="2"] <- 'A=0, B=1, | E=0'
+forplotc$grp[forplotc$grp=="3"] <- 'A=1, B=0, | E=0'
+forplotc$grp[forplotc$grp=="4"] <- 'A=1, B=1, | E=0'
+forplotc$grp[forplotc$grp=="5"] <- 'A=1, B=1, | E=1'
 
-# Next TO DO
-# we want to rerun experiment 'anna wins game if both succeed' - but not given - anna succeeded and bob succeeded but judges didn't recognise
-# like tobi or tadeg exceot peple don't know the status of eps a or b except that they only know the base rates.
-# we could also ask them explicit cf questions - do we think the judges did recognise bob's dish ,etc
-# (ie we would run this if the bars look different - find settings of the params to make the bars dissociable, do this by eye)
-# also we want to later dissociate this eventually from what the previous model said... (it says you pick Other randomly/equally for the unobserved, riding only on the prior probablity of the situation)
+# And copy this column
+forplotc$uAuB2 <- forplotc$uAuB
+# And replace these values
+forplotc$uAuB2[forplotc$uAuB2=='00'] <- 'Au=0, Bu=0'
+forplotc$uAuB2[forplotc$uAuB2=='01'] <- 'Au=0, Bu=1'
+forplotc$uAuB2[forplotc$uAuB2=='10'] <- 'Au=1, Bu=0'
+forplotc$uAuB2[forplotc$uAuB2=='11'] <- 'Au=1, Bu=1'
+
+
+
+# --------- Now save for use in next script --------------
+save(forplotd, forplotc, params, file='unobsforplot9.Rdata') 
 
 
 
