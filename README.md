@@ -7,9 +7,21 @@
 - Tadeg Quillien
 - Christopher Lucas
 
-## Update / WIP -- a temporary place for scripts in progress for review **most current**
+## WIP -- a temporary place for scripts in progress eg collider Spring 2024
+
+### Actual causation version - removing causes meaningless for outcome
+
+It is meaningless to assign a causal score to a variable with a setting that can not give rise to the effect and so these must be removed manually or on the heuristic "Do not assign score for C=! E". (Quillien).
+
+- `general_cesm_a.R` Script for general counterfactual model. A function takes arguments of causal variables with prior strengths, loops over observations and calculates causal responsibility of each variable across counterfactual worlds. The actual causation (Halpern) version. This is script 1 of 3 for the Spring 2024 collider setting.
+- `unobs_a.R` - Script to calculate marginal and weighted average counterfactual effect size of the unobserved variables. Takes as input the outputs of the `general_cesm_a.R` i.e. loads the probabilities of the 4 cause vars, the world combos in disjunctive and conjunctive collider settings, and model predictions for each. Gives as output the model's counterfactual effect size for each node in each world.
+- `collider_plot_a.R` - Script to plot model predictions for collider of two observed variables (A and B), and two unobserved noise variables of A and B (Au and Bu). In all three scripts, set parameters by hand and run all three to plot the model predictions at that setting.
+
+### Same but not using Halpern actual causation -- i.e. can assign a causal score to impermissable causes
 
 - `general_cesm.R` Script for general counterfactual model. A function takes arguments of causal variables with prior strengths, loops over observations and calculates causal responsibility of each variable across counterfactual worlds.
+- `unobs.R`
+- `collider_plot.R`
 
 ## Files / folders
 

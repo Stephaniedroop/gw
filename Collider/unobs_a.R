@@ -15,7 +15,7 @@ rm(list=ls())
 
 # Load params of 4 cause vars, the world combos in disjunctive and conjunctive collider settings, 
 # and model predictions for each from the `general_cesm` function in `general_cesm.R`
-load('collider9.rdata', verbose = T) 
+load('collider2.rdata', verbose = T) 
 
 # Key point: If peA and peB are unobserved, what can we say about them for each row?
 
@@ -194,8 +194,17 @@ forplotc$uAuB2[forplotc$uAuB2=='11'] <- 'Au=1, Bu=1'
 
 
 
+# Some extra for javascript coding experiment
+djs <- forplotd %>% filter(cp!=0 & wa!=0) # 44
+
+cjs <- forplotc %>% filter(cp!=0 & wa!=0) # 36 
+
+
+
+
+
 # --------- Now save for use in next script --------------
-save(forplotd, forplotc, params, file='unobsforplot9.Rdata') 
+save(forplotd, forplotc, params, file='unobsforplot2.Rdata') 
 
 
 
