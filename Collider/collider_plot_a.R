@@ -11,19 +11,21 @@
 
 # ------- Prelims -----------
 
-rm(list=ls())
+#rm(list=ls())
 # library(tidyverse)
 
 
 # Load params of 4 cause vars, the world combos in disjunctive and conjunctive collider settings, 
 # and model predictions for each from the `general_cesm` function in `general_cesm.R`
-load('unobsforplot12.Rdata', verbose = T) # 2 x 64 obs of 10 vars, plus params
+#load('unobsforplot12.Rdata', verbose = T) # 2 x 64 obs of 10 vars, plus params
 
 # ------------- PLOTS ----------------------
 
 # [which(forplotd$pred!=0),] -- put this back in the top line if we do decide it's needed. Looks like it was summing across all wa, so ned to rethink
 
 # DISJ 
+
+
 
 pd <- ggplot(forplotd, aes(x = node, y = cp,
                       fill = node)) +
@@ -37,10 +39,11 @@ pd <- ggplot(forplotd, aes(x = node, y = cp,
        shape='Assuming unobserved \nvariables are...', 
        colour='Assuming unobserved \nvariables are...',
        title = 'Disjunctive collider',
-       subtitle = 'pA=0.1, pAu=1, pB=0.9, pBu=1')
+       subtitle = paste0('pA=',poss_params[[i]][1,2],', pAu=',poss_params[[i]][2,2], 
+                         ', pB=',poss_params[[i]][3,2], ', pBu=',poss_params[[i]][4,2]))
 
 pd
-ggsave('~/Documents/GitHub/gw/dcollider12.pdf', width = 7, height = 5, units = 'in')
+#ggsave('~/Documents/GitHub/gw/dcollider.pdf', width = 7, height = 5, units = 'in')
 
 # CONJ
 
@@ -56,7 +59,8 @@ pc <- ggplot(forplotc, aes(x = node, y = cp,
        shape='Assuming unobserved \nvariables are...', 
        colour='Assuming unobserved \nvariables are...',
        title = 'Conjunctive collider',
-       subtitle = 'pA=0.1, pAu=1, pB=0.9, pBu=1')
+       subtitle = paste0('pA=',poss_params[[i]][1,2],', pAu=',poss_params[[i]][2,2], 
+                         ', pB=',poss_params[[i]][3,2], ', pBu=',poss_params[[i]][4,2]))
 
 pc
-ggsave('~/Documents/GitHub/gw/ccollider12.pdf', width = 7, height = 5, units = 'in')
+#ggsave('~/Documents/GitHub/gw/ccollider12.pdf', width = 7, height = 5, units = 'in')

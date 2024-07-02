@@ -22,11 +22,8 @@ setwd("/Users/stephaniedroop/Documents/GitHub/gw/Collider")
 # TO DO
 # Once got the df in smaller meaningful structure:
 # - merge with model predictions - not sure how to do this!
-# - is the answer even within the array of tadeg's permissable answers?
+# - is the answer even within the array of tadeg's permissable answers? (dong this in preprocesing script)
 # - aim is to plot prop of ppl picking a certain answer, against the model predictions
 # - but this is several steps 
 # so first plot data and prop against a simplified version of the model preds (eg simple normalised), wehre ppl are bars, model is dots
 
-# Get model preds - at mo just for one, then need to do for all. They are called same atm so problem
-load('model_data/collider1.rdata', verbose = T) # less likely these - all the summary work was in the next one, unobsforplot
-load('model_data/unobsforplot1.rdata', verbose = T) # Gets eg 'forplotd' - what from that do I want now?

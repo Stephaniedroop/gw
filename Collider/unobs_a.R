@@ -9,13 +9,13 @@
 
 # ------- Prelims -----------
 
-rm(list=ls())
+#rm(list=ls())
 #library(tidyverse)
 
 
 # Load params of 4 cause vars, the world combos in disjunctive and conjunctive collider settings, 
 # and model predictions for each from the `general_cesm` function in `general_cesm.R`
-load('collider2.rdata', verbose = T) 
+#load('collider2.rdata', verbose = T) 
 
 # Key point: If peA and peB are unobserved, what can we say about them for each row?
 
@@ -105,6 +105,16 @@ alld$node[alld$vAe=='1' & alld$node2=="Au"] <- 'Au=1'
 alld$node[alld$vBe=='0' & alld$node2=="Bu"] <- 'Bu=0'
 alld$node[alld$vBe=='1' & alld$node2=="Bu"] <- 'Bu=1'
 
+# Bring in trialtype and rename as the proper string name just in case
+alld$trialtype <- alld$group
+alld$trialtype[alld$trialtype==1] <- 'd1'
+alld$trialtype[alld$trialtype==2] <- 'd2'
+alld$trialtype[alld$trialtype==3] <- 'd3'
+alld$trialtype[alld$trialtype==4] <- 'd4'
+alld$trialtype[alld$trialtype==5] <- 'd5'
+alld$trialtype[alld$trialtype==6] <- 'd6'
+alld$trialtype[alld$trialtype==7] <- 'd7'
+
 
 
 # CONJUNCTIVE
@@ -147,6 +157,14 @@ allc$node[allc$vAe=='1' & allc$node2=="Au"] <- 'Au=1'
 allc$node[allc$vBe=='0' & allc$node2=="Bu"] <- 'Bu=0'
 allc$node[allc$vBe=='1' & allc$node2=="Bu"] <- 'Bu=1'
 
+
+# Bring in trialtype and rename as the proper string name just in case
+allc$trialtype <- allc$group
+allc$trialtype[allc$trialtype==1] <- 'c1'
+allc$trialtype[allc$trialtype==2] <- 'c2'
+allc$trialtype[allc$trialtype==3] <- 'c3'
+allc$trialtype[allc$trialtype==4] <- 'c4'
+allc$trialtype[allc$trialtype==5] <- 'c5'
 
 
 
@@ -201,10 +219,17 @@ cjs <- forplotc %>% filter(cp!=0 & wa!=0) # 36
 
 
 
+# Get weighted average as a single number for each var and world setting
+# MAYBE CHANGE TO TRIALTYPE
+wad <- forplotd %>% group_by(trialtype,node2) %>% summarise(predicted = sum(wa))
+wac <- forplotc %>% group_by(trialtype,node2) %>% summarise(predicted = sum(wa))
+
+
+
 
 
 # --------- Now save for use in next script --------------
-save(forplotd, forplotc, params, file='unobsforplot2.Rdata') 
+#save(forplotd, forplotc, params, file='unobsforplot2.Rdata') 
 
 
 

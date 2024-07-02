@@ -15,19 +15,19 @@
 # NOW AFTER TADEG'S HALPERN ACTUAL CAUSATION POINT, THIS IS VERSION..._a WHERE WE WEED OUT OBVIOUS NON-CAUSES
 
 # ------- Prelims -----------
-#library(tidyverse)
-rm(list=ls())
+# library(tidyverse)
+# rm(list=ls())
 
 # ----------- Define an example prior df -------------------------
 # Here define two causal vars and an exogenous noise variable for each (i.e. var epsilon A goes with A)
 # Change these values manually and rerun the series of 3 scripts. Just keep a note of what params
-pA <- c(0.9,0.1) # 
-peA <- c(0,1) #... most of the time the noise var for a doesn't occur. for a to work it needs a and exp a. 
-pB <- c(0.1,0.9) #  
-peB <- c(0,1) # Note for toy version we can't have extreme values because sometimes all resample is false and then sd is zero
-# And wrap them into a df called params. 
-params <- data.frame(rbind(pA, peA, pB, peB))
-colnames(params) <- c(0,1)
+# pA <- c(0.9,0.1) # 
+# peA <- c(0,1) #... most of the time the noise var for a doesn't occur. for a to work it needs a and exp a. 
+# pB <- c(0.1,0.9) #  
+# peB <- c(0,1) # Note for toy version we can't have extreme values because sometimes all resample is false and then sd is zero
+# # And wrap them into a df called params. 
+# params <- data.frame(rbind(pA, peA, pB, peB))
+# colnames(params) <- c(0,1)
 
 # But causal strengths are the edges from exp1a, ie odds ratios. Some are between 0,1 so are inhibitory (make it half as likely to happen)
 # Do noise nodes not have to be NOT on to make the effect work?
@@ -74,8 +74,8 @@ world_combos <- function(params, structure) {
 
 # Function call to get the dfs
 
-dfd <- world_combos(params = params, structure = 'disjunctive')
-dfc <- world_combos(params = params, structure = 'conjunctive')
+#dfd <- world_combos(params = params, structure = 'disjunctive')
+#dfc <- world_combos(params = params, structure = 'conjunctive')
 
 
 # ------------- CESM FUNCTION ----------------------------
@@ -142,10 +142,10 @@ generic_cesm <- function(params, df) {
 
 
 # Example function call, will print out 16 rows of 4 numbers 
-mp1d <- generic_cesm(params = params, df = dfd)
-mp1c <- generic_cesm(params = params, df = dfc)
+#mp1d <- generic_cesm(params = params, df = dfd)
+#mp1c <- generic_cesm(params = params, df = dfc)
 
 
 # Now save outputs and params for use in `unobs.R` 
-save(params, dfd, dfc, mp1c, mp1d, file='collider12.Rdata') # ie collider 1 is with pA and pB base rate .5,.5
+#save(params, dfd, dfc, mp1c, mp1d, file='forunobs.Rdata') # ie collider 1 is with pA and pB base rate .5,.5
 

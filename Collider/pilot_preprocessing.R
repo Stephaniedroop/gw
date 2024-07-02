@@ -6,15 +6,25 @@
 # This script makes a single df of all the ppts
 
 library(tidyverse)
+library(rjson)
 rm(list=ls())
 
 # Setwd 
 setwd("/Users/stephaniedroop/Documents/GitHub/gw/Collider/pilot_data")
 
 # read in csvs
-csvList <- lapply(list.files("./"), read.csv, stringsAsFactors = F)
+csvList <- lapply(list.files("./"), read.csv, stringsAsFactors = F) # this gives list of 10 when you're in the wd
+# csvList <- lapply(list.files("./pilot_data"), read.csv, stringsAsFactors = F)
 # bind them 
 dataset <- do.call(rbind, csvList) 
+
+
+# Get the jsons
+worlds <- fromJSON(file = '../worlds.json')
+worldsdf <- as.data.frame(worlds) # 8 obs of 132 vars
+conds <- fromJSON(file = '../conds.json')
+condsdf <- as.data.frame(conds) # 2 obs of 21 vars - remains to see how to get what we need out of this
+
 
 # Get the feedback rows and comment out 
 # feedback <- dataset[dataset$rowtype=='feedback',]
@@ -34,10 +44,10 @@ df1 <- df1 %>% filter(cb!='NA') # Obs should be 12* no. of ppts, as each did 12 
 
 # REMEMBER TO TURN ROUND THE CB ONES where cb==0 probs are 1,2,3,4 but cb==1 are 3,4,1,2
 # IF WE DECIDE WE NEED IT - WE MIGHT NOT ACTUALLY - DEPENDS HOW TO COMPARE AGAINST PROBS
-df1 <- df1 %>% mutate(probgroup = if_else(prob0=='10%' & prob1=='50%' | prob2=='10%' & prob3=='50%', '2', 
-                                          if_else(prob0=='50%' & prob1=='80%' | prob2=='50%' & prob3=='80%', '1', '11')))
+df1 <- df1 %>% mutate(probgroup = if_else(prob0=='10%' & prob1=='50%' | prob2=='10%' & prob3=='50%', '1', 
+                                          if_else(prob0=='50%' & prob1=='80%' | prob2=='50%' & prob3=='80%', '2', '3')))
 
-# Now reattach the number of their answer, as atm it has only recorded the text on theor radio button
+# Now reattach the number of their answer, as atm it has only recorded the text on their radio button
 # First here are the arrays of possible buttons from js exp.
 jobanswers <- c('The candidate had skill A',
             'The candidate did not have skill A',
@@ -71,18 +81,38 @@ df1 <- df1 %>% mutate(ans = if_else(scenario=='job', match(df1$answer, jobanswer
                                     if_else(scenario=='cook', match(df1$answer, cookanswers),
                                             match(df1$answer, groupanswers))))
 
-# Check whether these are permissable as per Tadeg's actual causation condition
-# First need to know how to get possAns out of js
+# -------- Check whether these are permissable as per Tadeg's actual causation condition-----------
+# Get .possAns out of json to be its own df for 
+js <- worldsdf %>% select(ends_with("possAns"))
 
-# Or do it manually, but need to do it long
-poss <- data.frame(world = c('c1', 'c2', 'c3', 'c4', 'c5', 'd1', 'd2', 'd3', 'd4', 'd5', 'd6', 'd7'),
-                   possAns = c())
+# Remove .possAns string from colnames
+colnames(js) <- sub(".possAns", "", colnames(js))
+js <- t(js)
 
-# Save the expjson somewhere for this to get using Rjson thre wil be r tools for json
-# (after reading rest of neil's link - and get to grips with json syntax)
+df1$isPoss <- df1$ans[1] %in% js[1,] ## nooooo - but how to apply? 
+# For exmaple, this gives logical T/F
+df1$ans[14] %in% js[1,] # but not sure how to apply to all rows - is this apply?
 
-ansies <- df1 %>% group_by(trialtype, ans) %>% summarise(n=n())
-write.csv(ansies, 'ansies.csv')
+# searching for
+df1$ans[]
+df1[trialtypecol, 15] # 15 is the column the ans is in
+
+row.names(js)[1] # gives first rowname, eg c1. Can I use that way round?
+
+# Example indexing
+# Indexing
+logical_vec <- c(F,F, T, T)
+original_vals <- c(1,1,1,1)
+new_vals <- c(NA, NA, 0,0)
+original_vals[logical_vec] <- new_vals[logical_vec]
+final_vec <- original_vals
+final_vec
+
+
+# ----------- cut? ---------------
+# This was a manual attempt for proof of concept (88% meaningful possAns) so not needed anymore
+# ansies <- df1 %>% group_by(trialtype, ans) %>% summarise(n=n())
+# write.csv(ansies, 'ansies.csv')
 
 probgroups_summary <- df1 %>% group_by(cb, prob0, prob1, prob2, prob3) %>% summarise(n=n())
 # QUESTION -- varies 12-29 in a group, is there something wrong with the randomisation?

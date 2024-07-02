@@ -9,6 +9,8 @@
 
 ## WIP -- a temporary place for scripts in progress eg collider Spring 2024
 
+Collider project has its own README and self contained folder.
+
 ### Actual causation version - removing causes meaningless for outcome
 
 It is meaningless to assign a causal score to a variable with a setting that can not give rise to the effect and so these must be removed manually or on the heuristic "Do not assign score for C=! E". (Quillien).
