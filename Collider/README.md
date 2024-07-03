@@ -29,8 +29,8 @@ The ones used were, in order A,Au,B,Bu:
 - [[]][[2]]: dfc
 - [[]][[3]]: forplotd
 - [[]][[4]]: forplotc
-- [[]][[5]]: wad
-- [[]][[6]]: wac
+- [[]][[5]]:
+- [[]][[6]]:
 
 These are collated with participant data in an R script `collider_analysis.R'. (TO DO)
 

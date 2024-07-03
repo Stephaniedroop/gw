@@ -2,7 +2,7 @@
 #### Master script for collider within gridworld project #####
 ##############################################################
 
-library(tidyverse)
+#library(tidyverse)
 rm(list=ls())
 
 #------- 1. Create parameters, run cesm, get model predictions and save them ------------
@@ -26,16 +26,16 @@ for (i in 1:length(poss_params)) {
   mp1d <- generic_cesm(params = poss_params[[i]], df = dfd)
   mp1c <- generic_cesm(params = poss_params[[i]], df = dfc)
   # Let's save these if we need to. This works but need a better structure
-  mod_preds[[i]][[1]] <- dfd # PROB. NOT NEEDED
-  mod_preds[[i]][[2]] <- dfc
+  #mod_preds[[i]][[1]] <- dfd # PROB. NOT NEEDED
+  #mod_preds[[i]][[2]] <- dfc
   #mod_preds[[1]][[i]]$dfc <- dfc
   # The next script makes dfs forplotd,forplotc, with model preds used for plotting
   source('unobs_a.R')
   # Save them too, for later 
-  mod_preds[[i]][[3]] <- forplotd
-  mod_preds[[i]][[4]] <- forplotc
-  mod_preds[[i]][[5]] <- wad # If you change what is taken here, it will change the indexing position later
-  mod_preds[[i]][[6]] <- wac
+  mod_preds[[i]][[1]] <- forplotd
+  mod_preds[[i]][[2]] <- forplotc
+  #mod_preds[[i]][[5]] <- wad # If you change what is taken here, it will change the indexing position later
+  #mod_preds[[i]][[6]] <- wac
   source('collider_plot_a.R')
   # One way of charting the possible values of the unobserved variables, saved under `i`
   # eg 'da1' is disjunctive actual , params setting 1
@@ -53,7 +53,13 @@ save(mod_preds, file='../model_data/modpreds.Rdata')
 
 
 #--------------- 2. Get ppt data and compare with model predictions -------------------
-source('pilot_preprocessing.R')
+#source('pilot_preprocessing.R')
+
+# ALL DONE TO HERE - now working on collideranalysis at end 3 July 2024 - but there the plot is not working
+# collecting ppt data too
+
+
+
 
 # Notes on chart
 # If we normalised the bars then it would give the prob matching approach. 

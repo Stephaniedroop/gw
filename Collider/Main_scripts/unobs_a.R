@@ -104,6 +104,15 @@ alld$node[alld$vAe=='0' & alld$node2=="Au"] <- 'Au=0'
 alld$node[alld$vAe=='1' & alld$node2=="Au"] <- 'Au=1'
 alld$node[alld$vBe=='0' & alld$node2=="Bu"] <- 'Bu=0'
 alld$node[alld$vBe=='1' & alld$node2=="Bu"] <- 'Bu=1'
+# Thus 'node' has become the one with 6
+# Also need one with 8
+alld$node3 <- alld$node
+alld$node3[alld$vA=='0' & alld$node2=='A'] <- 'A=0'
+alld$node3[alld$vA=='1' & alld$node2=='A'] <- 'A=1'
+alld$node3[alld$vB=='0' & alld$node2=='B'] <- 'B=0'
+alld$node3[alld$vB=='1' & alld$node2=='B'] <- 'B=1'
+
+
 
 # Bring in trialtype and rename as the proper string name just in case
 alld$trialtype <- alld$group
@@ -156,6 +165,13 @@ allc$node[allc$vAe=='0' & allc$node2=="Au"] <- 'Au=0'
 allc$node[allc$vAe=='1' & allc$node2=="Au"] <- 'Au=1'
 allc$node[allc$vBe=='0' & allc$node2=="Bu"] <- 'Bu=0'
 allc$node[allc$vBe=='1' & allc$node2=="Bu"] <- 'Bu=1'
+# Thus 'node' has become the one with 6
+# Also need one with 8
+allc$node3 <- allc$node
+allc$node3[allc$vA=='0' & allc$node2=='A'] <- 'A=0'
+allc$node3[allc$vA=='1' & allc$node2=='A'] <- 'A=1'
+allc$node3[allc$vB=='0' & allc$node2=='B'] <- 'B=0'
+allc$node3[allc$vB=='1' & allc$node2=='B'] <- 'B=1'
 
 
 # Bring in trialtype and rename as the proper string name just in case
@@ -209,28 +225,6 @@ forplotc$uAuB2[forplotc$uAuB2=='00'] <- 'Au=0, Bu=0'
 forplotc$uAuB2[forplotc$uAuB2=='01'] <- 'Au=0, Bu=1'
 forplotc$uAuB2[forplotc$uAuB2=='10'] <- 'Au=1, Bu=0'
 forplotc$uAuB2[forplotc$uAuB2=='11'] <- 'Au=1, Bu=1'
-
-
-
-# Some extra for javascript coding experiment
-djs <- forplotd %>% filter(cp!=0 & wa!=0) # 44
-
-cjs <- forplotc %>% filter(cp!=0 & wa!=0) # 36 
-
-
-
-# Get weighted average as a single number for each var and world setting
-# MAYBE CHANGE TO TRIALTYPE
-wad <- forplotd %>% group_by(trialtype,node2) %>% summarise(predicted = sum(wa))
-wac <- forplotc %>% group_by(trialtype,node2) %>% summarise(predicted = sum(wa))
-
-
-
-
-
-# --------- Now save for use in next script --------------
-#save(forplotd, forplotc, params, file='unobsforplot2.Rdata') 
-
 
 
 
