@@ -49,13 +49,11 @@ for (i in 1:length(poss_params)) {
 }
 
 # Save 
-save(mod_preds, file='model_data/modpreds.Rdata')
+save(mod_preds, file='../model_data/modpreds.Rdata')
 
 
-
-# Where to put json etc?
-
-
+#--------------- 2. Get ppt data and compare with model predictions -------------------
+source('pilot_preprocessing.R')
 
 # Notes on chart
 # If we normalised the bars then it would give the prob matching approach. 
@@ -64,7 +62,6 @@ save(mod_preds, file='model_data/modpreds.Rdata')
 # (For real thing it will have optimised softmax temp but at least we can see)
 
 
-#--------------- 2. Get ppt data and compare with model predictions -------------------
 
 
 

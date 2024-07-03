@@ -10,7 +10,7 @@ library(rjson)
 rm(list=ls())
 
 # Setwd 
-setwd("/Users/stephaniedroop/Documents/GitHub/gw/Collider/pilot_data")
+setwd("../pilot_data") # as in, setwd("/Users/stephaniedroop/Documents/GitHub/gw/Collider/pilot_data")
 
 # read in csvs 
 csvList <- lapply(list.files("./"), read.csv, stringsAsFactors = F) # this gives list of 10 when you're in the wd
@@ -19,11 +19,10 @@ csvList <- lapply(list.files("./"), read.csv, stringsAsFactors = F) # this gives
 dataset <- do.call(rbind, csvList) 
 
 # Get the jsons
-worlds <- fromJSON(file = '../worlds.json')
+worlds <- fromJSON(file = '../Experiment/worlds.json')
 worldsdf <- as.data.frame(worlds) # 8 obs of 132 vars
-conds <- fromJSON(file = '../conds.json')
-condsdf <- as.data.frame(conds) # 2 obs of 21 vars - remains to see how to get what we need out of this
-
+conds <- fromJSON(file = '../EXperiment/conds.json')
+condsdf <- as.data.frame(conds) # 2 obs of 21 vars 
 
 # Get the feedback rows and comment out 
 # feedback <- dataset[dataset$rowtype=='feedback',]
@@ -38,7 +37,7 @@ dataset <- dataset %>% mutate(across(c('answer'), ~na_if(.,"")))
 dataset <- dataset %>% fill(answer, .direction = 'up')
 
 # Get the pilot data
-pilot5 <- read.csv('../pilot1.csv') %>% select(-1)
+pilot5 <- read.csv('../processed_data/pilot1.csv') %>% select(-1)
 # Put them together
 df1 <- rbind(pilot5,dataset)
 
@@ -115,16 +114,9 @@ df1 <- cbind(df1, isPerm)
 
 # Now group by ppt to see if they mostly pick permissable answers
 tf <- df1 %>% group_by(subject_id, isPerm) %>% summarise(n=n())
-# Here they do (some 0, some 1-3 F), except one that has 50%. This is the analysis to do before paying them!!
-# Err on side of conservative, pay them if they complete. Or at least pay but then exclude if they pick the same answer for everything
 
-# Now is the data in a state where it can be combined with model preds? 
-
-# aim is to plot prop of ppl picking a certain answer, against the model predictions
-# So the 'answers' they pick, need to be mapped against the vars in the model
-
-# So we need a var in the df1 of 'var' (=4 options) and var took the value it took' (=8 options)
-
+# Map the answers they gave to the variables 
+# PROBLEM - WHAT TO DO ABOUT THE CB PROBS
 df1 <- df1 %>% mutate(ansVar = if_else(ans==1|ans==2, 'A', 
                                        if_else(ans==3|ans==4, 'Au',
                                                if_else(ans==5|ans==6, 'B', 'Bu'))))
@@ -157,5 +149,4 @@ pg3prop <- pg3 %>% group_by(trialtype, ansVar3) %>% summarise(n=n()) %>% mutate(
 
 # Now save
 save(df1, pg1, pg2, pg3, pg1prop, pg2prop, pg3prop, file="../processed_data/processed_data.Rdata")
-# write.csv(df1, file="../processed_collider.csv")
 
