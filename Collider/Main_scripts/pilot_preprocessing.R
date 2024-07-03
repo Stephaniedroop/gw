@@ -12,12 +12,11 @@ rm(list=ls())
 # Setwd 
 setwd("/Users/stephaniedroop/Documents/GitHub/gw/Collider/pilot_data")
 
-# read in csvs
+# read in csvs 
 csvList <- lapply(list.files("./"), read.csv, stringsAsFactors = F) # this gives list of 10 when you're in the wd
 # csvList <- lapply(list.files("./pilot_data"), read.csv, stringsAsFactors = F)
 # bind them 
 dataset <- do.call(rbind, csvList) 
-
 
 # Get the jsons
 worlds <- fromJSON(file = '../worlds.json')
@@ -36,7 +35,12 @@ dataset <- dataset %>% select(-c(2:4,6,7))
 # But first we need to replace spaces with NA
 dataset <- dataset %>% mutate(across(c('answer'), ~na_if(.,"")))
 # Then can fill upwards to get the text answer in the same place as the trial info
-df1 <- dataset %>% fill(answer, .direction = 'up')
+dataset <- dataset %>% fill(answer, .direction = 'up')
+
+# Get the pilot data
+pilot5 <- read.csv('../pilot1.csv') %>% select(-1)
+# Put them together
+df1 <- rbind(pilot5,dataset)
 
 # Remove empty cols and rows
 df1 <- df1 %>% select(-c(13:14))
@@ -81,44 +85,77 @@ df1 <- df1 %>% mutate(ans = if_else(scenario=='job', match(df1$answer, jobanswer
                                     if_else(scenario=='cook', match(df1$answer, cookanswers),
                                             match(df1$answer, groupanswers))))
 
-# -------- Check whether these are permissable as per Tadeg's actual causation condition-----------
-# Get .possAns out of json to be its own df for 
+# -------- Permissable actual cause analysis -----------
+# Checks whether ppt's answers are permissable as per Tadeg's actual causation condition
+# Then analyses by participant
+
+# Get .possAns out of json 
 js <- worldsdf %>% select(ends_with("possAns"))
 
-# Remove .possAns string from colnames
+# Remove .possAns string from colnames, transpose so easier to search and add 1 to every cell because js indexes from 0
 colnames(js) <- sub(".possAns", "", colnames(js))
 js <- t(js)
+js <- js+1 # now it ranges 1:8 instead of 0:7
 
-df1$isPoss <- df1$ans[1] %in% js[1,] ## nooooo - but how to apply? 
-# For exmaple, this gives logical T/F
-df1$ans[14] %in% js[1,] # but not sure how to apply to all rows - is this apply?
+# Empty vec to put the answers in, same order as df1
+isPerm <- rep(NA, 120)
 
-# searching for
-df1$ans[]
-df1[trialtypecol, 15] # 15 is the column the ans is in
+# (Long winded index match - would be good to know a better way)
+for (k in 1:nrow(df1)) 
+{
+  row <- df1[k,]
+  ttype <- row$trialtype
+  ans <- row$ans
+  jsvec <- js[ttype,1:8]
+  isposs <- ans %in% jsvec
+  isPerm[k] <- isposs
+}
+# Add to df1 (I checked it is right)
+df1 <- cbind(df1, isPerm)
 
-row.names(js)[1] # gives first rowname, eg c1. Can I use that way round?
+# Now group by ppt to see if they mostly pick permissable answers
+tf <- df1 %>% group_by(subject_id, isPerm) %>% summarise(n=n())
+# Here they do (some 0, some 1-3 F), except one that has 50%. This is the analysis to do before paying them!!
+# Err on side of conservative, pay them if they complete. Or at least pay but then exclude if they pick the same answer for everything
 
-# Example indexing
-# Indexing
-logical_vec <- c(F,F, T, T)
-original_vals <- c(1,1,1,1)
-new_vals <- c(NA, NA, 0,0)
-original_vals[logical_vec] <- new_vals[logical_vec]
-final_vec <- original_vals
-final_vec
+# Now is the data in a state where it can be combined with model preds? 
+
+# aim is to plot prop of ppl picking a certain answer, against the model predictions
+# So the 'answers' they pick, need to be mapped against the vars in the model
+
+# So we need a var in the df1 of 'var' (=4 options) and var took the value it took' (=8 options)
+
+df1 <- df1 %>% mutate(ansVar = if_else(ans==1|ans==2, 'A', 
+                                       if_else(ans==3|ans==4, 'Au',
+                                               if_else(ans==5|ans==6, 'B', 'Bu'))))
+
+df1 <- df1 %>% mutate(ansVar2 = if_else(ans==1|ans==2, 'A', 
+                                       if_else(ans==3, 'Au=1',
+                                               if_else(ans==4, 'Au=0',
+                                                       if_else(ans==5|ans==6, 'B', 
+                                                               if_else(ans==7, 'Bu=1', 'Bu=0'))))))
+
+df1 <- df1 %>% mutate(ansVar3 = if_else(ans==1, 'A=1',
+                                        if_else(ans==2, 'A=0',
+                                                if_else(ans==3, 'Au=1',
+                                                if_else(ans==4, 'Au=0',
+                                                        if_else(ans==5, 'B=1', 
+                                                                if_else(ans==6, 'B=0',
+                                                                if_else(ans==7, 'Bu=1', 'Bu=0'))))))))
 
 
-# ----------- cut? ---------------
-# This was a manual attempt for proof of concept (88% meaningful possAns) so not needed anymore
-# ansies <- df1 %>% group_by(trialtype, ans) %>% summarise(n=n())
-# write.csv(ansies, 'ansies.csv')
+# Split them by probgroup here, so they can go against the relevant model pred group for comparison
+pg1 <- df1 %>% filter(probgroup==1) # 80 obs of 18
+pg2 <- df1 %>% filter(probgroup==2) # 46 obs of 18
+pg3 <- df1 %>% filter(probgroup==3) # 54 obs of 18 
 
-probgroups_summary <- df1 %>% group_by(cb, prob0, prob1, prob2, prob3) %>% summarise(n=n())
-# QUESTION -- varies 12-29 in a group, is there something wrong with the randomisation?
+# Now summarise. For first round of plots , do ansVar=8 to see everything, so ansVar3
+# If want A=a, or just 'A', take ansVar2 later
+pg1prop <- pg1 %>% group_by(trialtype, ansVar3) %>% summarise(n=n()) %>% mutate(prop = n/sum(n))
+pg2prop <- pg2 %>% group_by(trialtype, ansVar3) %>% summarise(n=n()) %>% mutate(prop = n/sum(n))
+pg3prop <- pg3 %>% group_by(trialtype, ansVar3) %>% summarise(n=n()) %>% mutate(prop = n/sum(n))
 
-# Assign a number of their answer from the arrays of answers
-
-# Now save as data
-write.csv(df1, file="../processed_collider.csv")
+# Now save
+save(df1, pg1, pg2, pg3, pg1prop, pg2prop, pg3prop, file="../processed_data/processed_data.Rdata")
+# write.csv(df1, file="../processed_collider.csv")
 

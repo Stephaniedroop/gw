@@ -34,7 +34,7 @@ for (i in 1:length(poss_params)) {
   # Save them too, for later 
   mod_preds[[i]][[3]] <- forplotd
   mod_preds[[i]][[4]] <- forplotc
-  mod_preds[[i]][[5]] <- wad
+  mod_preds[[i]][[5]] <- wad # If you change what is taken here, it will change the indexing position later
   mod_preds[[i]][[6]] <- wac
   source('collider_plot_a.R')
   # One way of charting the possible values of the unobserved variables, saved under `i`
@@ -50,6 +50,23 @@ for (i in 1:length(poss_params)) {
 
 # Save 
 save(mod_preds, file='model_data/modpreds.Rdata')
+
+
+
+# Where to put json etc?
+
+
+
+# Notes on chart
+# If we normalised the bars then it would give the prob matching approach. 
+# Need no y axis because it suggests probability when it isn't
+# Try normalised so it becomes probability, then plot ppt against this. 
+# (For real thing it will have optimised softmax temp but at least we can see)
+
+
+#--------------- 2. Get ppt data and compare with model predictions -------------------
+
+
 
 
 # ------------- Analysis -----------
