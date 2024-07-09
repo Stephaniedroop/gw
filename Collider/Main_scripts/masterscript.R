@@ -53,10 +53,11 @@ save(mod_preds, file='../model_data/modpreds.Rdata')
 
 
 #--------------- 2. Get ppt data and compare with model predictions -------------------
-#source('pilot_preprocessing.R')
-
-# ALL DONE TO HERE - now working on collideranalysis at end 3 July 2024 - but there the plot is not working
-# collecting ppt data too
+#source('pilot_preprocessing.R') this was done separately for now
+# working on 'collider_analysis.R' at 10 July 2024 before going away for a month 
+# It currently generates dfs for plotting for the 3 prob groups, and plots % ppts choosing answer as primary explanation against normalised model pred wa
+# but for pilot only as we have a problem about hwo to redress the cb prob group
+# ppt data has been collected and is in gridworld/batch, but these preprocessing script and analysis not redone for it
 
 
 
