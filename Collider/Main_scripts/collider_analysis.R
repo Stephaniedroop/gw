@@ -3,11 +3,14 @@
 ####################################################
 
 # Script takes the processed data from the collider ppt expt 
-# cleaned in `pilot_preprocessing.R` and the model predictions
-# and puts them together
+# (which was cleaned and sliced in `mainbatch_preprocessing.R`) 
+# and combining with model predictions, and visualising 
 
 # library(tidyverse)
 rm(list=ls())
+
+# ------- to here 28 Aug - start here
+
 
 # Setwd - won't need to do this if still in the masterscript
 setwd("/Users/stephaniedroop/Documents/GitHub/gw/Collider/Main_scripts")
