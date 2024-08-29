@@ -9,14 +9,10 @@
 # library(tidyverse)
 rm(list=ls())
 
-# ------- to here 28 Aug - start here
 
-
-# Setwd - won't need to do this if still in the masterscript
-setwd("/Users/stephaniedroop/Documents/GitHub/gw/Collider/Main_scripts")
 
 # Read in processed ppt data
-load('../processed_data/processed_data.rdata', verbose = T)
+load('../Data/Data.Rdata', verbose = T)
 
 # Read in model preds # see master script for indexing etc -- if change what is saved in masterscript, it'll affect here
 load('../model_data/modpreds.rdata', verbose = T) # list of 3
@@ -52,6 +48,8 @@ names(trialvalsd) <- 'trialtype'
 
 trialvalscvec <- as.vector(unique(modpredsc$trialtype))
 fulltrialspecc <- c('A=0, B=0, | E=0','A=0, B=1, | E=0','A=1, B=0, | E=0','A=1, B=1, | E=0','A=1, B=1, | E=1')
+trialvalsdvec <- as.vector(unique(modpredsd$trialtype))
+fulltrialspecd <- c('A=0, B=0, | E=0','A=0, B=1, | E=0','A=0, B=1, | E=1', 'A=1, B=0, | E=0','A=1, B=1, | E=0','A=1, B=0, | E=1', 'A=1, B=1, | E=1')
 
 # Some 'intermediate merges' 
 # First, all trials and nodes for c and for d
@@ -71,30 +69,11 @@ fp1c <- merge(x = emptypgc1, y = wac, by = c('trialtype', 'node3'), all.x = T) %
 fp2c <- merge(x = emptypgc2, y = wac, by = c('trialtype', 'node3'), all.x = T) %>% replace(is.na(.), 0) %>% group_by(trialtype) %>% mutate(pred = predicted / sum(predicted))
 fp3c <- merge(x = emptypgc3, y = wac, by = c('trialtype', 'node3'), all.x = T) %>% replace(is.na(.), 0) %>% group_by(trialtype) %>% mutate(pred = predicted / sum(predicted))
 
-fp1d <- merge(x = emptypgd1, y = wac, by = c('trialtype', 'node3'), all.x = T) %>% replace(is.na(.), 0) %>% group_by(trialtype) %>% mutate(pred = predicted / sum(predicted))
-fp2d <- merge(x = emptypgd2, y = wac, by = c('trialtype', 'node3'), all.x = T) %>% replace(is.na(.), 0) %>% group_by(trialtype) %>% mutate(pred = predicted / sum(predicted))
-fp3d <- merge(x = emptypgd3, y = wac, by = c('trialtype', 'node3'), all.x = T) %>% replace(is.na(.), 0) %>% group_by(trialtype) %>% mutate(pred = predicted / sum(predicted))
+fp1d <- merge(x = emptypgd1, y = wad, by = c('trialtype', 'node3'), all.x = T) %>% replace(is.na(.), 0) %>% group_by(trialtype) %>% mutate(pred = predicted / sum(predicted))
+fp2d <- merge(x = emptypgd2, y = wad, by = c('trialtype', 'node3'), all.x = T) %>% replace(is.na(.), 0) %>% group_by(trialtype) %>% mutate(pred = predicted / sum(predicted))
+fp3d <- merge(x = emptypgd3, y = wad, by = c('trialtype', 'node3'), all.x = T) %>% replace(is.na(.), 0) %>% group_by(trialtype) %>% mutate(pred = predicted / sum(predicted))
 
-# That gives us 6 dfs for plotting
+# That gives us 6 dfs for plotting: probability groups 1:3, for c and for d
 
-# Now plot - manually change the df or write a function - not done yet
-
-p1c <- ggplot(fp1c, aes(x = node3, y = prop,
-                           fill = node3)) +
-  geom_col(aes(x = node3, y = prop), alpha = 0.4) +
-  facet_wrap(factor(trialtype, levels = trialvalscvec, labels = fulltrialspecc)~.) + #, scales='free_x'
-  geom_point(aes(x = node3, y = pred), size=2, alpha=0.4) + # pch=21 matches point to bar
-  theme_classic() +
-  theme(axis.text.x = element_text(angle = 90)) +
-  guides(fill = guide_legend(override.aes = list(size = 0, alpha=0.4))) +
-  labs(x='Node', y=NULL, fill='Explanation \nselected as \nbest by % of \nparticipants', 
-       title = 'Conjunctive collider: participant choice (bars) against \nweighted average CESM model prediction (dots) \n \nGroup 1:'
-       )
-
-p1c
-
-# BUT - WHAT TO DO ABOUT COUNTERBALANCED?? 
-# see note in archive 'gridworld collider experiment. Still need to decide what to flip
-# (maybe just prob or even maybe answer)
-
-
+# Save
+save(file = '../processed_data/fp.rdata', fp1c,fp2c,fp3c,fp1d,fp2d,fp3d, trialvalsdvec,trialvalscvec, fulltrialspecd,fulltrialspecc)

@@ -120,6 +120,7 @@ data <- data %>% mutate(ans = if_else(scenario=='job', match(data$answer, jobans
 
 # -------- Permissable actual cause analysis -----------
 # Checks whether ppt's answers are permissable as per Tadeg's actual causation condition
+# This is separate from the counterbalanced issue, so can be done on the un-switched vars
 # Then analyses by participant
 
 # Get .possAns out of json 
@@ -149,25 +150,40 @@ data <- cbind(data, isPerm)
 # Now group by ppt to see if they mostly pick permissable answers
 tf <- data %>% group_by(subject_id, isPerm) %>% summarise(n=n())
 
+# There is a problem: as counterbalancing happened across the probability vectors 
+# (ie cb==0 had var 'A' as one prob, and cb==1 had it the other) 
+# We can reverse that by when cb==1 & ans was A, add 4 to ans
+# and when cb==0 and ans was B, subtract 4 from ans
+
+# Store indices of which ansers are already a and which are b
+aans <- as.vector(1:4)
+bans <- as.vector(5:8)
+
+data <- data %>% mutate(anscb = if_else(cb==1 & ans %in% aans, ans+4,
+                                        if_else(cb==1 & ans %in% bans, ans-4, ans)))
+
+
+
+
 # Map the answers they gave to the variables 
 # PROBLEM - WHAT TO DO ABOUT THE CB PROBS
-data <- data %>% mutate(ansVar = if_else(ans==1|ans==2, 'A', 
-                                       if_else(ans==3|ans==4, 'Au',
-                                               if_else(ans==5|ans==6, 'B', 'Bu'))))
+data <- data %>% mutate(ansVar = if_else(anscb==1|anscb==2, 'A', 
+                                       if_else(anscb==3|anscb==4, 'Au',
+                                               if_else(anscb==5|anscb==6, 'B', 'Bu'))))
 
-data <- data %>% mutate(ansVar2 = if_else(ans==1|ans==2, 'A', 
-                                       if_else(ans==3, 'Au=1',
-                                               if_else(ans==4, 'Au=0',
-                                                       if_else(ans==5|ans==6, 'B', 
-                                                               if_else(ans==7, 'Bu=1', 'Bu=0'))))))
+data <- data %>% mutate(ansVar2 = if_else(anscb==1|anscb==2, 'A', 
+                                       if_else(anscb==3, 'Au=1',
+                                               if_else(anscb==4, 'Au=0',
+                                                       if_else(anscb==5|anscb==6, 'B', 
+                                                               if_else(anscb==7, 'Bu=1', 'Bu=0'))))))
 
-data <- data %>% mutate(ansVar3 = if_else(ans==1, 'A=1',
-                                        if_else(ans==2, 'A=0',
-                                                if_else(ans==3, 'Au=1',
-                                                if_else(ans==4, 'Au=0',
-                                                        if_else(ans==5, 'B=1', 
-                                                                if_else(ans==6, 'B=0',
-                                                                if_else(ans==7, 'Bu=1', 'Bu=0'))))))))
+data <- data %>% mutate(ansVar3 = if_else(anscb==1, 'A=1',
+                                        if_else(anscb==2, 'A=0',
+                                                if_else(anscb==3, 'Au=1',
+                                                if_else(anscb==4, 'Au=0',
+                                                        if_else(anscb==5, 'B=1', 
+                                                                if_else(anscb==6, 'B=0',
+                                                                if_else(anscb==7, 'Bu=1', 'Bu=0'))))))))
 
 
 # Split them by probgroup here, so they can go against the relevant model pred group for comparison
