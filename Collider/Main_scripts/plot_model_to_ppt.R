@@ -4,11 +4,17 @@
 
 # Actual plotting is done in a function in the masterscript??? no
 
+# Notes on chart
+# If we normalised the bars then it would give the prob matching approach. 
+# Need no y axis because it suggests probability when it isn't
+# Try normalised so it becomes probability, then plot ppt against this. 
+# (For real thing it will have optimised softmax temp but at least we can see)
+
 rm(list=ls())
 
 # get params
-load('../model_data/params.rdata', verbose = T)
-load('../processed_data/fp.rdata', verbose = T)
+load('../model_data/params.rdata', verbose = T) # saved in `get_model_preds.R`
+load('../processed_data/fp.rdata', verbose = T) # saved in `collider_analysis.R`
 
 # Define function to plot % ppts choosing answer as primary explanation against normalised model pred wa
 

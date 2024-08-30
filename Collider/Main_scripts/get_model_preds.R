@@ -1,3 +1,11 @@
+#################################################### 
+###### Collider - get model predictions  #####
+####################################################
+# Script to set up probability vectors of each variable, then run a series of 3 source files to implement the cesm
+# and save the model predictions for each run
+
+
+
 # All the params we want, put into a list of 4x2 dfs
 params1 <- data.frame("0"=c(0.9,0.5,0.2,0.5), "1"=c(0.1,0.5,0.8,0.5))
 params2 <- data.frame("0"=c(0.5,0.9,0.5,0.2), "1"=c(0.5,0.1,0.5,0.8))
@@ -9,7 +17,6 @@ save(file = '../model_data/params.rdata', poss_params)
 
 mod_preds <- vector(mode='list', length=3)
 
-# NOTE - RUN THIS AGAIN FOR REAL
 # Loop through the list of param dfs and run a series of scripts, to generate worlds, calculate model preds and plot
 for (i in 1:length(poss_params)) { 
   source('general_cesm_a.R')

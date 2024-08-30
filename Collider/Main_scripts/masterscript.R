@@ -17,13 +17,9 @@ source('mainbatch_preprocessing.R') # saves data
 setwd("../Main_scripts")
 source('collider_analysis.R') # combine with model predictions
 
-# --------------- 3. Now plot --------------
+# --------------- 3. Assess model fit to ppt data --------------
+# Facet plots for each condition showing dots against coloured bars
 source('plot_model_to_ppt.R')
 
-
-# Notes on chart
-# If we normalised the bars then it would give the prob matching approach. 
-# Need no y axis because it suggests probability when it isn't
-# Try normalised so it becomes probability, then plot ppt against this. 
-# (For real thing it will have optimised softmax temp but at least we can see)
-
+# Other metrics of model fit
+source('morefit.R')
