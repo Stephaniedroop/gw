@@ -4,49 +4,70 @@
 # Script to set up probability vectors of each variable, then run a series of 3 source files to implement the cesm
 # and save the model predictions for each run
 
+rm(list=ls())
+setwd("../Main_scripts")
+library(tidyverse)
+
+#library(profvis)
+
+# Other values set outside for now 
+N_cf <- 10000L # How many counterfactual samples to draw
+s_vals <- seq(0.00, 1.00, 0.05) # 21
+modelruns <- 10
+
+load('../model_data/params.rdata', verbose = T) # defined in script `set_params.r`
+
+# Load functions: world_combos, get_cond_probs, generic_cesm 
+source('functions.R')
 
 
-# All the params we want, put into a list of 4x2 dfs
-params1 <- data.frame("0"=c(0.9,0.5,0.2,0.5), "1"=c(0.1,0.5,0.8,0.5))
-params2 <- data.frame("0"=c(0.5,0.9,0.5,0.2), "1"=c(0.5,0.1,0.5,0.8))
-params3 <- data.frame("0"=c(0.9,0.3,0.2,0.5), "1"=c(0.1,0.7,0.8,0.5))
-row.names(params1) <- row.names(params2) <- row.names(params3) <-c ("pA",  "peA", "pB", "peB")
-names(params1) <- names(params2) <- names(params3) <- c('0','1')
-poss_params <- list(params1, params2, params3)
-save(file = '../model_data/params.rdata', poss_params)
+# -------------- Full cesm - what we started with ----------
 
-mod_preds <- vector(mode='list', length=3)
+# Empty df to put everything in
+all <- data.frame(matrix(ncol=18, nrow = 0))
 
-# Loop through the list of param dfs and run a series of scripts, to generate worlds, calculate model preds and plot
+# For each setting of possible probability parameters we want to: 
+# 1) generate worlds, 2) get conditional probabilities and 3) get model predictions
 for (i in 1:length(poss_params)) { 
-  source('general_cesm_a.R')
-  # Script contains functions, but we need to explicitly call them as dfs which will be used throughout
+  # 1) Get possible world combos of two observed variables in both dis and conj structures
   dfd <- world_combos(params = poss_params[[i]], structure = 'disjunctive')
+  dfd$pgroup <- i
   dfc <- world_combos(params = poss_params[[i]], structure = 'conjunctive')
-  mp1d <- generic_cesm(params = poss_params[[i]], df = dfd)
-  mp1c <- generic_cesm(params = poss_params[[i]], df = dfc)
-  # Let's save these if we need to. This works but need a better structure
-  #mod_preds[[i]][[1]] <- dfd # PROB. NOT NEEDED
-  #mod_preds[[i]][[2]] <- dfc
-  #mod_preds[[1]][[i]]$dfc <- dfc
-  # The next script makes dfs forplotd,forplotc, with model preds used for plotting
-  source('unobs_a.R')
-  # Save them too, for later 
-  mod_preds[[i]][[1]] <- forplotd
-  mod_preds[[i]][[2]] <- forplotc
-  #mod_preds[[i]][[5]] <- wad # If you change what is taken here, it will change the indexing position later
-  #mod_preds[[i]][[6]] <- wac
-  source('collider_plot_a.R')
-  # One way of charting the possible values of the unobserved variables, saved under `i`
-  # eg 'da1' is disjunctive actual , params setting 1
-  dchart <- paste0('~/Documents/GitHub/gw/Collider/figs/model_preds/','da',i,'.pdf')
-  ggsave(dchart, plot=pd, width = 7, height = 5, units = 'in')
-  cchart <- paste0('~/Documents/GitHub/gw/Collider/figs/model_preds/','ca',i,'.pdf')
-  ggsave(cchart, plot=pc, width = 7, height = 5, units = 'in')
-  
-  # Important to find the right piece of the model predictions - what do we want to do with it?
-  # assuming wa (in unobs_a, saved as wad/wac)
-}
+  dfc$pgroup <- i
+  # 2) Get conditional probabilities of these and the two unobserved variables too
+  newdfd <- get_cond_probs(dfd)
+  newdfc <- get_cond_probs(dfc)
+  # 3) Get predictions of the counterfactual effect size model for all these worlds AND S
+  for (s in 1:length(s_vals)) {
+    mp1d <- data.frame(matrix(ncol = 14, nrow = 0))
+    mp1c <- data.frame(matrix(ncol = 14, nrow = 0))
+    # We also want to calculate like 10 versions to get the variance of model predictions
+    for (m in 1:modelruns) {
+      mpd <- get_cfs(params = poss_params[[i]], structure = 'disjunctive', df = dfd, s = s_vals[s]) # 16 obs of 6
+      mpd$run <- m
+      mpc <- get_cfs(params = poss_params[[i]], structure = 'conjunctive', df = dfc, s = s_vals[s])
+      mpc$run <- m
+      mp1d <- rbind(mp1d, mpd)
+      mp1c <- rbind(mp1c, mpc)
+    }
+    mp1d$pgroup <- i
+    mp1c$pgroup <- i
+    # Put them together a bit scrappily; we'll tidy it later
+    d <- merge(x = mp1d, y = newdfd, by = c('index')) 
+    c <- merge(x = mp1c, y = newdfc, by = c('index'))
+    all1 <- rbind(d,c) # next, how to rbind all to the same all
+    all <- rbind(all, all1) # 20160 obs of 24
+  }
+} 
+# It takes a minute or two but not terrible.
+# saves intermediate set of world setup and model predictions
+write.csv(all, "../model_data/all.csv")
 
-# Save 
-save(mod_preds, file='../model_data/modpreds.Rdata')
+# These model predictions are raw and do not account for some variables being unobserved.
+# Now treat them for actual causality and unobservability in script `modpred_processing.R`
+
+# -------------- Others, lesioned ------------------
+
+# 1. Run model again with chance params to see if people are better modelled with no probabilities.
+# 2. Noactual - in a processing script, then fit in 20x .Rmd as before
+# 3. For various lesions of the cp: Can probably be done in the data later also, as we only calculate the raw cesm then treat it later
