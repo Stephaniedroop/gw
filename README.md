@@ -1,51 +1,26 @@
-# Social Explanations in gridworlds
+# Social Explanations in Gridworlds
 
-## Authors
+A long-standing project forming chapter 2 of my thesis.
 
-- Stephanie Droop (stephanie.droop@ed.ac.uk)
-- Neil Bramley
-- Tadeg Quillien
-- Christopher Lucas
+In much exisiting research on how people explain outcomes and reason about causes, the outcomes do naturally follow from the observed causes. But in real life things are often not so coherent. I wanted to study how people explain outcomes that don't obviously fit what they have seen.
 
-## WIP -- a temporary place for scripts in progress eg collider Spring 2024
+The general universe the studies take place in is a `gridworld` where characters/avatars/agents move around a stylised boxy urban environment to get to various food trucks, where they stop to eat. Everything is a binary variable: the agents start either in view of pizza or hotdog, they go to pizza or hotdog, and they go directly or a roundabout way. We also know various biographical details about the agents: they either know the area or they don't, they either like hotdogs or they don't, they are either sporty or lazy.
 
-Collider project has its own README and self contained folder.
+These details combine to promote various behaviours: eg. if an agent likes hotdogs and starts in view of hotdogs and is lazy and doesn't know the area, then it might make more sense for them to go straight to the hotdog van they can see. Likewise, if they can't see the pizza but they know the area, then if they go round the corner to the pizza then it makes sense and we can explain their behaviour if we know they know the area. (Sometimes the biographical details don't seem to immediately explain the outcome and then it might get interesting).
 
-### Actual causation version - removing causes meaningless for outcome
+Anyway, we know from daily life that people can fluidly brainstorm reasons for what they see, even when the available evidence doesn't fully explain it. (Presumably people have some kind of _world model_ of the kinds of things that tend to cause other events). In that sense it wouldn't be groundbreaking to find scientific evidence for it. However, it's an interesting information problem to solve. That people _can_ do it is perhaps clear; but _how_ they do it is not clear at all.
 
-It is meaningless to assign a causal score to a variable with a setting that can not give rise to the effect and so these must be removed manually or on the heuristic "Do not assign score for C=! E". (Quillien).
+Enter computational modelling as a way to formalise theories in programs and maths to precisely manage the information flows, and see what types of models can reproduce people's patterns of answers.
 
-- `general_cesm_a.R` Script for general counterfactual model. A function takes arguments of causal variables with prior strengths, loops over observations and calculates causal responsibility of each variable across counterfactual worlds. The actual causation (Halpern) version. This is script 1 of 3 for the Spring 2024 collider setting.
-- `unobs_a.R` - Script to calculate marginal and weighted average counterfactual effect size of the unobserved variables. Takes as input the outputs of the `general_cesm_a.R` i.e. loads the probabilities of the 4 cause vars, the world combos in disjunctive and conjunctive collider settings, and model predictions for each. Gives as output the model's counterfactual effect size for each node in each world.
-- `collider_plot_a.R` - Script to plot model predictions for collider of two observed variables (A and B), and two unobserved noise variables of A and B (Au and Bu). In all three scripts, set parameters by hand and run all three to plot the model predictions at that setting.
+This repo has closed end-to-end process of generating our own data and then modelling it:
 
-### Same but not using Halpern actual causation -- i.e. can assign a causal score to impermissable causes
+1. **Experiment 1:** Data and model for a causal model selection task. We showed people all combinations of variables (biohraphies and starting position) and asked them to rate how likely each outcome (agent taking a certain path to a certain food) was. Then we found the best fitting causal structure that governs how variables act in this 'world', i.e. the causal model strengths that drive the next experiment. Can also call this the **prediction** part, because it gives the parameters that allow to say how likely different outcomes are. Like looking forwards.
+2. **Experiment 2:** We showed a new set of participants the paths the agents took, and asked each time, 'What's the best explanation for the character's action?'. This generated a dataset of free text explanations. Can also call this the **explanation** part, because we are diagnosing or explaining outcomes we have already seen. Like looking backwards.
+3. Qualitative ratings of the free text explanations on various metrics, by other people.
 
-- `general_cesm.R` Script for general counterfactual model. A function takes arguments of causal variables with prior strengths, loops over observations and calculates causal responsibility of each variable across counterfactual worlds.
-- `unobs.R`
-- `collider_plot.R`
+Each of these folders has its own README on the main scripts and how to use them. Summary: it's all in R and each has a masterscript which calls the other scripts.
 
-## Files / folders
-
-### Experiment 1: prediction, obtains parameters for Experiment 2
-
-#### Experiment and data
-
-- `params_data_Jan23.csv` Experiment 1 behavioural data to inform situation model. Participants (n=90) saw 16 scenarios and, for each one, rated the 4 possible outcomes (2 food x 2 path) for how likely the character was to make that choice given their biography and starting position.
-- `pizzaland_parameters.R` Data wrangling script for Exp.1; produces `pizpar3` df saved in `exp1processed_wide.rdata` used in older stepwise.R script, and `pizpar3_long' df saved in `exp1processed_long.rdata`. Also added in numerical situation tag.
-
-#### Modelling
-
-- `stepwise.R` Takes the processed Exp1 data and runs two independent regression models; one for path length and one for food choice, finding significant beta slopes by stepwise model selection.
-- `stepwiseLong.R` Same but modified Oct23 to use recoded Factor 4 and for prob_long instead of short.
-- `glmulti_play.R` Replaces `stepwise.R` with a 4-way multinomial regression instead of 2x2.
-
-### Gridworld scenarios setup
-
-- `worldsetup.R` Sets up the 64 gridworld scenarios and takes the beta slopes of the significant vars from the stepwise selection procedure in pizzaland_parameters.R as weights to calculate the probability of each of the 4 outcomes in each of the 16 scenarios. **NOW OBSOLETE** - to move/delete when we're sure
-- `worldsetup_mod.R` Modified version of previous file, to recode F4 Start to Hotdog==1, and using prob_long.
-- `worlds.rdata` Static df of the 64 scenarios (16 gridworld setups and 4 possible outcomes for each) with pAction, produced by worldsetup.R.
-- `pChoice.csv` Same as worlds.rdata; the csv it produces.
+The output of the whole repo is rated explanations from a rich causal system, which then have to be modelled. This whole chapter was to get the data ready to be modelled, which happens in Chapter 3 of the thesis, and will be new repo [TO DO].
 
 ### Experiment 2
 
