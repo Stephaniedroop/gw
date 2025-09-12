@@ -45,6 +45,12 @@ pizpar$long_inv_norm <- pizpar$long_inv/pizpar$row_sum
 # New smaller df with columns we need
 pizpar2 <- pizpar %>% select(mindsCode, subjectGroup, stim1, rowNo, note1, short_vis_norm, long_vis_norm, short_inv_norm, long_inv_norm)
 
+
+# Later for Neil instead of previous line:
+# New smaller df with columns we need
+pizpar2 <- pizpar %>% select(mindsCode, subjectGroup, stim1, rowNo, note1, short_vis, long_vis, short_inv, long_inv)
+
+
 # Set columns for what the condition tags actually mean
 pizpar2 <- pizpar2 %>% mutate(Preference = if_else(grepl("F", note1), 'Hot dogs', 'Absent'))
 pizpar2 <- pizpar2 %>% mutate(Knowledge = if_else(grepl("K", note1), 'Knows area', 'Does not know area'))
@@ -104,6 +110,9 @@ pizpar2$situTag <- factor(pizpar2$situTag)
 # Streamline the data again to keep only what we want - 1440 OBS OF 12 VARS
 pizpar3 <- pizpar2 %>% select(mindsCode, situTag, Preference, Knowledge, Character, Start, prob_long, prob_hotdog,
                               prob_short_hotdog, prob_long_hotdog, prob_short_pizza, prob_long_pizza)
+
+# Streamline the data again to keep only what we want - SPECIAL FOR NEIL INSTEAD OF PREVIOUS ONE
+pizpar3 <- pizpar2 %>% select(mindsCode, situTag, Preference, Knowledge, Character, Start, short_vis, long_vis, short_inv, long_inv)
 
 # Save file
 save(file = 'exp1processed_wide.rdata', pizpar3) # Used for stepwise model selection

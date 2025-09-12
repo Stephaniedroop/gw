@@ -1,0 +1,94 @@
+---
+title: "descriptives"
+output: html_document
+date: "2025-06-07"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#
+
+
+
+```{r}
+rm(list=ls())
+
+library(tidyverse)
+library(ggplot2)
+library(ggbeeswarm)
+
+
+df <- read.csv('../Data/gwdata.csv') # saved in `gw_preprocessing.Rmd`. 1440 ovs of 28
+
+```
+
+```{r}
+forscatter_long <- df %>%
+  select(mindsCode, lik_short_pizza:lik_long_hotdog, Situation) %>%
+  pivot_longer(
+    cols = lik_short_pizza:lik_long_hotdog,
+    names_to = "Choice",
+    values_to = "Rating"
+  )
+```
+
+```{r}
+# There were 28 ratings of 0 - this is 0.49% of 5760 ratings so is not a big deal
+sum(forscatter_long$Rating == 0)
+```
+
+
+
+
+```{r}
+ggplot(forscatter_long, aes(x = Choice, y = Rating, color = Choice)) +
+  geom_beeswarm(cex = 0.3) +
+  facet_wrap(~Situation) +
+  labs(x = "Item", y = "Rating") +
+  theme_minimal() +
+  scale_x_discrete(guide = guide_axis(angle = 45))
+```
+
+
+Counts: you can see how in each situation, the popular categories get eg 30-60, while unpopular get 1-2. So a box or violin is not heplful because it tries to show everything.
+
+```{r}
+counts <- df %>%
+  select(mindsCode, lik_short_pizza:lik_long_hotdog, Situation) %>%
+  pivot_longer(
+    cols = lik_short_pizza:lik_long_hotdog,
+    names_to = "item",
+    values_to = "rating"
+  ) %>%
+  group_by(Situation, item, rating) %>%
+  summarise(count = n(), .groups = "drop")
+
+```
+
+
+This below is better than a box or violin plot because it shows 
+
+```{r}
+ggplot(counts, aes(x = item, y = count, fill = as.factor(rating))) +
+  geom_bar(stat = "identity", position = "stack") +
+  facet_wrap(~Situation) +
+  labs(x = "Item", y = "Count", fill = "Rating") +
+  theme_minimal()
+```
+
+Not massively helpful....
+
+```{r, echo=FALSE}
+ggplot(forscatter_long, aes(x = Choice, y = Rating)) +
+  geom_point() +
+  geom_violin() +
+  #geom_jitter(width = 0.2, height = 0, size = 1.5, alpha = 0.7) +
+  facet_wrap(~Situation) +
+  theme_bw() +
+  labs(title = "Jittered Scatterplot Faceted by Situation",
+       x = "X Axis Label",
+       y = "Y Axis Label")
+
+```

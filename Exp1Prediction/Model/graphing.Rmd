@@ -1,0 +1,225 @@
+---
+title: "graphing"
+output: html_document
+date: "2025-06-12"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggdag)
+library(dagitty)
+```
+
+## 
+
+
+
+
+```{r}
+library(igraph)
+library(RColorBrewer)
+
+labs<-c('P', 'Pu','K', 'Ku', 'C', 'Cu', 'S', 'Su', 'PK', 'PKu', 'PC', 'PCu', 'PS', 'PSu', 'KC', 'KCu', 'KS', 'KSu', 'CS', 'CSu',
+        'Path')
+fg<-matrix(0, 21, 21, dimnames = list(labs, labs)) # 21x21
+
+# Set the path part to 1 for everything
+for(i in 1:20)
+{
+  fg[i,21]<-1
+}
+
+# Manually set which vars of the adjacency matrix are 1
+fg[1,9]<-fg[1,11]<-fg[1,13] <- 1 #P goes to PK, PC, PS etc
+fg[3,9]<-fg[3,15]<-fg[3,17] <- 1 #K
+fg[5,11]<-fg[5,15]<-fg[5,19] <- 1#C
+fg[7,13]<-fg[7,17]<-fg[7,19] <- 1#S
+
+# New matrix of 21 rows and 2 columns and fill it with zeroes
+locations<-matrix(0,21, 2) 
+locations[,2]<-c(rev(seq(0,1, length.out = 20)), 0.5) # sequence of 20 equally spaced numbers and reverses it, then adds 0.5. seems unrelated to the 'out' from before)
+locations[,1]<-c(rep(c(0,0.15), 4),
+                 rep(c(0.4,0.55), 6),
+                 1)
+
+
+pg<-dg<-fg
+
+pg[rep(best_path==0, each=2),] <- 0 # creates a logical vector of which elements of best_path are 0, then repeats it twice, then selects rows of the matrix corresponding to what is meant to be 0, then sets columns of these to zero.
+# This is only C,Cu,PC,PCu
+# (and not sure yet what the point is)
+keep<-pg[,21]!=0
+keep[21]<-T
+pg<-pg[keep,keep] # Keeps a 5x5 of only the elements of pg named as T in keep, then their values
+# Those are only C>PC (C,PC), and then C,Cu,PC,PCu to Path 
+
+# Once we have pg as the adjacency matrix, the single next line makes the graph, and everything after that is modifying it.
+# So the point becomes, is there an easier way to get the adjacency matrix from what we know?
+g<-graph_from_adjacency_matrix(pg)
+```
+
+My new section: doing it without an adjacency matrix.
+In fact nothing. now uses an adjacency matrix but they do use an edge list (df with 'from' and 'to' columns)
+
+```{r}
+# Suppose amat is your adjacency matrix (square, 0/1, row/col names = node names)
+amat <- pg
+edges <- which(amat == 1, arr.ind = TRUE)
+edge_list <- data.frame(
+  from = rownames(amat)[edges[, 1]],
+  to   = colnames(amat)[edges[, 2]]
+)
+
+```
+
+Next we want a dagify formula: use this edge list to get dagify() formula
+
+```{r}
+# Create a list of formulas, e.g. PK ~ P means P -> PK
+formulas <- lapply(split(edge_list, edge_list$to), function(x) {
+  as.formula(paste(x$to[1], "~", paste(x$from, collapse = " + ")))
+})
+# Combine into a dagify call
+dag <- do.call(dagify, formulas)
+# Now analyse or plot thsi with ggdag or dagitty
+tidy_dag <- tidy_dagitty(dag)
+ggdag(tidy_dag) # Then add ggplot2 layers for more customisation
+```
+
+This seems ok. (still to decide what to do about 1 vs -1). 
+also, how to get directly from best_path to an edge list with no faff abotu adjacency matrix?
+
+Test, of how to set coordinates from the start:
+
+```{r}
+# Define coordinates for each node
+coord_dag <- list(
+  x = c(P = 0, K = 1, C = 2, S = 3, Path = 2),
+  y = c(P = 2, K = 2, C = 1, S = 0, Path = 1)
+)
+
+# Create DAG with manual coordinates
+my_dag <- dagify(
+  K ~ P,
+  C ~ K,
+  S ~ C,
+  Path ~ C + S,
+  coords = coord_dag
+)
+
+# Plot with ggdag
+ggdag(my_dag) + ggplot2::theme_minimal()
+
+```
+
+But if you already have a dagitty object (like dag) - seems not to work with an already tidy one like tidy_dag:
+
+```{r}
+coordinates(dag) <- list(
+  x = c(C = -1, Cu = -1.8, PC = 0, PCu = 0.5, Path = -0.5),
+  y = c(C = 2, Cu = 1.5, PC = 1.25, PCu = 0.5, Path = -1)
+)
+
+ggdag(dag)
+
+# Making it tidy has no later apparent effect on the spacing, but looks like we need it for setting the colours
+tidy_dag <- tidy_dagitty(dag)
+ggdag(tidy_dag) +
+  remove_axes()
+
+```
+
+I like it now! But haven't done colours or strengths of the edges yet
+For that, we want the strengths of the Cu and KCu (params) from the best_paths_params vector. Add them to the tidy_dag df and then can be plotted / given in a layer of the ggplot, like normal.
+
+Question for Neil:
+- is the 'strength' of the Cu edge the C param from best_path_params?
+- Or how else do they interact?
+
+V(g)$name<-V(g)$label<-labs[keep]
+
+# cols<-colorRampPalette( c("red", "grey", "green"), space="rgb")(100)
+cols<-colorRampPalette( c("white", "#003377"), space="rgb")(100)
+
+path_node_cols<-round(c(t(cbind(c(rep(0.5,4), rep(0.25,6)), unlist(best_path_params[2:11]))), 0), digits = 2)*100+1
+path_node_cols[path_node_cols>100]<-100
+
+V(g)$label.font<-2
+V(g)$size<-30
+V(g)$color<-cols[path_node_cols[keep]]
+V(g)$label.cex<- 1
+V(g)$label.color<-'black'
+el <- apply(get.edgelist(g), 1, paste, collapse="-")
+elix<-grep('u', el)
+green_ones<-c(paste0(names(best_path)[which(best_path==1)], '-Path'), paste0(names(best_path)[which(best_path==1)], 'u-Path'))
+red_ones<-c(paste0(names(best_path)[which(best_path==-1)], '-Path'), paste0(names(best_path)[which(best_path==-1)], 'u-Path'))
+edge_col_vec<-rep('black', length(el))
+
+for (i in 1:length(green_ones))
+{
+  edge_col_vec[el==green_ones[i]]<-'darkgreen'
+}
+for (i in 1:length(red_ones))
+{
+  edge_col_vec[el==red_ones[i]]<-'darkred'
+}
+
+V(g)$label.family<- "sans"
+E(g)$width <- 1
+E(g)$curved<-0
+E(g)$color<-edge_col_vec
+these_locs<-locations[keep,]
+these_locs[1:(nrow(these_locs)-1),2]<-seq(1,0, length.out=nrow(these_locs)-1)
+pdf('path_mod.pdf', width=6, height=6)
+plot(g, layout = these_locs, edge.arrow.size=1)#layout=locations,  
+dev.off()
+
+
+# Start of next section, for destination
+
+labs<-c('P', 'Pu','K', 'Ku', 'C', 'Cu', 'S', 'Su', 'PK', 'PKu', 'PC', 'PCu', 'PS', 'PSu', 'KC', 'KCu', 'KS', 'KSu', 'CS', 'CSu',
+        'Food')
+
+dg[rep(best_destination==0, each=2),]<-0
+keep<-dg[,21]!=0
+keep[21]<-T
+dg<-dg[keep,keep]
+
+g<-graph_from_adjacency_matrix(dg)
+V(g)$name<-V(g)$label<-labs[keep]
+
+
+destination_node_cols<-round(c(t(cbind(c(rep(0.5,4), rep(0.25,6)), unlist(best_path_params[2:11]))), 0), digits = 2)*100+1
+destination_node_cols[destination_node_cols>100]<-100
+
+V(g)$label.font<-2
+V(g)$size<-30
+V(g)$color<-cols[destination_node_cols[keep]]
+V(g)$label.cex<- 1
+V(g)$label.color<-'black'
+V(g)$label.family<- "sans"
+E(g)$width <- 1
+E(g)$curved<-0
+el <- apply(get.edgelist(g), 1, paste, collapse="-")
+elix<-grep('u', el)
+green_ones<-c(paste0(names(best_destination)[which(best_destination==1)], '-Food'), paste0(names(best_destination)[which(best_destination==1)], 'u-Food'))
+red_ones<-c(paste0(names(best_destination)[which(best_destination==-1)], '-Food'), paste0(names(best_destination)[which(best_destination==-1)], 'u-Food'))
+edge_col_vec<-rep('black', length(el))
+
+for (i in 1:length(green_ones))
+{
+  edge_col_vec[el==green_ones[i]]<-'darkgreen'
+}
+for (i in 1:length(red_ones))
+{
+  edge_col_vec[el==red_ones[i]]<-'darkred'
+}
+E(g)$color<-edge_col_vec
+these_locs<-locations[keep,]
+these_locs[1:(nrow(these_locs)-1),2]<-seq(1,0, length.out=nrow(these_locs)-1)
+
+pdf('destination_mod.pdf', width=6, height=6)
+plot(g, layout = these_locs, edge.arrow.size=1)#layout=locations,  
+dev.off()
+
+```
