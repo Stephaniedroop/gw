@@ -22,20 +22,6 @@ Each of these folders has its own README on the main scripts and how to use them
 
 The output of the whole repo is rated explanations from a rich causal system, which then have to be modelled. This whole chapter was to get the data ready to be modelled, which happens in Chapter 3 of the thesis, and will be new repo [TO DO].
 
-### Experiment 2
-
-#### Data
-
-- `pilot.csv` Experiment 2 behavioural data [just pilot for now; pending real].
-- `pilot_recoded_SD.csv` **For Neil Oct23 -- see column lesionAbove**
-- `gw_data.R` Data wrangling script for Experiment 2.
-
-#### Modelling
-
-- `ecesm_minimal.R` Script to implement Q&L's CESM. Takes `worlds.rdata` as input and calculates how much each outcome depends on each cause across simulated counterfactual worlds. This is a minimal version to see how the model works. Later version [tbd] saves predictions and optimises parameters.
-- `tbd` Script to fit the CESM to Exp2 behavioural data.
-- `Icard` script to implement other causal models eg. Icard 2017, PivotCritical, etc
-
 ### Later_rating
 
 - `processing_ratings.R`. Script to read in rater ratings data, standardise it (by eg removing comments and question marks, making it numeric etc) and saving a version which replaces numbers >1 with 1. Saves four dfs in `ratings.Rda`. **This last saved S's and V's ratings 20 Feb ready to use for the final version, k=.61**. Then go to `merge_ratings.R` to merge them, or `gw_irr.R` for stats on agreement.

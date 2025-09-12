@@ -6,8 +6,8 @@
 
 
 #---------- Read in data and get it to standard numerical form ------------------
-idat <- read.csv('ivanna_coded.csv', na.strings=c(""," ","NA")) 
-vdat <-  read.csv('coding_valtteri_finished.csv', na.strings=c(""," ","NA")) # REPLACE CSV WITH WHAT YOU NEED
+idat <- read.csv('coder1.csv', na.strings=c(""," ","NA")) 
+vdat <-  read.csv('coder2.csv', na.strings=c(""," ","NA")) # REPLACE CSV WITH WHAT YOU NEED
 
 # vdat cut off last two columns; idat merge last two to be same as v's third last one 'Unclear'
 # Q: the merging script puts Unclear any where the raters disagree. 
