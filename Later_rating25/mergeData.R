@@ -1,62 +1,35 @@
 ###############################################################################
 ##### Merge Gridworld ppt explanations with ratings of those explanations #####
+###############################################################################
 
 
-library(tidyverse)
+#library(tidyverse)
 rm(list = ls())
 
-# Get the ppt data - 2040 of 10
-df <- read.csv('../Exp2Explanation/Experiment/processedData.csv')
 
+# Load the processed data from processData.R - 2040 participant rows and a note of 24 duplicates
+load('../Exp2Explanation/Experiment/processedData.rda', verbose = T) 
 
 # Get the ratings: this is the intersection of two raters, taken in processRatings.R and mergeRating.R
 ratings <- read.csv('ratings.csv')
-ratings <- ratings[,-1]
 
+# Pull out the response column of the rows we will remove - c(113:120, 433:440, 1249:1256) from ratings
+# These are the second attempts of 3 participants who did the task twice
+responses_to_remove <- ratings[c(113:120, 433:440, 1249:1256), ]
 
-# But.... not done it yet because still deciding what to do about the three. Once decide, can cbind or what. But it works up to here
+# Check these responses match the responses and indices in duplicates
+all(responses_to_remove$response %in% duplicates$response) # TRUE
 
+# Remove rows c(113:120, 433:440, 1249:1256) from ratings 
+ratings <- ratings[-c(113:120, 433:440, 1249:1256), ] # 2040 of 10
 
+# Merge df with ratings and remove the duplicate response column
+rated_explans <- cbind(df, ratings)[, -12]
 
+# Now we have a df of 2040 rows and 14 columns: mindsCode, tag, response, digit1:digit6, a:h, unc
 
-
-# Merge with ratings 
-forreg <- cbind(df2, ratings)
-forreg <- forreg[,-9]
-
-# Rename the columns to be readable 
-sixvars <- c('P', 'K', 'C', 'S', 'Dest', 'Path')
-ninelabels <- c('rated_P', 'rated_K', 'rated_C', 'rated_S', 'rated_Pu', 'rated_Ku', 'rated_Cu', 'rated_Su', 'rated_unc')
-
-colnames(forreg)[3:8] <- sixvars
-colnames(forreg)[9:17] <- ninelabels
-
-# ---------- Section XX to remove 3 duplicate participants -----------------
-duplicates <- c("M121212", "M343434", "M565656")
-
-cleaned_combined <- forreg %>% filter(!(mindsCode %in% duplicates)) # 2040 obs, ie 255 ppts
-
-
-
-
-# Now filter for each outcome, and do a separate binomial regression for each
-
-# Define function
-# run_glmers <- function(data, input_cols, output_cols, family = binomial()) {
-#   results <- list()
-#   for (out_col in output_cols) {
-#     # Filter to non-missing for this output (don't need the na part but hey)
-#     df_sub <- data[!is.na(data[[out_col]]), c(input_cols, out_col)]
-#     # Build formula
-#     formula <- as.formula(
-#       paste(out_col, "~", paste(input_cols, collapse = " + "))
-#     )
-#     # Fit glm
-#     fit <- glm(formula, data = df_sub, family = family)
-#     results[[out_col]] <- fit
-#   }
-#   return(results)
-# }
+# Save rated explanations
+save(rated_explans, file = 'ratedExplans.rda')
 
 run_glmers <- function(data, input_cols, output_cols, participant_col, family = binomial()) {
   results <- list()
@@ -109,7 +82,7 @@ print(tidy_results)
 
 # ----------- descriptives ----------
 # A reduced version for just looking at tag and response
-df1 <- df %>% select(response, tag)
+df1 <- df |> select(response, tag)
 
 
 
@@ -130,16 +103,16 @@ print(colSums(data[,3:11]))
 data$tag <- as.factor(data$tag)
 
 # Column sums
-data_sums <- data %>% 
-  group_by(tag) %>% 
+data_sums <- data |> 
+  group_by(tag) |> 
   summarise(across(a:unc,~sum(.x), .names = "total_{.col}"), .groups = 'drop') # could put , na.rm = TRUE after .x, but it doesn't need
 
 # Column means - doesn't make sense to split out tags but do this ON the grouped total - mostly around 5
-data_means <- data_sums %>% 
+data_means <- data_sums |> 
   summarise(across(total_a:total_unc,~mean(.x), .names = "mean_{.col}"), .groups = 'drop')
 
 # Same for sd
-data_sd <- data_sums %>% 
+data_sd <- data_sums |> 
   summarise(across(total_a:total_unc,~sd(.x), .names = "sd_{.col}"), .groups = 'drop')
 
 # ~sum(.x, na.rm = TRUE) means “for each column, apply the function sum to the column, treating it as .x”
@@ -148,22 +121,22 @@ data_sd <- data_sums %>%
 
 # What about the situations with the highest ratings for each column? Might as well know
 
-max_df <- data_sums %>%
+max_df <- data_sums |>
   pivot_longer(
     cols = -tag,
     names_to = "Column",
     values_to = "Value"
-  ) %>%
-  group_by(Column) %>%
-  mutate(Max_Value = max(Value, na.rm = TRUE)) %>%
-  filter(Value == Max_Value) %>%
+  ) |>
+  group_by(Column) |>
+  mutate(Max_Value = max(Value, na.rm = TRUE)) |>
+  filter(Value == Max_Value) |>
   summarise(
     Tags = paste(tag, collapse = ", "),
     Max_Value = first(Max_Value),
     N_Tags = n(),
     .groups = "drop"
-  ) %>%
-  select(Column, Tags, Max_Value, N_Tags) %>%
+  ) |>
+  select(Column, Tags, Max_Value, N_Tags) |>
   as.data.frame()
 
 print(max_df)
@@ -171,28 +144,28 @@ print(max_df)
 
 # -------------------- BY ROW SUMS - tag type -----------
 
-row_sum_data <- data_sums %>%
-  mutate(row_total = rowSums(across(total_a:total_unc))) %>%
+row_sum_data <- data_sums |>
+  mutate(row_total = rowSums(across(total_a:total_unc))) |>
   select(tag, row_total)
 
 # Is that really surprising though... every explanation needed some sort of rating
 # But how many had 'real' explanations vs unclear?
 
-ind <- data %>% 
-  mutate(row_total = rowSums(across(a:h))) %>%
+ind <- data |> 
+  mutate(row_total = rowSums(across(a:h))) |>
   select(response, tag, row_total)
 
 indmean <- mean(ind$row_total)
 indsd <- sd(ind$row_total)
 
 # How many rows had 0 explanation, 1, 2 etc? 
-counts <- ind %>% 
-  group_by(row_total) %>% 
+counts <- ind |> 
+  group_by(row_total) |> 
   summarise(n=n())
 
 
 # Two texts were rated in 4 categories! which were they?
-ind %>% filter(row_total==4)
+ind |> filter(row_total==4)
 # These are 'comprehensive' answers, one for t101010 and one for t001100
 # What those have in common is: don't know the area, sporty, took short path
 # This is reading anything in, not statistical, 2 is not a big crossover, no analysis just interesting
