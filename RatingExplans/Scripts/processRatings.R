@@ -3,11 +3,13 @@
 
 # This script standardises rater data, names it shortened categories and replaces all numbers with 1s
 
+rm(list = ls())
+library(tidyverse) # for select - if packages become a hassle let's do it another way
 
 
 #---------- Read in data and get it to standard numerical form ------------------
-idat <- read.csv('coder1.csv', na.strings=c(""," ","NA")) 
-vdat <-  read.csv('coder2.csv', na.strings=c(""," ","NA")) # REPLACE CSV WITH WHAT YOU NEED
+idat <- read.csv('../Data/coder1.csv', na.strings=c(""," ","NA")) 
+vdat <-  read.csv('../Data/coder2.csv', na.strings=c(""," ","NA")) # REPLACE CSV WITH WHAT YOU NEED
 
 # vdat cut off last two columns; idat merge last two to be same as v's third last one 'Unclear'
 # Q: the merging script puts Unclear any where the raters disagree. 
@@ -17,8 +19,10 @@ vdat <-  read.csv('coder2.csv', na.strings=c(""," ","NA")) # REPLACE CSV WITH WH
 idat[is.na(idat)] <- 0
 vdat[is.na(vdat)] <- 0
 # Remove notes, Random, Unclear etc
-idat <- idat %>% select(-c(10))
-vdat <- vdat %>% select(-c(10,11,12))
+idat <- idat |> 
+  select(-c(10))
+vdat <- vdat |> 
+  select(-c(10,11,12))
 
 # Remove after row 2064; it is not data
 idat <- idat[-2065,]
@@ -48,6 +52,6 @@ vdat2[vdat==2] <- 1
 vdat2[vdat==3] <- 1
 vdat2[vdat==4] <- 1
 
-save(idat, idat2, vdat, vdat2, file="ratings.Rda")
+save(idat, idat2, vdat, vdat2, cats, file="../Data/ratings.Rda")
 
-# Then go to merge_ratings.R to merge them
+# Then go to mergeRatings.R to merge them

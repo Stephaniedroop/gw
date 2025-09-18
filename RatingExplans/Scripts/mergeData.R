@@ -8,10 +8,10 @@ rm(list = ls())
 
 
 # Load the processed data from processData.R - 2040 participant rows and a note of 24 duplicates
-load('../Exp2Explanation/Experiment/processedData.rda', verbose = T) 
+load('../../Exp2Explanation/Experiment/processedData.rda', verbose = T) 
 
 # Get the ratings: this is the intersection of two raters, taken in processRatings.R and mergeRating.R
-ratings <- read.csv('ratings.csv')
+load('../Data/ratingIntersect.rda', verbose = T) 
 
 # Pull out the response column of the rows we will remove - c(113:120, 433:440, 1249:1256) from ratings
 # These are the second attempts of 3 participants who did the task twice
@@ -29,4 +29,4 @@ rated_explans <- cbind(df, ratings)[, -12]
 # Now we have a df of 2040 rows and 14 columns: mindsCode, tag, response, digit1:digit6, a:h, unc
 
 # Save rated explanations
-save(rated_explans, file = 'ratedExplans.rda')
+save(rated_explans, file = '../Data/ratedExplans.rda')

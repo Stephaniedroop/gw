@@ -3,22 +3,16 @@
 
 # This script merges the two raters' ratings into one df by taking the intersection, 
 # and adds a catch-all column 'unclear' for ratings where they disagreed
-# Later TO DO make it a generalisable function not depending on the individual raters or documents
 
 # Prelims
-library(tidyverse)
-library(rje)
-library(checkmate)
+#library(tidyverse)
+rm(list = ls())
 
 
-setwd("/Users/stephaniedroop/Documents/GitHub/gw/Later_rating")
-
-# Read in data (processed in `processing_ratings.R`)
-load('ratings.rda', verbose = T) # loads idat and vdat, with ratings of >1, and idat2 and vdat2, with all digits 1
+# Read in data (processed in `processRatings.R`)
+load('../Data/ratings.rda', verbose = T) # loads idat and vdat, with ratings of >1, and idat2 and vdat2, with all digits 1
 
 # Now to actually merge and get a merged set for use
-cats <- c('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h')
-
 nrat <- nrow(idat)
 
 # Empty df 
@@ -35,6 +29,7 @@ ratings <- data.frame(response = rep(NA, nrat),
 
 ratings$response <- idat$response
 
+# Function to take only the intersection of both ratings, and if no intersection, allocate 1 to unclear
 for (exp in 1:nrat)
 {
   vexp <- vdat2[exp,]
@@ -57,7 +52,4 @@ for (exp in 1:nrat)
 # Replace NAs with 0 
 ratings[is.na(ratings)] <- 0
 
-
-save(file = 'to_go.rdata', ratings)
-
-# Then go to process_merged_ratings.R
+save(file = '../Data/ratingIntersect.rda', ratings)

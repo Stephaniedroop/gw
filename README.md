@@ -21,14 +21,3 @@ This repo has closed end-to-end process of generating our own data and then mode
 Each of these folders has its own README on the main scripts and how to use them. Summary: it's all in R and each has a masterscript which calls the other scripts.
 
 The output of the whole repo is rated explanations from a rich causal system, which then have to be modelled. This whole chapter was to get the data ready to be modelled, which happens in Chapter 3 of the thesis, and will be new repo [TO DO].
-
-### Later_rating
-
-- `processing_ratings.R`. Script to read in rater ratings data, standardise it (by eg removing comments and question marks, making it numeric etc) and saving a version which replaces numbers >1 with 1. Saves four dfs in `ratings.Rda`. **This last saved S's and V's ratings 20 Feb ready to use for the final version, k=.61**. Then go to `merge_ratings.R` to merge them, or `gw_irr.R` for stats on agreement.
-- `gw_irr.R`. Script to calculate inter rater agreement: a homemade function summarises matrix as contingency table then calculates cohen's kappa.
-- `merge_ratings.R`. Script to merge the rater ratings into a single file by saving only the intersection, with a new column 'unclear' for all where they disagreed. Saves it as `to_go.rdata`. Next go to
-- `process_merged_ratings.R` which generates plot for checking distribution of rating categories and whether they are good or not, and will later do other calcs on these.
-
-### OtherNoCode
-
-Any project admin, pdfs, docs, setup that found their way into this folder.
