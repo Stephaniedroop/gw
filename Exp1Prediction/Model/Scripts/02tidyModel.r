@@ -27,7 +27,7 @@ bdix <- which.min(fitted_destination_mods$kl + fitted_destination_mods$n_edge*co
 best_path <- structures[bpix,] # 00100-10000
 best_path_params <- fitted_path_mods[bpix,]
 
-best_destination <- structures[bdix,] # 1001111100
+best_destination <- structures[bdix,] # 10011-11100
 best_destination_params <- fitted_destination_mods[bdix,]
 
 # Create the best fitting models for display
@@ -66,6 +66,6 @@ mpd <- get_mod_pred(structures[bdix,], fitted_destination_params)
 
 df.m <- data.frame(situation = df$SituationVerbose[1:16], td_path = td_path, td_destination = td_destination, mp_path = mpp, mp_destination = mpd)
 
-save(df.m, file = '../Data/model.rda') # Run again once we're happy
+save(df.m, file = '../Data/model.rda') # Run again once we're happy. Also add in best_path 
 #write.csv(df.m, 'model.csv') # 16 obs of 5 vars
 

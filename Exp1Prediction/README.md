@@ -23,6 +23,7 @@ Scripts and data from behavioural experiment in 2023 to inform situation model: 
 
 - `master.R`
 - `01preprocess.R`. Input `dataJan23.csv`; output `gwExp1data.Rda`.
+- `02describe.R`. Exploratory facted beeswarm plots and other to explore distribution of the participant ratings.
 
 ### Model
 
@@ -31,6 +32,7 @@ Scripts to find and then plot best causal model of the behavioural experimental 
 - `master.R`
 - `01findModel.R` - causal selection task by brute force minimising KL divergence.
 - `02tidyModel.R` - tidy and present the best fitting model.
+- `03graphs.R` - directed acyclic graph plots of the best fitting model.
 
 ## Interpretaion of KL divergence - a note for the model selection task
 
@@ -41,6 +43,8 @@ Small KL (e.g., < 0.01 or < 0.1): Very good fit. The model's predictions are ext
 Moderate KL (e.g., 0.1–0.5): Decent fit. The model captures the main features, but there are noticeable differences.
 
 Large KL (e.g., > 1): Poor fit. The model and target distributions are quite different; the model is missing key aspects of the data
+
+---
 
 BELOW HERE IS OLD
 
