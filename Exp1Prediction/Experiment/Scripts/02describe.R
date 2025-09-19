@@ -1,5 +1,5 @@
 ###############################################################################################
-############ Some initial plotting of the distribuition of Likert scale ratings #############
+############ Some initial plotting of the distribution of Likert scale ratings #############
 ###############################################################################################
 
 library(tidyverse)
@@ -20,6 +20,7 @@ forscatter_long <- df |>
     values_to = "Rating"
   )
 
+# ---------------- SECTION FOR APPENDIX, EACH PLOT SAVED AS A SEPARATE PDF ----------------
 
 # Instead of faceting, which are further down the page, make a separate ggplot for each situation = extra clear
 
@@ -44,6 +45,8 @@ for(i in 1:length(plots)) {
   ggsave(paste0("../Figures/likert", gsub(" ", "_", situations[i]), ".pdf"), plots[[i]], width=6, height=4.5)
   #print(plots[[i]])
 }
+
+# --------- ----- REJECT SECTION FOR APPENDIX, FACETED 2x8 PLOTS ----------------
 
 # Another option is to do the faceting here, to get 2x8 grid of plots. 
 # (Since decided best not to use this, so comment out)
@@ -88,7 +91,7 @@ ggsave("../Figures/likertSecond.pdf", second_grid, width = 15, height = 20) # Be
 
 
 
-# -------------------------------------
+# -------------------- OTHER, BEESWARM AND STACK BARS --------------------
 
 # I reckon a faceted one is less good because you cant see the individual points. 
 # Unlikely to have space for these but maybe in an appendix

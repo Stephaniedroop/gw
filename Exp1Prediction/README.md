@@ -23,14 +23,14 @@ Scripts and data from behavioural experiment in 2023 to inform situation model: 
 
 - `master.R`
 - `01preprocess.R`. Input `dataJan23.csv`; output `gwExp1data.Rda`.
-- `02describe.R`. Exploratory facted beeswarm plots and other to explore distribution of the participant ratings.
+- `02describe.R`. Exploratory facted beeswarm plots and other to explore distribution of the participant ratings as raw Likert ratings (ie. before normalisation to make the target distribution in the Model section). Saves a series of 16 pdfs which are currently reported as Appendix 2.
 
 ### Model
 
 Scripts to find and then plot best causal model of the behavioural experimental data. Saves model output and plots in the same folder.
 
 - `master.R`
-- `01targetDist.R` - clean and sumamrise participant Likert scale rating to obtain target distribution (mean and sd) per situation
+- `01targetDist.R` - clean and summarise participant Likert scale rating to obtain normalised target distribution (mean and sd) per situation
 - `02findModel.R` - causal selection task by brute force minimising KL divergence.
 - `03tidyModel.R` - tidy and present the best fitting model.
 - `04graphs.R` - directed acyclic graph plots of the best fitting model.
