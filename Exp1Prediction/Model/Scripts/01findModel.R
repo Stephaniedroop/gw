@@ -2,13 +2,6 @@
 ############ Select best-fitting causal model by minimising K-L divergence #############
 ###############################################################################################
 
-
-rm(list=ls())
-library(tidyverse)
-
-# Load df 1421 of 27. Each row is one participant's response to one of the 16 situations. Was 1440 but 19 had 0s so were removed.
-load('../../Experiment/Data/gwExp1data.Rda') 
-
 # ==============================================================================
 # Path and Destination Choice Model Analysis
 # ==============================================================================
@@ -23,37 +16,17 @@ load('../../Experiment/Data/gwExp1data.Rda')
 # - S (Start): What's visible at the start (0=See_pizza, 1=See_hotdog)
 #
 # The script:
-# 1. Loads and preprocesses experimental data
+# 1. Loads target distributions
 # 2. Fits causal models to predict path choices (short vs long)
 # 3. Fits causal models to predict destination choices (pizza vs hotdog)
 # 4. Uses model comparison to find the best causal structure
 # 5. Visualizes the results and model predictions
 
+rm(list=ls())
+library(tidyverse)
 
-
-# ==============================================================================
-## Calculate Target Distributions
-# ==============================================================================
-  
-# Get the complete target distribution over all outcomes: 16 of 5, then lose first column
-td <- df |> 
-  group_by(Situation) |> 
-  summarise(p_short_pizza = mean(p_short_pizza, na.rm=T),
-  p_long_pizza = mean(p_long_pizza, na.rm=T),
-  p_short_hotdog = mean(p_short_hotdog, na.rm=T),
-  p_long_hotdog = mean(p_long_hotdog, na.rm=T)) |> 
-  data.frame()
-
-td <- td[,2:5] # 16 obs of 4
-
-# Calculate marginal probabilities for path and destination
-td_path <- (df |> 
-              group_by(Situation) |> 
-              summarise(p_long = mean(p_long, na.rm=T)))$p_long
-
-td_destination <- (df |> 
-                     group_by(Situation) |> 
-                     summarise(p_hotdog = mean(p_hotdog, na.rm=T)))$p_hotdog
+# Load target distributions for path and destination choices
+load('../Data/targetDist.rda') # td is the main one; also marginals td_path and td_destination 
 
 
 

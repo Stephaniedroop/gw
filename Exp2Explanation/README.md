@@ -1,6 +1,6 @@
 # Experiment 2: Explanation
 
-Behavioural experiment to collect free text explnations.
+Behavioural experiment to collect 1421 free text explnations.
 
 ## Summary
 

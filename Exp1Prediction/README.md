@@ -30,9 +30,10 @@ Scripts and data from behavioural experiment in 2023 to inform situation model: 
 Scripts to find and then plot best causal model of the behavioural experimental data. Saves model output and plots in the same folder.
 
 - `master.R`
-- `01findModel.R` - causal selection task by brute force minimising KL divergence.
-- `02tidyModel.R` - tidy and present the best fitting model.
-- `03graphs.R` - directed acyclic graph plots of the best fitting model.
+- `01targetDist.R` - clean and sumamrise participant Likert scale rating to obtain target distribution (mean and sd) per situation
+- `02findModel.R` - causal selection task by brute force minimising KL divergence.
+- `03tidyModel.R` - tidy and present the best fitting model.
+- `04graphs.R` - directed acyclic graph plots of the best fitting model.
 
 ## Interpretaion of KL divergence - a note for the model selection task
 

@@ -1,5 +1,5 @@
 ###############################################################################################
-############ Some initial plotting (non-dag) of the best-fitting causal model #############
+############ Some initial plotting of the distribuition of Likert scale ratings #############
 ###############################################################################################
 
 library(tidyverse)
