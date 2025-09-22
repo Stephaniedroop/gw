@@ -32,10 +32,10 @@ Scripts to find and then plot best causal model of the behavioural experimental 
 - `master.R`
 - `01targetDist.R` - clean and summarise participant Likert scale rating to obtain normalised target distribution (mean and sd) per situation
 - `02findModel.R` - causal selection task by brute force minimising KL divergence.
-- `03tidyModel.R` - tidy and present the best fitting model.
+- `03processModel.R` - tidy, preprocess and present the best fitting model. _Sadly not an actual process model, sorry scientists_
 - `04graphs.R` - directed acyclic graph plots of the best fitting model.
 
-## Interpretaion of KL divergence - a note for the model selection task
+## Interpretation of KL divergence - a note for the model selection task
 
 A note on KL-div:
 

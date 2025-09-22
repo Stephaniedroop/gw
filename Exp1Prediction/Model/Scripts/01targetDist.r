@@ -93,3 +93,34 @@ td_destination <- (df |>
 
 # Save target distributions for later modelling
 save(td, td_sd, td_combined, td_path, td_destination, file = '../Data/targetDist.Rda')
+
+
+
+##########################
+##### Congruency ########
+
+# Congruency is how well the action fits or is aligned with the starting conditions
+# E.g., if you see pizza, and you are lazy and have no preference, then going short to pizza is congruent
+# If all actions have a 0.25 probability, then none is particularly congruent, or any more congruent than the others
+# If one action has a high probability, then it is congruent, and if it has low then it is incongruent
+# However deciding the cut-off numbers for congruent and incongruent is tricky: presumably as high as .4 or .5 should def be congruent
+
+print(max(td$p_long_hotdog)) # .30
+print(max(td$p_short_pizza)) # .48
+print(max(td$p_long_pizza)) # .26
+print(max(td$p_short_hotdog)) # .52
+
+print(min(td$p_long_hotdog)) # .11
+print(min(td$p_short_pizza)) # .18
+print(min(td$p_long_pizza)) # .10
+print(min(td$p_short_hotdog)) # .26
+
+# Because these are normalised, they are all rather wishy washy and often don't give a clear signal. 
+# Long pizza never seems very high and short hotdog is relatively highly congruent in every situation
+# (If the definition of congruency is just how likely their action was). Possibly park this for a bit
+# It doesn't make sense to give a hard 1:4 allocation for the 4 actions on each row. 
+# (That would mean an action could be most congruent (1) with a p_action of almost same as the one with (4).
+# But also don't want an absolute marker?
+
+
+
