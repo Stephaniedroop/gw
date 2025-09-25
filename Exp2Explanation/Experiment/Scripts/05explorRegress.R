@@ -5,10 +5,9 @@
 library(tidyverse)
 library(lme4)
 library(broom.mixed)
-rm(list = ls())
 
 # Load the combined data called ratedExplans
-load('ratedExplans.rda', verbose = T) # 2040 of 20
+load(here('Exp2Explanation', 'Experiment', 'Data', 'ratedExplans.rda')) # 2040 of 20
 
 # Now filter for each outcome, and do a separate binomial regression for each
 # First a function to run the glmer on an input and an output column

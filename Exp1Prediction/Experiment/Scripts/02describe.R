@@ -5,11 +5,11 @@
 library(tidyverse)
 library(ggplot2)
 library(ggbeeswarm)
-
-rm(list=ls())
+library(here)
 
 # Load df 1421 of 27. Each row is one participant's response to one of the 16 situations. Was 1440 but 19 had 0s so were removed.
-load('../Data/gwExp1data.Rda') 
+load(here('Exp1Prediction', 'Experiment', 'Data', 'gwExp1data.Rda'))
+
 
 # For any plotting we need a long version of participants' actual ratings on a 1:7 Likert scale - 5684
 forscatter_long <- df |>
@@ -28,7 +28,8 @@ situations <- unique(forscatter_long$Situation)
 
 # Plotting function
 plot_situation <- function(sit) {
-  ggplot(forscatter_long |> filter(Situation == sit), aes(x = Choice, y = Rating, color = Choice)) +
+  ggplot(forscatter_long |> 
+           filter(Situation == sit), aes(x = Choice, y = Rating, color = Choice)) +
     geom_jitter(width = 0.3, height = 0.1, size = 0.5, alpha = 0.6) +
     stat_summary(fun = mean, geom = "point", size = 3, shape = 16, color = 'black') +
     stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.2, color = 'black') +
@@ -41,11 +42,19 @@ plot_situation <- function(sit) {
 plots <- lapply(situations, plot_situation)
 
 # A loop to save each plot 
+# for(i in 1:length(plots)) {
+#   ggsave(paste0("../Figures/likert", situations[i]), ".pdf"), plots[[i]], width=6, height=4.5)
+# }
+
 for(i in 1:length(plots)) {
-  ggsave(paste0("../Figures/likert", gsub(" ", "_", situations[i]), ".pdf"), plots[[i]], width=6, height=4.5)
-  #print(plots[[i]])
+  filename <- here("Exp1Prediction", "Experiment", "Figures", paste0("likert", situations[i], ".pdf"))
+  ggsave(filename, plots[[i]], width=6, height=4.5)
 }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> cfbd179 (try now)
 # --------- ----- REJECT SECTION FOR APPENDIX, FACETED 2x8 PLOTS ----------------
 
 # Another option is to do the faceting here, to get 2x8 grid of plots. 
@@ -85,12 +94,15 @@ second_grid <- forscatter_long |>
   scale_x_discrete(guide = guide_axis(angle = 45))
 
 # Save the faceted plots
-ggsave("../Figures/likertFirst.pdf", first_grid, width = 12, height = 16) # Too small
-ggsave("../Figures/likertSecond.pdf", second_grid, width = 15, height = 20) # Better?
+ggsave(here("Exp1Prediction", "Experiment", "Figures", "likertFirst.pdf"), first_grid, width = 12, height = 16) # Too small
+ggsave(here("Exp1Prediction", "Experiment", "Figures", "likertSecond.pdf"), second_grid, width = 15, height = 20) # Better?
 
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> cfbd179 (try now)
 # -------------------- OTHER, BEESWARM AND STACK BARS --------------------
 
 # I reckon a faceted one is less good because you cant see the individual points. 
@@ -133,4 +145,3 @@ ggplot(forscatter_long, aes(x = Choice, y = Rating)) +
   labs(title = "Jittered Scatterplot Faceted by Situation",
        x = "X Axis Label",
        y = "Y Axis Label")
-       )

@@ -2,15 +2,12 @@
 ############ Summarise participant Likert scale ratings into a target distribution #############
 ###############################################################################################
 
-
-rm(list=ls())
-library(tidyverse)
-library(kable)
+libary(tidyverse)
 library(kableExtra)
-library(knitr)
+library(here)
 
 # Load df 1421 of 27. Each row is one participant's response to one of the 16 situations. Was 1440 but 19 had 0s so were removed.
-load('../../Experiment/Data/gwExp1data.Rda') 
+load(here('Exp1Prediction', 'Experiment', 'Data', 'gwExp1data.Rda'))
 
 # ==============================================================================
 # Obtaining target distributions
@@ -92,8 +89,12 @@ td_destination <- (df |>
                      summarise(p_hotdog = mean(p_hotdog, na.rm=T)))$p_hotdog
 
 # Save target distributions for later modelling
-save(td, td_sd, td_combined, td_path, td_destination, file = '../Data/targetDist.Rda')
-
+save(td, 
+     td_sd, 
+     td_combined, 
+     td_path, 
+     td_destination, 
+     file = here('Exp1Prediction', 'Model', 'Data', 'targetDist.rda'))
 
 
 ##########################

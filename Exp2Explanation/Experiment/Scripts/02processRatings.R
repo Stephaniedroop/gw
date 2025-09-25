@@ -3,13 +3,12 @@
 
 # This script standardises rater data, names it shortened categories and replaces all numbers with 1s
 
-rm(list = ls())
 library(tidyverse) # for select - if packages become a hassle let's do it another way
-
+library(here)
 
 #---------- Read in data and get it to standard numerical form ------------------
-idat <- read.csv('../Data/coder1.csv', na.strings=c(""," ","NA")) 
-vdat <-  read.csv('../Data/coder2.csv', na.strings=c(""," ","NA")) # REPLACE CSV WITH WHAT YOU NEED
+idat <- read.csv(here('Exp2Explanation', 'Experiment', 'Data', 'coder1.csv'), na.strings = c("", " ", "NA"))
+vdat <- read.csv(here('Exp2Explanation', 'Experiment', 'Data', 'coder2.csv'), na.strings = c("", " ", "NA")) 
 
 # vdat cut off last two columns; idat merge last two to be same as v's third last one 'Unclear'
 # Q: the merging script puts Unclear any where the raters disagree. 
@@ -52,6 +51,6 @@ vdat2[vdat==2] <- 1
 vdat2[vdat==3] <- 1
 vdat2[vdat==4] <- 1
 
-save(idat, idat2, vdat, vdat2, cats, file="../Data/ratings.Rda")
+save(idat, idat2, vdat, vdat2, cats, file = here('Exp2Explanation', 'Experiment', 'Data', 'ratings.Rda'))
 
 # Then go to mergeRatings.R to merge them

@@ -3,10 +3,10 @@
 
 # Previously this project was called 'ug data rerun' so that name crops up sometimes
 library(tidyverse)
-rm(list = ls())
+library(here)
 
 # This is the data 1.5MB saved directly from testable. Also exists in wide format
-data <- read.csv('rerundata.csv') # 2838 of 47
+data <- read.csv(here('Exp2Explanation', 'Experiment', 'Data', 'rerundata.csv')) # 2838 of 47
 
 # Get just the responses lines - 2064 - and filter for relevant info which is just subjectID, condition tag, and the reponse
 df <- data |>
@@ -42,7 +42,7 @@ df <- df |>
   separate(tag_digits, into = paste0("digit", 1:6), sep = 1:5) |>
   mutate(across(starts_with("digit"), as.numeric)) 
 
-save(df, duplicates, file = 'processedData.rda')
+save(df, duplicates, file = here('Exp2Explanation', 'Experiment', 'Data', 'processedData.rda'))
 
 
 # -------------- A separate analysis on demographics ---------------

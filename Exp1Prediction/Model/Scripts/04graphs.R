@@ -2,19 +2,15 @@
 #  Plotting best-fitting causal model
 ##########################################################################################
 
-
-rm(list = ls())
-library(tidyverse)
+library(here)
 library(ggdag)
 library(dagitty)
-library(igraph)
-library(RColorBrewer)
+
 
 # Load the target distribution and the model prediction for each of the 16 situations
-load("../../Experiment/Data/model.Rda")  # Actually this is not saved yet; it will be but for now use 
+load(here('Exp1Prediction', 'Model', 'Data', 'model.Rda'))  # Actually this is not saved yet; it will be but for now use 
 
-df <- read.csv("../Data/model.csv")  # 16 of 6
-
+#df <- read.csv("../Data/model.csv")  # 16 of 6
 
 # Got best_path manually just now: check the output from the model fitting later
 # The heuristic is that everything that is 1 in best_path has an edge between it: 
@@ -24,6 +20,9 @@ df <- read.csv("../Data/model.csv")  # 16 of 6
 
 best_path <- c(0, 0, 1, 0, 0, 1, 0, 0, 0, 0)  
 state_names <- c("P", "K", "C", "S", "PK", "PC", "PS", "KC", "KS", "CS")
+
+# TO DO destination
+
 
 # A function to get the causal formulas to send for dagify 
 # @param causevector A vector of 0s and 1s indicating which variables are included in the best fitting model
@@ -56,13 +55,15 @@ get_formulas <- function(causevector, state_names) {
 }
 
 # Test the function get_formulas
-formula <- get_formulas(best_path, state_names)
-print(formula)  # "Path ~ C + PC + Cu + PCu" and "PC ~ C"
+formulaP <- get_formulas(best_path, state_names)
+print(formulaP)  # "Path ~ C + PC + Cu + PCu" and "PC ~ C"
 
 # It returns a list of character strings, not actual formulas, so turn it to formulas
-formula_list <- lapply(formula, as.formula)
+formula_listP <- lapply(formulaP, as.formula)
 
 #------------ Using dagify, ggdag and dagitty -----------------
+
+# PATH 
 
 dag <- do.call(dagify, formula_list)
 # Now analyse or plot this with ggdag or dagitty
@@ -101,3 +102,12 @@ tidy_dag <- tidy_dagitty(dag)
 ggdag(tidy_dag) + remove_axes()
 
 # It now looked ok enough to save for now. Still need to do the destination one
+
+# DESTINATION 
+
+
+
+
+# SAVE PLOTS
+
+

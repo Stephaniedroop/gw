@@ -2,19 +2,19 @@
 ############ Tidy best-fitting causal model and export for plotting #############
 ###############################################################################################
 
-library(tidyverse)
-rm(list=ls())
+library(here)
+source(here('Exp1Prediction', 'Model', 'Scripts', 'modelUtils.R'))
 
-
-# Load fitted models from `01findModel.R`: 2 dfs of 59049 rows of 13 vars each, one for path and one for destination
-load('../Data/fitted.rdata', verbose = 5)
+# Load fitted models from `01findModel.R`: 2 dfs of 59049 rows of 13 vars each: path and destination
+load(here('Exp1Prediction', 'Model', 'Data', 'fitted.rdata'))
 
 # Count number of edges in each structure
 fitted_path_mods$n_edge <- rowSums(structures!=0)
 fitted_destination_mods$n_edge <- rowSums(structures!=0)
 
 # Penalise complexity (number of edges) to avoid overfitting
-complexity_penalisation <- 0.002 # This was picked arbitarily: TO DO  justify by plotting how stable it is at different vals of complexity? TO DO free parameter hand fit.
+complexity_penalisation <- 0.002 # This was picked arbitrarily: 
+#TO DO  justify by plotting how stable it is at different vals of complexity? TO DO free parameter hand fit.
 
 # Find which model has the lowest KL divergence - that's the one we want!
 which.min(fitted_path_mods$kl) # 31717 for first td but redone as 32204
@@ -60,12 +60,17 @@ fitted_destination_params <- list(s = c(P = tmp$P,
                                   br = tmp$br,
                                   tau = tmp$tau)
 
-
+# Call function 1 from `modelUtils` file 
 mpp <- get_mod_pred(structures[bpix,], fitted_path_params)
 mpd <- get_mod_pred(structures[bdix,], fitted_destination_params)
 
-df.m <- data.frame(situation = df$SituationVerbose[1:16], td_path = td_path, td_destination = td_destination, mp_path = mpp, mp_destination = mpd)
+df.m <- data.frame(situation = df$SituationVerbose[1:16], 
+                   td_path = td_path, 
+                   td_destination = td_destination, 
+                   mp_path = mpp, 
+                   mp_destination = mpd)
 
-save(df.m, file = '../Data/model.rda') # Run again once we're happy. Also add in best_path 
-#write.csv(df.m, 'model.csv') # 16 obs of 5 vars
 
+# Results in 2 dfs, each of 59049 obs of 13 vars
+save(df.m, 
+     file = here('Exp1Prediction', 'Model', 'Data', 'model.rda'))

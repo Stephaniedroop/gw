@@ -6,10 +6,8 @@
 library(stringi) 
 library(tidyverse)
 
-rm(list = ls())
-
 # Read in data downloaded as long from Testable
-data <- read.csv("../Data/dataJan23.csv") # 1456 obs of 41 vars
+data <- read.csv(here("Exp1Prediction", "Experiment", "Data", "dataJan23.csv")) # 1456 obs of 41 vars
 
 # Choose only active rows that have a participant code
 data <-  data |> 
@@ -24,7 +22,10 @@ data$flipped2 <- data$flipped
 
 # Split out the response column and remove delimiter |
 # These names are needed due to the different starting points of the agents, different food was visible
-data <- separate(data = data, col = flipped2, into = c("short_inv", "long_inv", "short_vis", "long_vis"), sep = "\\|")
+data <- separate(data = data, 
+                 col = flipped2, 
+                 into = c("short_inv", "long_inv", "short_vis", "long_vis"), 
+                 sep = "\\|")
 
 # The convention of eg. 'short path to visible food' was used for this part of the project
 data$short_vis <- as.numeric(data$short_vis) 
@@ -103,4 +104,4 @@ df <- df |>
 
 
 # Save the df as an .Rda 
-save(df, file = '../Data/gwExp1data.Rda')
+save(df, file = here('Exp1Prediction', 'Experiment', 'Data', 'gwExp1data.Rda'))

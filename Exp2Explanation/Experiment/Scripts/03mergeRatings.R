@@ -6,11 +6,11 @@
 
 # Prelims
 #library(tidyverse)
-rm(list = ls())
+library(here)
 
 
 # Read in data (processed in `processRatings.R`)
-load('../Data/ratings.rda', verbose = T) # loads idat and vdat, with ratings of >1, and idat2 and vdat2, with all digits 1
+load(here('Exp2Explanation', 'Experiment', 'Data', 'ratings.rda')) # loads idat and vdat, with ratings of >1, and idat2 and vdat2, with all digits 1
 
 # Now to actually merge and get a merged set for use
 nrat <- nrow(idat)
