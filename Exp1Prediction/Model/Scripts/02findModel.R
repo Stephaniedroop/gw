@@ -87,8 +87,8 @@ rownames(ix) <- NULL
 # ==============================================================================
 
 # Test model fitting functionality and parameter transformations
-wrapper(par =  rep(.5,12), struct = unlist(structures[10000,]), td = cbind(1-td_path, td_path))
-wrapper(par =  rep(.5,12), struct = unlist(structures[10000,]), td = cbind(1-td_destination, td_destination))
+wrapper(par =  rep(.5,12), struct = unlist(structures[10000,]), td = cbind(1-td_path, td_path)) # .88
+wrapper(par =  rep(.5,12), struct = unlist(structures[10000,]), td = cbind(1-td_destination, td_destination)) # 1.08
 
 out <- optim(wrapper, par = rep(.5,12), struct = unlist(structures[5,]), td = cbind(1-td_path, td_path))
 out 
@@ -96,16 +96,9 @@ s <- 58941
 out <- optim(wrapper, par = rep(.5,12), struct=unlist(structures[s,]), td = cbind(1-td_destination, td_destination))
 out 
 
-# Don't need this cos already have a function to do it
-
-  
-# tmp <- c(1/(1+exp(-out$par[1:11])),
-#        exp(out$par[12]))
-# tmp
-
 transform_params(par = out$par)
 wrapper(par =  out$par, struct=unlist(structures[5,]), td = cbind(1-td_path, td_path))
-
+# TO DO - test and understand this wrapper better
 
 # Now actually do it: set up empty place to put results
 n_structs <- nrow(structures)
@@ -116,7 +109,7 @@ fitted_destination_mods <- matrix(NA, n_structs, 13)
 # Currently takes a few hours so set up progress bar
 pb <- txtProgressBar(min = 0, max = n_structs, style = 3)
 
-# Calls function 4
+# Calls function 4 which calls 2 which calls 1
 for (s in 1:n_structs) {
   fitted_path_mods[s, ] <- fit_structure(s, cbind(1 - td_path, td_path))
   fitted_destination_mods[s, ] <- fit_structure(s, cbind(1 - td_destination, td_destination))

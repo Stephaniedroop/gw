@@ -2,7 +2,7 @@
 ############ Summarise participant Likert scale ratings into a target distribution #############
 ###############################################################################################
 
-libary(tidyverse)
+library(tidyverse)
 library(kableExtra)
 library(here)
 
