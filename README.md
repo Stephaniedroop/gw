@@ -2,7 +2,7 @@
 
 A long-standing project forming chapter 2 of my thesis.
 
-In much exisiting research on how people explain outcomes and reason about causes, the outcomes do naturally follow from the observed causes. But in real life things are often not so coherent. I wanted to study how people explain outcomes that don't obviously fit what they have seen.
+In much existing research on how people explain outcomes and reason about causes, the outcomes do naturally follow from the observed causes. But in real life things are often not so coherent. I wanted to study how people explain outcomes that don't obviously fit what they have seen.
 
 The general universe the studies take place in is a `gridworld` where characters/avatars/agents move around a stylised boxy urban environment to get to various food trucks, where they stop to eat. Everything is a binary variable: the agents start either in view of pizza or hotdog, they go to pizza or hotdog, and they go directly or a roundabout way. We also know various biographical details about the agents: they either know the area or they don't, they either like hotdogs or they don't, they are either sporty or lazy.
 

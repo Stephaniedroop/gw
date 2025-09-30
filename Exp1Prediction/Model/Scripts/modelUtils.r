@@ -2,6 +2,57 @@
 # Model Prediction Functions  
 # ==============================================================================
 
+# --------- 0. Static vars ---------
+# First create indexing grid for all possible situations - 16 obs of 4
+ix <- expand.grid(S = 0:1, 
+                  C = 0:1,
+                  K = 0:1,
+                  P = 0:1)
+
+# Keep it in same order as rest of code
+ix <- ix[, c("P", "K", "C", "S")]
+rownames(ix) <- NULL
+
+# Add interaction columns
+state_names <- c("P", "K", "C", "S", "PK", "PC", "PS", "KC", "KS", "CS")
+
+# ----------- Define model structures and initial parameters -------------
+# This section creates all possible causal structures (3^10 combinations)
+# and sets up initial parameters for model fitting
+
+# Define all possible causal structures
+#Each variable can be:
+#  1: positive influence
+#  0: no influence
+# -1: negative influence
+
+# 59049 obs of 10 vars (3^10)
+structures <- expand.grid(P = -1:1,
+                          K = -1:1,
+                          C = -1:1,
+                          S = -1:1, 
+                          PK = -1:1,
+                          PC = -1:1,
+                          PS = -1:1,
+                          KC = -1:1,
+                          KS = -1:1,
+                          CS = -1:1)
+
+init_full_par <- list(s = c(P = .5,
+                            K = .5,
+                            C = .5,
+                            S = .5,
+                            PK = .5,
+                            PC = .5,
+                            PS = .5,
+                            KC = .5,
+                            KS = .5,
+                            CS = .5),
+                      br = .5, # Base rate
+                      tau = 1
+)
+
+
 
 #--- 1. Function to predict probabilities for outcomes given a causal structure and parameters -----
 
@@ -32,14 +83,14 @@ get_mod_pred <- function(struct, par) {
   nandnot_idx <- which(struct == -1)
   one_minus_s <- 1 - par$s
   
-  # Vectorized calculations
+  # Calculations
   p <- sapply(1:nrow(state_mat), function(i) {
     state <- state_mat[i, ]
     nor <- c(1 - par$br, (one_minus_s[nor_idx] ^ state[nor_idx]))
     nandnot <- (one_minus_s[nandnot_idx] ^ state[nandnot_idx])
-    (1 - prod(nor)) * prod(nandnot)
+    (1 - prod(nor)) * prod(nandnot) # the first part from prod(nor) is the base rate taken forwards to the preventative. we assume gen first then prevent after 
   })
-  
+ 
   # Softmax
   out <- data.frame(p0 = 1 - p, p1 = p)
   out <- exp(as.matrix(out) / par$tau)
