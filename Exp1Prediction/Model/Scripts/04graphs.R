@@ -9,11 +9,11 @@ library(ggplot2)
 library(ggdag)
 
 # Load the target distribution and the model prediction for each of the 16 situations
-load(here('Exp1Prediction', 'Model', 'Data', 'model.Rda'))  # Actually this is not saved yet; it will be but for now use 
+load(here('Exp1Prediction', 'Model', 'Data', 'model.Rda'))  
 
 # the dependencies between path and length are too subtle to bother with, so we are going to model path x destination
 # and this fits our pattern well enough
-# the next task is to compute cesm for our situations of interest from the 
+# the next task is to compute cesm for our situations of interest!
 
 
 # A function to get the causal formulas to send for dagify 
@@ -49,35 +49,37 @@ get_formulas <- function(causevector) {
   }
   # Create corresponding unobserved cause variables
   #vars_u <- paste0(vars, "u")
-  
-  # Create terms with appropriate signs (only if we need the actual equation for generative v preventative - but we don't)
-  # var_terms <- paste(ifelse(signs == 1, "+", "-"), vars)
-  # var_u_terms <- paste(ifelse(signs == 1, "+", "-"), vars_u)
-  
-  #all_terms <- c(var_terms, var_u_terms)
-  #varsforform <- paste(all_terms, collapse = " ")
 
   all_terms <- c(vars, paste0(vars, "u"))
   varsforform <- paste(all_terms, collapse = " + ")
   
-  # Change this manually for now
-  formula1 <- paste("Destination ~", varsforform)
+  # Use substitute to access the argument name used in the function call: Path or Destination. deparse returns the string otherwise substitute would return the object
+  obj_name <- deparse(substitute(causevector))
+  # Split by underscore and get the second part ('[[1]]' is on the face of it not used but is equivalent to unlist, needed because output is a list)
+  part2 <- strsplit(obj_name, "_")[[1]][2]
+  # Capitalize the extracted part by taking first letter to upper and rest to lower
+  extractedname <- paste0(toupper(substr(part2, 1, 1)), tolower(substr(part2, 2, nchar(part2))))
+  
+  # OR if want to use package stringr - if we use elsewhere then can use here too
+  #str_to_title("path")
+  
+  formula1 <- paste(extractedname, "~", varsforform)
+
   formulas <- c(list(formula1), formulas)
   return(formulas)
 }
 
 
-# Run the function - remember to change manually between path and destination for now
 # Path
 formulaP <- get_formulas(best_path)
 print(formulaP) 
-# Destination
-formulaD <- get_formulas(best_destination)
-print(formulaD)  
+# Food - renamed from Destination
+formulaF <- get_formulas(best_food)
+print(formulaF)  
 
 # It returns a list of character strings, not actual formulas, so turn it to formulas
 formula_listP <- lapply(formulaP, as.formula)
-formula_listD <- lapply(formulaD, as.formula)
+formula_listF <- lapply(formulaF, as.formula)
 
 
 #------------- PATH -------------------
@@ -88,114 +90,136 @@ coordinates(dagP) <- list(
   y = c(K = 1.75, Ku = 1.5, KS = 1.75, KSu = 1.5, Path = 0.5)
 )
 tidy_dagP <- tidy_dagitty(dagP)
-ggdag(tidy_dagP) #+ remove_axes() # try with axes to get the coords first then remove
+#ggdag(tidy_dagP) #+ remove_axes() # try with axes to get the coords first then remove
 
 
 # ------ Color the edges -------
 
 # ------ Test for path ------------
 # Create a mapping of edge colors based on signs
-edge_colors <- data.frame(
+Pedge_colors <- data.frame(
   name = names(best_path)[best_path != 0],
   sign = best_path[best_path != 0]
 )
 # Add the corresponding 'u' variables
-edge_colors_u <- data.frame(
-  name = paste0(edge_colors$name, "u"),
-  sign = edge_colors$sign
+Pedge_colors_u <- data.frame(
+  name = paste0(Pedge_colors$name, "u"),
+  sign = Pedge_colors$sign
 )
 
-all_edge_colors <- rbind(edge_colors, edge_colors_u)
+Pall_edge_colors <- rbind(Pedge_colors, Pedge_colors_u)
 
 # Now map these colors to the edges in tidy_dagP - use two $ to get into the nested layers
 tidy_dagP$data$edge_color <- 
   ifelse(tidy_dagP$data$name %in% 
-           all_edge_colors$name[all_edge_colors$sign == 1], "green",
+           Pall_edge_colors$name[Pall_edge_colors$sign == 1], "limegreen",
                                     ifelse(tidy_dagP$data$name %in% 
-                                             all_edge_colors$name[all_edge_colors$sign == -1], "red", "black"))
+                                             Pall_edge_colors$name[Pall_edge_colors$sign == -1], "red", "black"))
 
-# tidydagP was already defined above, just adding color to the edges now
-ggdag(tidy_dagP) + 
-  geom_dag_edges(aes(edge_color = edge_color)) +
-  scale_color_identity()
+#Other green options include: "darkgreen", "green", "forestgreen", "seagreen", "mediumseagreen", "springgreen", "limegreen", "chartreuse".
+
+# I wanted to change node colors (darkgrey for observed, lightgrey for unobserved) but couldn't get it to work
+#tidy_dagP$data$node_color <- ifelse(grepl("u$", tidy_dagP$data$name), "lightgrey", "darkgrey")
 
 
 #------- Initial stab at annotate edges with parameters -------------
 # For any node ending in '-u' attach the corresponding param of the letters before 'u'
 
 # Create a mapping from node names to parameters
-param_mapping <- setNames(best_path_params[names(best_path)], names(best_path))
+#param_mapping <- setNames(best_path_params[names(best_path)], names(best_path))
+
+
+
+# Also use the parameter values to set edge widths, so stronger parameters have thicker edges
+Pparam_mapping <- setNames(best_path_params[names(best_path)], names(best_path))
+Pparam_mapping_u <- setNames(Pparam_mapping, paste0(names(Pparam_mapping), "u"))
+Pall_param_mapping <- c(Pparam_mapping, Pparam_mapping_u)
+
+tidy_dagP$data$edge_width <- ifelse(tidy_dagP$data$name %in% names(Pall_param_mapping),
+                                    abs(Pall_param_mapping[tidy_dagP$data$name]), 0.5)
+tidy_dagP$data$edge_width <- scales::rescale(tidy_dagP$data$edge_width, to = c(0.5, 4))
 
 # Add parameter labels to tidy_dagP data
 tidy_dagP$data$param_label <- ifelse(
   grepl("u$", tidy_dagP$data$name),
-  as.character(round(param_mapping[sub("u$", "", tidy_dagP$data$name)], 3)),
+  sub("^(-?)0\\.", ".", sprintf("%.2g", Pparam_mapping[sub("u$", "", tidy_dagP$data$name)])),
   ""
 )
 
 dp <- ggdag(tidy_dagP) + 
-  geom_dag_edges(aes(edge_color = edge_color)) +
+  geom_dag_edges(aes(edge_color = edge_color, edge_width = edge_width)) +
   scale_color_identity() +
-  geom_dag_text(aes(label = param_label), nudge_y = -0.5, color = "blue", size = 3)
+  geom_dag_text(aes(label = param_label), nudge_y = -0.2, color = "blue", size = 5) +
+  theme_void()
+
+dp
 
 
-#-------------  DESTINATION ------------------
-dagD <- do.call(dagify, formula_listD)
-# Set coordinates immediately after creating `dagD`
-coordinates(dagD) <- list(
-    x = c(P = -1.5, Pu = -1.5, PS = -0.5, PSu = 0.25, KS = 1, KSu = 1.25, CS = 2, CSu = 2.25, Destination = 0.5),
-    y = c(P = 1.5, Pu = 1, PS = 2, PSu = 1.75, KS = 1.5, KSu = 1.25, CS = 1.5, CSu = 1.25, Destination = 0.5)
+#-------------  FOOD ------------------
+dagF <- do.call(dagify, formula_listF)
+# Set coordinates immediately after creating `dagF`
+coordinates(dagF) <- list(
+    x = c(P = -1.5, Pu = -1.5, PS = -0.5, PSu = 0.25, KS = 1, KSu = 1.25, CS = 2, CSu = 2.25, Food = 0.5),
+    y = c(P = 1.5, Pu = 1, PS = 2, PSu = 1.75, KS = 1.5, KSu = 1.25, CS = 1.5, CSu = 1.25, Food = 0.5)
 )
-tidy_dagD <- tidy_dagitty(dagD)
-ggdag(tidy_dagD)
+tidy_dagF <- tidy_dagitty(dagF)
 
 # Create a mapping of edge colors based on signs
-edge_colors <- data.frame(
-  name = names(best_destination)[best_destination != 0],
-  sign = best_destination[best_destination != 0]
+Fedge_colors <- data.frame(
+  name = names(best_food)[best_food != 0],
+  sign = best_food[best_food != 0]
 )
 # Add the corresponding 'u' variables
-edge_colors_u <- data.frame(
-  name = paste0(edge_colors$name, "u"),
-  sign = edge_colors$sign
+Fedge_colors_u <- data.frame(
+  name = paste0(Fedge_colors$name, "u"),
+  sign = Fedge_colors$sign
 )
 
-all_edge_colors <- rbind(edge_colors, edge_colors_u)
+Fall_edge_colors <- rbind(Fedge_colors, Fedge_colors_u)
 
-# Now map these colors to the edges in tidy_dagP - use two $ to get into the nested layers
-tidy_dagD$data$edge_color <- 
-  ifelse(tidy_dagD$data$name %in% 
-           all_edge_colors$name[all_edge_colors$sign == 1], "green",
-         ifelse(tidy_dagD$data$name %in% 
-                  all_edge_colors$name[all_edge_colors$sign == -1], "red", "black"))
-
-# tidydagP was already defined above, just adding color to the edges now
-ggdag(tidy_dagD) + 
-  geom_dag_edges(aes(edge_color = edge_color)) +
-  scale_color_identity()
+# Now map these colors to the edges in tidy_dagF - use two $ to get into the nested layers
+tidy_dagF$data$edge_color <- 
+  ifelse(tidy_dagF$data$name %in% 
+           Fall_edge_colors$name[Fall_edge_colors$sign == 1], "limegreen",
+         ifelse(tidy_dagF$data$name %in% 
+                  Fall_edge_colors$name[Fall_edge_colors$sign == -1], "red", "black"))
 
 
 #------- Initial stab at annotate edges with parameters -------------
 # For any node ending in '-u' attach the corresponding param of the letters before 'u'
 
-# Create a mapping from node names to parameters
-param_mapping <- setNames(best_destination_params[names(best_destination)], names(best_destination))
+# Also use the parameter values to set edge widths, so stronger parameters have thicker edges
+Fparam_mapping <- setNames(best_food_params[names(best_food)], names(best_food))
+Fparam_mapping_u <- setNames(Fparam_mapping, paste0(names(Fparam_mapping), "u"))
+Fall_param_mapping <- c(Fparam_mapping, Fparam_mapping_u)
 
-# Add parameter labels to tidy_dagP data
-tidy_dagD$data$param_label <- ifelse(
-  grepl("u$", tidy_dagD$data$name),
-  as.character(round(param_mapping[sub("u$", "", tidy_dagD$data$name)], 3)),
+tidy_dagF$data$edge_width <- ifelse(tidy_dagF$data$name %in% names(Fall_param_mapping),
+                                    abs(Fall_param_mapping[tidy_dagF$data$name]), 0.5)
+
+tidy_dagF$data$edge_width <- scales::rescale(tidy_dagF$data$edge_width, to = c(0.5, 4))
+
+
+
+# Add parameter labels to tidy_dagD data, and make it the observed param's label added to the unobserved var, and remove trailing 0
+tidy_dagF$data$param_label <- ifelse(
+  grepl("u$", tidy_dagF$data$name),
+  sub("^(-?)0\\.", ".", sprintf("%.2g", Fparam_mapping[sub("u$", "", tidy_dagF$data$name)])),
   ""
 )
 
-dd <- ggdag(tidy_dagD) + 
-  geom_dag_edges(aes(edge_color = edge_color)) +
+
+fd <- ggdag(tidy_dagF) + 
+  geom_dag_edges(aes(edge_color = edge_color, edge_width = edge_width)) +
   scale_color_identity() +
-  geom_dag_text(aes(label = param_label), nudge_y = -0.5, color = "blue", size = 3)
+  geom_dag_text(aes(label = param_label), nudge_x = 0.2, nudge_y = 0.2, color = "blue", size = 5) +
+  theme_void()
+
+fd
+
 
 # SAVE PLOTS
-# save dd
-ggsave(here("Exp1Prediction", "Model", "Figures", "best_destination_model.pdf"), dd, width = 6, height = 4.5)
+# save fd
+ggsave(here("Exp1Prediction", "Model", "Figures", "best_food_model.pdf"), fd, width = 6, height = 4.5)
 # save dp
 ggsave(here("Exp1Prediction", "Model", "Figures", "best_path_model.pdf"), dp, width = 6, height = 4.5)
 
