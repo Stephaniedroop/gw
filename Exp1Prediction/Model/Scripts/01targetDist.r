@@ -89,7 +89,8 @@ td_destination <- (df |>
                      summarise(p_hotdog = mean(p_hotdog, na.rm=T)))$p_hotdog
 
 # A new var for later
-situations <- df$SituationVerbose[1:16]
+situationsVerbose <- df$SituationVerbose[1:16]
+situations <- as.factor(td_sd$Situation)
 
 # Save target distributions for later modelling
 save(td, 
@@ -97,6 +98,7 @@ save(td,
      td_combined, 
      td_path, 
      td_destination, 
+     situationsVerbose,
      situations,
      file = here('Exp1Prediction', 'Model', 'Data', 'targetDist.rda'))
 

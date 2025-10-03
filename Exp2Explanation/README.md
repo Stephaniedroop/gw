@@ -55,13 +55,7 @@ Then the scripts are more on the ratings, and merging them for later modelling:
 
 The masterscript runs scripts in the following order:
 
-- `01getPreds.R` 
+- `01getPs.R` - calculates the joint probability of each 2x2 outcome for each of the 16 situations, and hence pOutcome for each of the 64 worlds. Input: `df.m` from `03processModel.R` in Exp1. Output: `pChoice.rda`.
+- `02getPreds.R` 
 Let's just think about this! From collider we have functions that are not ready to use but can be adapted. 
-Also have v old scripts that had some logic but were inefficient. They can be adapted. They took hardcoded params from causal model 
-Let's find the equivalent and adapt.
 
-Old ones that might be helpful?
-
-- `ecesm_minimal.R` Script to implement Q&L's CESM. Takes `worlds.rdata` as input and calculates how much each outcome depends on each cause across simulated counterfactual worlds. This is a minimal version to see how the model works. Later version [tbd] saves predictions and optimises parameters.
-- `tbd` Script to fit the CESM to Exp2 behavioural data.
-- `Icard` script to implement other causal models eg. Icard 2017, PivotCritical, etc

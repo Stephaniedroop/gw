@@ -16,6 +16,18 @@ rownames(ix) <- NULL
 # Add interaction columns
 state_names <- c("P", "K", "C", "S", "PK", "PC", "PS", "KC", "KS", "CS")
 
+# Use the predefined ix
+states <- ix
+states$PK <- states$P * states$K
+states$PC <- states$P * states$C
+states$PS <- states$P * states$S
+states$KC <- states$K * states$C
+states$KS <- states$K * states$S
+states$CS <- states$C * states$S
+
+state_mat <- as.matrix(states[, state_names])
+
+
 # ----------- Define model structures and initial parameters -------------
 # This section creates all possible causal structures (3^10 combinations)
 # and sets up initial parameters for model fitting
@@ -67,17 +79,6 @@ init_full_par <- list(s = c(P = .5,
 # @return Vector of probabilities for each situation
 
 get_mod_pred <- function(struct, par) {
-  # Use the predefined ix (created outside)
-  states <- ix
-  states$PK <- states$P * states$K
-  states$PC <- states$P * states$C
-  states$PS <- states$P * states$S
-  states$KC <- states$K * states$C
-  states$KS <- states$K * states$S
-  states$CS <- states$C * states$S
-  
-  state_mat <- as.matrix(states[, state_names])
-  
   # Precompute indices
   nor_idx <- which(struct == 1)
   nandnot_idx <- which(struct == -1)

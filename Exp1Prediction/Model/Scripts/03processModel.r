@@ -10,7 +10,7 @@ load(here('Exp1Prediction', 'Model', 'Data', 'fitted.rda'))
 load(here('Exp1Prediction', 'Model', 'Data', 'targetDist.rda')) # from before - still need those
 
 # Sometimes use this before we can get it out of the long brute force causal model selection
-situations <- as.factor(td_sd$Situation)
+#situations <- as.factor(td_sd$Situation)
 
 
 # ---------- Rename destination to food -------------
@@ -105,16 +105,28 @@ fitted_food_params <- list(s = c(P = tmp$P,
                                   br = tmp$br,
                                   tau = tmp$tau)
 
-# Call function 1 from `modelUtils` file 
+# Call function 1 from `modelUtils` file. mpp and mpf are the marginal probabilities for pathLong and foodHotdog 
 mpp <- get_mod_pred(structures[bpix,], fitted_path_params)
 mpf <- get_mod_pred(structures[bfix,], fitted_food_params)
 
-df.m <- data.frame(situation = situations, 
+df.m <- data.frame(situationVerbose = situationsVerbose,
+                   situation = situations, 
                    td_path = td_path, 
                    td_food = td_destination, 
                    mp_path = mpp, 
                    mp_food = mpf)
 
+# Get the 'active' edges from best_path: the ones !=0 and their corresponding parameters
+active_path_edges <- names(best_path)[best_path != 0]
+active_path_params <- best_path_params[active_path_edges]
+# Wrap these together into a named vector
+active_path <- setNames(active_path_params, active_path_edges)
+
+# And the same for food
+active_food_edges <- names(best_food)[best_food != 0]
+active_food_params <- best_food_params[active_food_edges]
+# Wrap these together into a named vector
+active_food <- setNames(active_food_params, active_food_edges)
 
 # Results in 2 dfs, each of 59049 obs of 13 vars
 save(df.m, 
@@ -122,6 +134,8 @@ save(df.m,
      best_path_params,
      best_food,
      best_food_params,
+     active_food,
+     active_path,
      mpp,
      mpf,
      file = here('Exp1Prediction', 'Model', 'Data', 'model.rda'))
