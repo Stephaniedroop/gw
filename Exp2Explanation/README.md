@@ -23,7 +23,7 @@ Data collected in 2024.
 
 ## Files / folders
 
-#### Experiment
+## Experiment
 
 ### Scripts
 
@@ -39,22 +39,28 @@ Then the scripts are more on the ratings, and merging them for later modelling:
 - `03mergeRatings.R` - script to merge the ratings from the 2 raters and keep an intersection. Input `ratings.Rda`; output `ratingInteresect.Rda`.
 - `04mergeData.R` - script to merge the intersection of ratings back with the participant and condition details which was cleaned in script01. Input `processedData.rda`. Output: `ratedExplans.rda`.
 
-# Other
+#### Other
 
 - `05exploreRegress.R` - go back to - a series of individual regressions to see if any of the cause categories can predict the ratings they get
 - `gw_irr.R` - script to calculate inter-rater reliability for the Gridworld task. This is a work in progress, and not yet working out of the box.
 
 (Some pilot data in the gwnotes folder - not sure whether to incorporate or just use my new ones)
 
-### OLD - to update
 
-All old:
+## Model
 
-- `pilot.csv` Experiment 2 behavioural data [just pilot for now; pending real].
-- `pilot_recoded_SD.csv` **For Neil Oct23 -- see column lesionAbove**
-- `gw_data.R` Data wrangling script for Experiment 2. probably old
+### Scripts
 
-#### Modelling
+- `master.R` - top level script to generate counterfactual worlds, implement the causal model from Exp1, and generate predictions for Exp2. Saves predictions for each cause-outcome pair in `cesm_predictions.rda` for later modelling.
+
+The masterscript runs scripts in the following order:
+
+- `01getPreds.R` 
+Let's just think about this! From collider we have functions that are not ready to use but can be adapted. 
+Also have v old scripts that had some logic but were inefficient. They can be adapted. They took hardcoded params from causal model 
+Let's find the equivalent and adapt.
+
+Old ones that might be helpful?
 
 - `ecesm_minimal.R` Script to implement Q&L's CESM. Takes `worlds.rdata` as input and calculates how much each outcome depends on each cause across simulated counterfactual worlds. This is a minimal version to see how the model works. Later version [tbd] saves predictions and optimises parameters.
 - `tbd` Script to fit the CESM to Exp2 behavioural data.

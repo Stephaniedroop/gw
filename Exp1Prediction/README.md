@@ -33,4 +33,6 @@ Scripts to find and then plot best causal model of the behavioural experimental 
 - `01targetDist.R` - clean and summarise participant Likert scale rating to obtain normalised target distribution (mean and sd) per situation. Input `gwExp1data.Rda` from Experiment folder. Output `targetDist.rda`.
 - `02findModel.R` - causal selection task by brute force minimising KL divergence. Input `targetDist.rda`. Output `fitted.rda`. 
 - `03processModel.R` - tidy, preprocess and present the best fitting model. Input `fitted.rda`. Output `model.rda`.
-- `04graphs.R` - directed acyclic graph plots of the best fitting model. Input `model.rda`. Output `modelGraphs.pdf`. \\ TO DO
+- `04graphs.R` - directed acyclic graph plots of the best fitting model. Input `model.rda`. Output `best_food_model.pdf` and `best_path_model.pdf`.
+
+After this the model-finding is complete and now go to the Model folder of Exp2Explanation to use the fitted model to generate predictions for Experiment 2.
