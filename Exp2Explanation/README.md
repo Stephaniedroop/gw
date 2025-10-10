@@ -6,6 +6,9 @@ Then: rating of free text responses for mention of causal variables.
 
 2040 free text explanations elicited from participants in a behavioural experiment on causal inference, where they had to explain the choice made by an agent in a simple graphic.
 
+Then: [maybe put in different repo?!]: modelling of these free text explanations with the modified cesm with information gain from Collider project.
+
+
 ## How to run
 
 Install R. If you keep the structure of these folders, set working directory to `Scripts` and run the masterscript to generate all artefacts fresh. OR: if you know which part you want, source that script and run it and use the data saved in `Data`.
@@ -55,7 +58,9 @@ Then the scripts are more on the ratings, and merging them for later modelling:
 
 The masterscript runs scripts in the following order:
 
-- `01getPs.R` - calculates the joint probability of each 2x2 outcome for each of the 16 situations, and hence pOutcome for each of the 64 worlds. Input: `df.m` from `03processModel.R` in Exp1. Output: `pChoice.rda`.
-- `02getPreds.R` 
-Let's just think about this! From collider we have functions that are not ready to use but can be adapted. 
+- `01getPs.R` - calculates the joint probability of each 2x2 outcome for each of the 16 situations, and hence pOutcome for each of the 64 worlds. 
+Input: `df.m` from `03processModel.R` in Exp1. Output: `pChoice.rda`.
+- `02getPosts` - gets posteriors of all combinations of unobserved variables
+- `03getPreds.R` . Let's just think about this! From collider we have functions that are not ready to use but can be adapted. Ditto ecesm from years ago
 
+# TO HERE Oct 10 2025... Now trying to run cesm on the data
