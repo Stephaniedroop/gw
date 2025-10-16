@@ -64,10 +64,10 @@ pChoice_food <- merge(pChoice_food, u_combos_food) # 512 obs of 10
 # -------- Test other way, only separately combine 64 composite pChoice with u_combos_path and u_combos_food -------------
 # Now we need to combine these with pChoice, so that for each situation we have all combinations of u-vars for both models
 # First combine pChoice with u_combos_path
-pChoice_path2 <- merge(pChoice, u_combos_path) # 256: 64 x 2^2, of 13 vars
+#pChoice_path2 <- merge(pChoice, u_combos_path) # 256: 64 x 2^2, of 13 vars
 
 # Separately combine pChoice with u_combos_food
-pChoice_food2 <- merge(pChoice, u_combos_food) # 1024: 64 x 2^4, of 15 vars because 4 model vars instead of path's two
+#pChoice_food2 <- merge(pChoice, u_combos_food) # 1024: 64 x 2^4, of 15 vars because 4 model vars instead of path's two
 
 # --------- Moving on -----------
 # Now attach the values from active_path and active_food to these dataframes, without replacing
@@ -129,43 +129,35 @@ pChoice_food$PrUn <- pChoice_food$PrUn * ifelse(pChoice_food$Food == "Pizza", pC
 # ------- That's the priors, now for posteriors -----------
 
 # There is not the same way of grouping by Effect as in collider
-
-# We need to group by the observed vars and the outcome var - Path or Food - then get posterior
-# PATH
+# Group by the observed vars and the outcome var - Path or Food - then get posterior
+# PATH - 128 obs of 15: 16 situations x 2 paths x 2^2 u-vars
 path_post <- pChoice_path |> 
   group_by(situation) |> 
   mutate(posterior = PrUn/sum(PrUn)) |>
   ungroup()
 
 # Check it sums to 1 in each situation 
-check_path <- path_post |> 
-  group_by(situation) |> 
-  summarise(total = sum(posterior))
+# check_path <- path_post |> 
+#   group_by(situation) |> 
+#   summarise(total = sum(posterior))
 
-# FOOD
+# FOOD - 512 obs of 21: 16 situations x 2 foods x 2^4 u-vars
 food_post <- pChoice_food |> 
   group_by(situation) |> 
   mutate(posterior = PrUn/sum(PrUn)) |>
   ungroup()
 
 # Check it sums to 1 in each situation
-check_food <- food_post |> 
-  group_by(situation) |> 
-  summarise(total = sum(posterior))
+# check_food <- food_post |> 
+#   group_by(situation) |> 
+#   summarise(total = sum(posterior))
 
 # Think now we can get the CESM values for these...?
 # save these dataframes for later
 save(path_post, food_post, file=here('Exp2Explanation', 'Model', 'Data', 'posteriors.rda'))
 
 
-# he other variables not in the causal model also need to be included with a value of 0.5
-# So we need to add columns for P, C, PC, S, PS, CS
-# with a value of 0.5 for each row
-# for (var in c("P", "C", "PC", "S", "PS", "CS")) {
-#   if (!(var %in% colnames(pChoice_path))) {
-#     pChoice_path[[var]] <- rep(0.5, nrow(pChoice_path))
-#   }
-# }
-# # But they need to add to 1 eventually. No - just the actual worlds
-# pChoice_path$Pr <- pChoice_path$Pr * apply(pChoice_path[, c("P", "C", "PC", "S", "PS", "CS")], 1, prod)
+#write.csv(path_post, 'path_post.csv', row.names=FALSE)
+#write.csv(food_post, 'food_post.csv', row.names=FALSE)
+
 
