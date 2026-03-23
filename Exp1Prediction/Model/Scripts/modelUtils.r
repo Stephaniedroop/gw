@@ -1,13 +1,10 @@
 # ==============================================================================
-# Model Prediction Functions  
+# Model Prediction Functions
 # ==============================================================================
 
 # --------- 0. Static vars ---------
 # First create indexing grid for all possible situations - 16 obs of 4
-ix <- expand.grid(S = 0:1, 
-                  C = 0:1,
-                  K = 0:1,
-                  P = 0:1)
+ix <- expand.grid(S = 0:1, C = 0:1, K = 0:1, P = 0:1)
 
 # Keep it in same order as rest of code
 ix <- ix[, c("P", "K", "C", "S")]
@@ -39,38 +36,42 @@ state_mat <- as.matrix(states[, state_names])
 # -1: negative influence
 
 # 59049 obs of 10 vars (3^10)
-structures <- expand.grid(P = -1:1,
-                          K = -1:1,
-                          C = -1:1,
-                          S = -1:1, 
-                          PK = -1:1,
-                          PC = -1:1,
-                          PS = -1:1,
-                          KC = -1:1,
-                          KS = -1:1,
-                          CS = -1:1)
-
-init_full_par <- list(s = c(P = .5,
-                            K = .5,
-                            C = .5,
-                            S = .5,
-                            PK = .5,
-                            PC = .5,
-                            PS = .5,
-                            KC = .5,
-                            KS = .5,
-                            CS = .5),
-                      br = .5, # Base rate
-                      tau = 1
+structures <- expand.grid(
+  P = -1:1,
+  K = -1:1,
+  C = -1:1,
+  S = -1:1,
+  PK = -1:1,
+  PC = -1:1,
+  PS = -1:1,
+  KC = -1:1,
+  KS = -1:1,
+  CS = -1:1
 )
 
+init_full_par <- list(
+  s = c(
+    P = .5,
+    K = .5,
+    C = .5,
+    S = .5,
+    PK = .5,
+    PC = .5,
+    PS = .5,
+    KC = .5,
+    KS = .5,
+    CS = .5
+  ),
+  br = .5, # Base rate
+  tau = 1
+)
 
 
 #--- 1. Function to predict probabilities for outcomes given a causal structure and parameters -----
 
 # The model uses a noisy-OR/noisy-AND-NOT combination:
 # - Positive influences combine via noisy-OR
-# - Negative influences combine via noisy-AND-NOT  
+# - Negative influences combine via noisy-AND-NOT
 # - These combine by NOISY-AND-NOT(NOISY-OR(positive_causes), preventative_causes)
 # - Final probability is transformed via softmax
 
@@ -83,15 +84,17 @@ get_mod_pred <- function(struct, par) {
   nor_idx <- which(struct == 1)
   nandnot_idx <- which(struct == -1)
   one_minus_s <- 1 - par$s
-  
+
   # Calculations
   p <- sapply(1:nrow(state_mat), function(i) {
     state <- state_mat[i, ]
-    nor <- c(1 - par$br, (one_minus_s[nor_idx] ^ state[nor_idx]))
-    nandnot <- (one_minus_s[nandnot_idx] ^ state[nandnot_idx])
-    (1 - prod(nor)) * prod(nandnot) # the first part from prod(nor) is the base rate taken forwards to the preventative. we assume gen first then prevent after 
+    nor <- c(1 - par$br, (one_minus_s[nor_idx]^state[nor_idx]))
+    nandnot <- (one_minus_s[nandnot_idx]^state[nandnot_idx])
+    (1 - prod(nor)) * prod(nandnot)
+    # the first part from prod(nor) is the base rate taken forwards to the preventative
+    # we assume gen first then prevent after
   })
- 
+
   # Softmax
   out <- data.frame(p0 = 1 - p, p1 = p)
   out <- exp(as.matrix(out) / par$tau)
@@ -103,27 +106,27 @@ get_mod_pred <- function(struct, par) {
 # Objective function wrapper for parameter optimization
 # Transforms unconstrained parameters, computes model predictions, and calculates KL divergence
 # @param par Unconstrained parameter vector (logit-transformed strengths + log tau)
-# @param struct Causal structure specification 
+# @param struct Causal structure specification
 # @param td Target distribution matrix (observed probabilities)
 # @return KL divergence between target and model distributions
 
 wrapper <- function(par, struct, td) {
   s_vals <- plogis(par[1:10])
   names(s_vals) <- state_names
-  
+
   br_val <- plogis(par[11])
   tau_val <- exp(par[12])
-  
+
   input_pars <- list(
     s = s_vals,
     br = br_val,
     tau = tau_val
   )
-  
+
   model_pred <- get_mod_pred(struct, input_pars)
   model_probs <- cbind(1 - model_pred, model_pred)
   kl_div <- sum(rowSums(td * log(td / model_probs)))
-  
+
   return(kl_div)
 }
 
@@ -131,7 +134,6 @@ wrapper <- function(par, struct, td) {
 transform_params <- function(par) {
   c(plogis(par[1:11]), exp(par[12]))
 }
-
 
 
 #----  4. Function to fit a specific causal structure to target distribution data -----

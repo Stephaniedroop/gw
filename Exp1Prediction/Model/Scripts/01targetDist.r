@@ -18,7 +18,7 @@ load(here('Exp1Prediction', 'Experiment', 'Data', 'gwExp1data.Rda'))
 #
 # Variables:
 # - P (Preference): Whether the person has a food preference (0=Absent, 1=Hotdog)
-# - K (Knowledge): Whether they know about the hotdog stand (0=No, 1=Yes)  
+# - K (Knowledge): Whether they know about the hotdog stand (0=No, 1=Yes)
 # - C (Character): Person's character type (0=Lazy, 1=Sporty)
 # - S (Start): What's visible at the start (0=See_pizza, 1=See_hotdog)
 #
@@ -32,38 +32,58 @@ load(here('Exp1Prediction', 'Experiment', 'Data', 'gwExp1data.Rda'))
 # ==============================================================================
 
 # Get the complete target distribution over all outcomes: 16 of 5, then lose first column
-td <- df |> 
-  group_by(Situation) |> 
-  summarise(p_short_pizza = mean(p_short_pizza, na.rm=T),
-            p_long_pizza = mean(p_long_pizza, na.rm=T),
-            p_short_hotdog = mean(p_short_hotdog, na.rm=T),
-            p_long_hotdog = mean(p_long_hotdog, na.rm=T)) |> 
+td <- df |>
+  group_by(Situation) |>
+  summarise(
+    p_short_pizza = mean(p_short_pizza, na.rm = T),
+    p_long_pizza = mean(p_long_pizza, na.rm = T),
+    p_short_hotdog = mean(p_short_hotdog, na.rm = T),
+    p_long_hotdog = mean(p_long_hotdog, na.rm = T)
+  ) |>
   data.frame()
 
 # Print a latex table of the means
-kable(td, 
-      format = "latex", 
-      digits = 3, 
-      caption = "Target Distributions by Situation", 
-      col.names = c("Situation", "Short Pizza", "Long Pizza", "Short Hotdog", "Long Hotdog"))
+kable(
+  td,
+  format = "latex",
+  digits = 3,
+  caption = "Target Distributions by Situation",
+  col.names = c(
+    "Situation",
+    "Short Pizza",
+    "Long Pizza",
+    "Short Hotdog",
+    "Long Hotdog"
+  )
+)
 
-td <- td[,2:5] # 16 obs of 4
+td <- td[, 2:5] # 16 obs of 4
 
 # A new df like td but to get sd instead
-td_sd <- df |> 
-  group_by(Situation) |> 
-  summarise(sd_short_pizza = sd(p_short_pizza, na.rm=T),
-            sd_long_pizza = sd(p_long_pizza, na.rm=T),
-            sd_short_hotdog = sd(p_short_hotdog, na.rm=T),
-            sd_long_hotdog = sd(p_long_hotdog, na.rm=T)) |> 
+td_sd <- df |>
+  group_by(Situation) |>
+  summarise(
+    sd_short_pizza = sd(p_short_pizza, na.rm = T),
+    sd_long_pizza = sd(p_long_pizza, na.rm = T),
+    sd_short_hotdog = sd(p_short_hotdog, na.rm = T),
+    sd_long_hotdog = sd(p_long_hotdog, na.rm = T)
+  ) |>
   data.frame()
 
 # Print a latex table of the sds
-kable(td_sd, 
-      format = "latex", 
-      digits = 3, 
-      caption = "Standard Deviations by Situation", 
-      col.names = c("Situation", "Short Pizza", "Long Pizza", "Short Hotdog", "Long Hotdog"))
+kable(
+  td_sd,
+  format = "latex",
+  digits = 3,
+  caption = "Standard Deviations by Situation",
+  col.names = c(
+    "Situation",
+    "Short Pizza",
+    "Long Pizza",
+    "Short Hotdog",
+    "Long Hotdog"
+  )
+)
 
 # A combined latex table of means and sds for reporting the descriptives of Exp1
 td_combined <- data.frame(
@@ -80,27 +100,29 @@ td_combined <- data.frame(
 
 
 # Calculate marginal probabilities for path and destination
-td_path <- (df |> 
-              group_by(Situation) |> 
-              summarise(p_long = mean(p_long, na.rm=T)))$p_long
+td_path <- (df |>
+  group_by(Situation) |>
+  summarise(p_long = mean(p_long, na.rm = T)))$p_long
 
-td_destination <- (df |> 
-                     group_by(Situation) |> 
-                     summarise(p_hotdog = mean(p_hotdog, na.rm=T)))$p_hotdog
+td_destination <- (df |>
+  group_by(Situation) |>
+  summarise(p_hotdog = mean(p_hotdog, na.rm = T)))$p_hotdog
 
 # A new var for later
 situationsVerbose <- df$SituationVerbose[1:16]
 situations <- as.factor(td_sd$Situation)
 
 # Save target distributions for later modelling
-save(td, 
-     td_sd, 
-     td_combined, 
-     td_path, 
-     td_destination, 
-     situationsVerbose,
-     situations,
-     file = here('Exp1Prediction', 'Model', 'Data', 'targetDist.rda'))
+save(
+  td,
+  td_sd,
+  td_combined,
+  td_path,
+  td_destination,
+  situationsVerbose,
+  situations,
+  file = here('Exp1Prediction', 'Model', 'Data', 'targetDist.rda')
+)
 
 
 ##########################
@@ -122,12 +144,9 @@ print(min(td$p_short_pizza)) # .18
 print(min(td$p_long_pizza)) # .10
 print(min(td$p_short_hotdog)) # .26
 
-# Because these are normalised, they are all rather wishy washy and often don't give a clear signal. 
+# Because these are normalised, they are all rather wishy washy and often don't give a clear signal.
 # Long pizza never seems very high and short hotdog is relatively highly congruent in every situation
 # (If the definition of congruency is just how likely their action was). Possibly park this for a bit
-# It doesn't make sense to give a hard 1:4 allocation for the 4 actions on each row. 
+# It doesn't make sense to give a hard 1:4 allocation for the 4 actions on each row.
 # (That would mean an action could be most congruent (1) with a p_action of almost same as the one with (4).
 # But also don't want an absolute marker?
-
-
-

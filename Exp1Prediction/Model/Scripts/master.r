@@ -18,7 +18,7 @@ source(here('Exp1Prediction', 'Model', 'Scripts', 'modelUtils.R'))
 
 # Run source scripts
 source(here('Exp1Prediction', 'Model', 'Scripts', '01targetDist.R')) # obtain target distribution from cleaned Exp1 behavioural data
-source(here('Exp1Prediction', 'Model', 'Scripts','02findModel.R')) # to find best fitting causal model from target distibution
-source(here('Exp1Prediction', 'Model', 'Scripts','03tidyModel.R')) # to tidy up the model output
-source(here('Exp1Prediction', 'Model', 'Scripts','04graphs.R')) # a function to make formulas from the best fitting model structure, to send to dagify, daggity, ggdag
+source(here('Exp1Prediction', 'Model', 'Scripts', '02findModel.R')) # to find best fitting causal model from target distibution
+source(here('Exp1Prediction', 'Model', 'Scripts', '03tidyModel.R')) # to tidy up the model output
+source(here('Exp1Prediction', 'Model', 'Scripts', '04graphs.R')) # a function to make formulas from the best fitting model structure, to send to dagify, daggity, ggdag
 # Done for path but not yet for destination (can prob use same function). Btw I deleted all the old script. Look on gwnotes for graphing or .rmd if you still need it

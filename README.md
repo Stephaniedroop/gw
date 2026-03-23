@@ -21,3 +21,36 @@ This repo has closed end-to-end process of generating our own data and then mode
 Each of these folders has its own README on the main scripts and how to use them. Summary: it's all in R and each has a masterscript which calls the other scripts.
 
 The output of the whole repo is rated explanations from a rich causal system, which then have to be modelled. This whole chapter was to get the data ready to be modelled, which happens in Chapter 3 of the thesis, and will be new repo [TO DO].
+
+## Citing packages used
+
+This project makes use of the following R packages. Please cite them if you use this code.
+
+*here*
+Müller K (2025). _here: A Simpler Way to Find Your Files_. R package version 1.0.2,
+  <https://CRAN.R-project.org/package=here>.
+  
+*renv*
+Ushey K, Wickham H (2025). _renv: Project Environments_. R package version 1.1.5,
+  <https://CRAN.R-project.org/package=renv>.
+  
+*gander*
+Couch S (2025). _gander: High Performance, Low Friction Large Language Model Chat_. R package version
+  0.1.0, <https://CRAN.R-project.org/package=gander>.
+  
+*ggplot2*
+H. Wickham. ggplot2: Elegant Graphics for Data Analysis. Springer-Verlag New York, 2016
+
+*ggdag*
+Barrett M (2024). _ggdag: Analyze and Create Elegant Directed Acyclic Graphs_. R package version 0.2.13,
+  <https://CRAN.R-project.org/package=ggdag>.
+  
+*tidyverse*
+Wickham H, Averick M, Bryan J, Chang W, McGowan LD, François R, Grolemund G, Hayes A, Henry L, Hester J,
+  Kuhn M, Pedersen TL, Miller E, Bache SM, Müller K, Ooms J, Robinson D, Seidel DP, Spinu V, Takahashi K,
+  Vaughan D, Wilke C, Woo K, Yutani H (2019). “Welcome to the tidyverse.” _Journal of Open Source
+  Software_, *4*(43), 1686. doi:10.21105/joss.01686 <https://doi.org/10.21105/joss.01686>.
+  
+  
+  
+  

@@ -28,12 +28,33 @@ situations <- unique(forscatter_long$Situation)
 
 # Plotting function
 plot_situation <- function(sit) {
-  ggplot(forscatter_long |> 
-           filter(Situation == sit), aes(x = Choice, y = Rating, color = Choice)) +
+  ggplot(
+    forscatter_long |>
+      filter(Situation == sit),
+    aes(x = Choice, y = Rating, color = Choice)
+  ) +
     geom_jitter(width = 0.3, height = 0.1, size = 0.5, alpha = 0.6) +
-    stat_summary(fun = mean, geom = "point", size = 3, shape = 16, color = 'black') +
-    stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.2, color = 'black') +
-    stat_summary(fun = mean, geom = "text", aes(label = round(..y.., 2)), vjust = -1.5, hjust = -0.5, color = 'black') +
+    stat_summary(
+      fun = mean,
+      geom = "point",
+      size = 3,
+      shape = 16,
+      color = 'black'
+    ) +
+    stat_summary(
+      fun.data = mean_se,
+      geom = "errorbar",
+      width = 0.2,
+      color = 'black'
+    ) +
+    stat_summary(
+      fun = mean,
+      geom = "text",
+      aes(label = round(..y.., 2)),
+      vjust = -1.5,
+      hjust = -0.5,
+      color = 'black'
+    ) +
     labs(x = "Item", y = "Rating", title = sit) +
     theme_minimal() +
     scale_x_discrete(guide = guide_axis(angle = 45))
@@ -41,71 +62,114 @@ plot_situation <- function(sit) {
 # Generate plots for each situation
 plots <- lapply(situations, plot_situation)
 
-# A loop to save each plot 
+# A loop to save each plot
 # for(i in 1:length(plots)) {
 #   ggsave(paste0("../Figures/likert", situations[i]), ".pdf"), plots[[i]], width=6, height=4.5)
 # }
 
-for(i in 1:length(plots)) {
-  filename <- here("Exp1Prediction", "Experiment", "Figures", paste0("likert", situations[i], ".pdf"))
-  ggsave(filename, plots[[i]], width=6, height=4.5)
+for (i in 1:length(plots)) {
+  filename <- here(
+    "Exp1Prediction",
+    "Experiment",
+    "Figures",
+    paste0("likert", situations[i], ".pdf")
+  )
+  ggsave(filename, plots[[i]], width = 6, height = 4.5)
 }
 
-<<<<<<< HEAD
-=======
-
->>>>>>> cfbd179 (try now)
 # --------- ----- REJECT SECTION FOR APPENDIX, FACETED 2x8 PLOTS ----------------
 
-# Another option is to do the faceting here, to get 2x8 grid of plots. 
+# Another option is to do the faceting here, to get 2x8 grid of plots.
 # (Since decided best not to use this, so comment out)
 # Split situations into two halves
 first_half <- situations[1:8]
 second_half <- situations[9:16]
 
 # Create first facet grid (2x4) but text is wayy too small
-first_grid <- forscatter_long |> 
+first_grid <- forscatter_long |>
   filter(Situation %in% first_half) |>
   ggplot(aes(x = Choice, y = Rating, color = Choice)) +
   geom_jitter(width = 0.3, height = 0.1, size = 0.5, alpha = 0.6) +
-  stat_summary(fun = mean, geom = "point", size = 3, shape = 16, color = 'black') +
-  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.2, color = 'black') +
-  stat_summary(fun = mean, geom = "text", aes(label = round(after_stat(y), 2)), vjust = -1.5, hjust = -0.5, color = 'black') +
+  stat_summary(
+    fun = mean,
+    geom = "point",
+    size = 3,
+    shape = 16,
+    color = 'black'
+  ) +
+  stat_summary(
+    fun.data = mean_se,
+    geom = "errorbar",
+    width = 0.2,
+    color = 'black'
+  ) +
+  stat_summary(
+    fun = mean,
+    geom = "text",
+    aes(label = round(after_stat(y), 2)),
+    vjust = -1.5,
+    hjust = -0.5,
+    color = 'black'
+  ) +
   facet_wrap(~Situation, ncol = 2, nrow = 4) +
   labs(x = "Item", y = "Rating") +
   theme_minimal() +
   scale_x_discrete(guide = guide_axis(angle = 45))
 
-# They are not the same - this one trying to get bigger text - if decide to use, need to apply this to the first one. 
+# They are not the same - this one trying to get bigger text - if decide to use, need to apply this to the first one.
 second_grid <- forscatter_long |>
   filter(Situation %in% second_half) |>
   ggplot(aes(x = Choice, y = Rating, color = Choice)) +
   geom_jitter(width = 0.3, height = 0.1, size = 0.5, alpha = 0.6) +
-  stat_summary(fun = mean, geom = "point", size = 3, shape = 16, color = 'black') +
-  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.2, color = 'black') +
-  stat_summary(fun = mean, geom = "text", aes(label = round(after_stat(y), 2)), vjust = -1.5, hjust = -0.5, color = 'black') +
+  stat_summary(
+    fun = mean,
+    geom = "point",
+    size = 3,
+    shape = 16,
+    color = 'black'
+  ) +
+  stat_summary(
+    fun.data = mean_se,
+    geom = "errorbar",
+    width = 0.2,
+    color = 'black'
+  ) +
+  stat_summary(
+    fun = mean,
+    geom = "text",
+    aes(label = round(after_stat(y), 2)),
+    vjust = -1.5,
+    hjust = -0.5,
+    color = 'black'
+  ) +
   facet_wrap(~Situation, ncol = 2, nrow = 4) +
   labs(x = "Item", y = "Rating") +
   theme_minimal() +
-  theme(panel.spacing = unit(1.5, "lines"),
-        strip.text = element_text(size = 12),
-        axis.text = element_text(size = 10),
-        axis.title = element_text(size = 12)) +
+  theme(
+    panel.spacing = unit(1.5, "lines"),
+    strip.text = element_text(size = 12),
+    axis.text = element_text(size = 10),
+    axis.title = element_text(size = 12)
+  ) +
   scale_x_discrete(guide = guide_axis(angle = 45))
 
 # Save the faceted plots
-ggsave(here("Exp1Prediction", "Experiment", "Figures", "likertFirst.pdf"), first_grid, width = 12, height = 16) # Too small
-ggsave(here("Exp1Prediction", "Experiment", "Figures", "likertSecond.pdf"), second_grid, width = 15, height = 20) # Better?
+ggsave(
+  here("Exp1Prediction", "Experiment", "Figures", "likertFirst.pdf"),
+  first_grid,
+  width = 12,
+  height = 16
+) # Too small
+ggsave(
+  here("Exp1Prediction", "Experiment", "Figures", "likertSecond.pdf"),
+  second_grid,
+  width = 15,
+  height = 20
+) # Better?
 
-
-<<<<<<< HEAD
-
-
-=======
->>>>>>> cfbd179 (try now)
 # -------------------- OTHER, BEESWARM AND STACK BARS --------------------
 
-# I reckon a faceted one is less good because you cant see the individual points. 
+# I reckon a faceted one is less good because you cant see the individual points.
 # Unlikely to have space for these but maybe in an appendix
 
 # A coloured beeswarm plot showing distribution of ratings, faceted by the 16 situations
@@ -142,6 +206,8 @@ ggplot(forscatter_long, aes(x = Choice, y = Rating)) +
   #geom_jitter(width = 0.2, height = 0, size = 1.5, alpha = 0.7) +
   facet_wrap(~Situation) +
   theme_bw() +
-  labs(title = "Jittered Scatterplot Faceted by Situation",
-       x = "X Axis Label",
-       y = "Y Axis Label")
+  labs(
+    title = "Jittered Scatterplot Faceted by Situation",
+    x = "X Axis Label",
+    y = "Y Axis Label"
+  )
