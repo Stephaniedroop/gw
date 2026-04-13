@@ -5,7 +5,7 @@
 library(here)
 library(tidyverse)
 #load(here('Exp2Explanation', 'Model', 'Data', 'pChoice.rda'))
-load(here('Exp2Explanation', 'Model', 'Data', 'scenarios.rda')) # from getProbs.R?
+load(here('Exp2Explanation', 'Model', 'Data', 'scenarios.rda')) # loads all_food and all_path, from getProbs.R?
 # Load data from the previous getParams script
 load(here('Exp2Explanation', 'Model', 'Data', 'params.rda'))
 

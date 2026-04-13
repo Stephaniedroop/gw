@@ -10,16 +10,15 @@ load(here('Exp2Explanation', 'Model', 'Data', 'modelData.rda')) # from getPreds.
 
 # Just this time: merge in all_food and all_path with the right posterior: next time it will be correct from start
 # Replace column 'prior' in path_preds with column 'prior' from all_path
-path_preds$prior <- all_path$prior
-food_preds$prior <- all_food$prior
-path_preds$posterior <- all_path$posterior
-food_preds$posterior <- all_food$posterior
-
-# check the data in cols P:CS are the same for both food_preds and path_preds
-check <- all(path_preds[, 1:21] == food_preds[, 1:21])
-
-all_preds
-
+# path_preds$prior <- all_path$prior
+# food_preds$prior <- all_food$prior
+# path_preds$posterior <- all_path$posterior
+# food_preds$posterior <- all_food$posterior
+#
+# # check the data in cols P:CS are the same for both food_preds and path_preds
+# check <- all(path_preds[, 1:21] == food_preds[, 1:21])
+#
+# all_preds
 
 # ------------ PATH processing ---------------
 
@@ -55,7 +54,7 @@ foodlong$node3 <- apply(foodlong, 1, function(r) {
 })
 
 
-# Get the marginalised ces scores for each variables
+# Get the marginalised ces scores for each variables - S~ from collider paper
 path_ces <- pathlong |>
   group_by(condition, sem, node3) |>
   summarise(postces = sum(posterior * ces)) |>
@@ -77,12 +76,18 @@ food_ces <- food_ces |>
   ungroup()
 
 
+# Need a check: ces score for u-vars - expected should be lower than actual
+# How to check - what is actual and expected? Don't know how to do this check. It should be: check the
+
 save(
   path_ces,
   food_ces,
   file = here('Exp2Explanation', 'Model', 'Data', 'ces_sep.rda')
 )
 
+
+# A version with no unobserved interactions vars
+# or do it right there in script 8
 
 # Get ig [[[LATER]]]
 
@@ -117,18 +122,18 @@ getpostf <- getpostf |>
 # ---- Later .... ------
 
 # Simple ig of each pair of unobserved vars
-unobs_igp <- getpostp |>
-  group_by(condition, node3) |> # what about u_set as well
-  summarise(
-    prior_entropy = round(-sum(prior * log2(prior + 1e-10)), 3),
-    post_entropy = round(-sum(post * log2(post + 1e-10)), 3),
-    ig = round(prior_entropy - post_entropy, 3)
-  ) |>
-  ungroup()
-
-# This will be 288 obs, same size as data and ppts, in the eventual likelihood, remember to save it with mp
-ig <- unobs_ig |>
-  select(condition, ig)
+# unobs_igp <- getpostp |>
+#   group_by(condition, node3) |> # what about u_set as well
+#   summarise(
+#     prior_entropy = round(-sum(prior * log2(prior + 1e-10)), 3),
+#     post_entropy = round(-sum(post * log2(post + 1e-10)), 3),
+#     ig = round(prior_entropy - post_entropy, 3)
+#   ) |>
+#   ungroup()
+#
+# # This will be 288 obs, same size as data and ppts, in the eventual likelihood, remember to save it with mp
+# ig <- unobs_ig |>
+#   select(condition, ig)
 
 # Other considerations
 # - then map to participant data
