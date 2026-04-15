@@ -75,9 +75,11 @@ food_ces <- food_ces |>
   mutate(postces_norm = postces / sum(postces)) |>
   ungroup()
 
+meanrawpath <- pathlong |>
+  group_by(condition, node3) |>
+  summarise(meances = mean(ces)) |>
+  ungroup()
 
-# Need a check: ces score for u-vars - expected should be lower than actual
-# How to check - what is actual and expected? Don't know how to do this check. It should be: check the
 
 save(
   path_ces,

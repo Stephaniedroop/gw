@@ -3,10 +3,10 @@
 ###############################################################################################
 
 library(here)
-source(here('Exp1Prediction', 'Model', 'Scripts', 'modelUtils.R'))
+source(here('Exp1Prediction', 'Model', 'Scripts', 'modelUtilsSimple.R'))
 
 # Load fitted models from `01findModel.R`: 2 dfs of 59049 rows of 13 vars each: path and destination
-load(here('Exp1Prediction', 'Model', 'Data', 'fitted.rda'))
+load(here('Exp1Prediction', 'Model', 'Data', 'fittedSimple.rda'))
 load(here('Exp1Prediction', 'Model', 'Data', 'targetDist.rda')) # from before - still need those
 
 # Sometimes use this before we can get it out of the long brute force causal model selection
@@ -20,13 +20,19 @@ fitted_food_mods <- fitted_destination_mods # rename everywhere! Simpler to do i
 fitted_path_mods$n_edge <- rowSums(structures != 0)
 fitted_food_mods$n_edge <- rowSums(structures != 0)
 
-print(min(fitted_path_mods$kl)) # .00945
-print(min(fitted_food_mods$kl)) # .0204
+print(min(fitted_path_mods$kl)) # .01300222
+print(min(fitted_food_mods$kl)) # .0393 - it was .025 before
+
+
+# ------ Without complexity -----------
+bpix <- which.min(fitted_path_mods$kl) # 8:
+bfix <- which.min(fitted_food_mods$kl) # 78:
+
 
 # -------- Complexity penalisation -------------
 
 # Penalise complexity (number of edges) to avoid overfitting
-complexity_penalisation <- 0.003 # Tried variety, see below, settled on .003 as both path and dest have become stable there
+#complexity_penalisation <- 0.003 # Tried variety, see below, settled on .003 as both path and dest have become stable there
 
 # With complexity 0
 # bpix was 25874 which gives structure 0, 1, -1, 0, 0, 0, 1, 1, -1, 0
@@ -49,34 +55,28 @@ complexity_penalisation <- 0.003 # Tried variety, see below, settled on .003 as 
 # bdix was 56499 which gives structure 1  0  0  0  0  0  1  0  1  1
 
 # Make the KL bigger for each edge so to penalise complexity and so avoid saturated fully connected model
-bpix <- which.min(
-  fitted_path_mods$kl + fitted_path_mods$n_edge * complexity_penalisation
-) # 22967
-bfix <- which.min(
-  fitted_food_mods$kl + fitted_food_mods$n_edge * complexity_penalisation
-) # 58713
+# bpix <- which.min(
+#   fitted_path_mods$kl + fitted_path_mods$n_edge * complexity_penalisation
+# ) # 22967
+# bfix <- which.min(
+#   fitted_food_mods$kl + fitted_food_mods$n_edge * complexity_penalisation
+# ) # 58713
 
 # Btw, some reporting stats about this distribution:
-mean(fitted_path_mods$kl) # .43
-sd(fitted_path_mods$kl) # .17
-mean(fitted_food_mods$kl) # .21
-sd(fitted_food_mods$kl) # .08
-mean(fitted_path_mods$n_edge) # 6.7
-sd(fitted_path_mods$n_edge) # 1.5
-mean(fitted_food_mods$n_edge) # 6.7
-sd(fitted_food_mods$n_edge) # 1.5
+mean(fitted_path_mods$kl) # .388
+sd(fitted_path_mods$kl) # .188
+mean(fitted_food_mods$kl) # .152
+sd(fitted_food_mods$kl) # .0728
+mean(fitted_path_mods$n_edge) # 2.67
+sd(fitted_path_mods$n_edge) # .949
+mean(fitted_food_mods$n_edge) # 2.67
+sd(fitted_food_mods$n_edge) # .949
 
 # Find the best fitting structures and their parameters
-best_path <- unlist(structures[bpix, ]) # 01000000-10
+best_path <- unlist(structures[bpix, ]) # 0 1 -1 -1
 best_path_params <- unlist(fitted_path_mods[bpix, ])
 
-
-# rbind best_path and the params that have a name in best_path
-
-#pathmod <- rbind(best_path, best_path_params[2:11])
-# Get the names of best_path_params that are in best_path
-
-best_food <- unlist(structures[bfix, ]) # 1 0 0 0 0 0 1 0 1 1
+best_food <- unlist(structures[bfix, ]) # 1 0 1 1
 best_food_params <- unlist(fitted_food_mods[bfix, ])
 
 # Get model predictions for each situation
@@ -87,13 +87,7 @@ fitted_path_params <- list(
     P = tmp$P,
     K = tmp$K,
     C = tmp$C,
-    S = tmp$S,
-    PK = tmp$PK,
-    PC = tmp$PC,
-    PS = tmp$PS,
-    KC = tmp$KC,
-    KS = tmp$KS,
-    CS = tmp$CS
+    S = tmp$S
   ),
   br = tmp$br,
   tau = tmp$tau
@@ -106,13 +100,7 @@ fitted_food_params <- list(
     P = tmp$P,
     K = tmp$K,
     C = tmp$C,
-    S = tmp$S,
-    PK = tmp$PK,
-    PC = tmp$PC,
-    PS = tmp$PS,
-    KC = tmp$KC,
-    KS = tmp$KS,
-    CS = tmp$CS
+    S = tmp$S
   ),
   br = tmp$br,
   tau = tmp$tau
@@ -143,7 +131,7 @@ active_food_params <- best_food_params[active_food_edges]
 # Wrap these together into a named vector
 active_food <- setNames(active_food_params, active_food_edges)
 
-# Results in 2 dfs, each of 59049 obs of 13 vars
+# Results in 2 dfs, each of 81 obs of 13 vars
 save(
   df.m,
   best_path,
@@ -154,5 +142,5 @@ save(
   active_path,
   mpp,
   mpf,
-  file = here('Exp1Prediction', 'Model', 'Data', 'model.rda')
+  file = here('Exp1Prediction', 'Model', 'Data', 'modelSimple.rda')
 )

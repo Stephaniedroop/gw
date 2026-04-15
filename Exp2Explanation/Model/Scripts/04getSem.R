@@ -52,6 +52,7 @@ all_path <- all_path |>
   ungroup()
 
 
+# Made an id for each setting of 'relevant' u-vars but this might not be a good var because it is hard coded and also doesn't distinguish vars well
 all_path <- all_path |>
   group_by(condition, Ku, KSu, br) |>
   mutate(u_set = cur_group_id()) |>

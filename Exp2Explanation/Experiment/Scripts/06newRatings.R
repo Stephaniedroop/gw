@@ -1,4 +1,4 @@
-load(here('Exp2Explanation', 'Experiment', 'Data', 'processedData.Rda')) # df
+load(here('Exp2Explanation', 'Experiment', 'Data', 'processedData.Rda')) # df. This 2040 already has 24 duplictaes removed
 
 # I want to remove 15% of df as a test set
 set.seed(12)
@@ -22,6 +22,4 @@ write_csv(
   here('Exp2Explanation', 'Experiment', 'Data', 'maintocode.csv')
 )
 
-# Then I annotated train1 myself (late at night - needs another run through)
-# It then went to Claude for annotation, who annotated it using the train1 set as guide. (90% agreement with me).#
-# Once I annotate test1, I will get it to annotate that too and we can test them.
+# This maintocode then got annotated by claude, see the app for the prompt. forced one choice, using fuzzy llm powers

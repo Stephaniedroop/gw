@@ -11,7 +11,7 @@ library(ggplot2)
 load(here('Exp2Explanation', 'Model', 'Data', 'ces_sep.Rda')) # 791-804 of 5 vars
 df <- read.csv(here('Exp2Explanation', 'Experiment', 'Data', 'maincoded.csv')) # 1887 of 11
 
-# df[is.na(df)] <- 0
+# ---------- 1. Process df the claude rated explanations -----------------
 
 split <- strsplit(as.character(df$X), "_")
 left <- sapply(split, function(x) trimws(x[1]))
@@ -29,6 +29,62 @@ df <- df |>
 df <- df |>
   filter(!str_detect(as.character(right), 'Unclear'))
 
+
+# ----- Filter df into the 4 separate ones and make it long -------
+
+df_longPizza <- df |>
+  filter(
+    str_ends(as.character(tag), '01')
+  ) |>
+  mutate(cond = 'LongPizza')
+
+df_shortPizza <- df |>
+  filter(
+    str_ends(as.character(tag), '00')
+  ) |>
+  mutate(cond = 'ShortPizza')
+
+df_longHotdog <- df |>
+  filter(
+    str_ends(as.character(tag), '11')
+  ) |>
+  mutate(cond = 'LongHotdog')
+
+df_shortHotdog <- df |>
+  filter(
+    str_ends(as.character(tag), '10')
+  ) |>
+  mutate(cond = 'ShortHotdog')
+
+
+# Need counts of number of explanations; this (in proportion form) is actually what will be modeled
+
+counts_longPizza <- df_longPizza |>
+  group_by(condObs, right) |>
+  summarise(count = n()) |>
+  ungroup() |>
+  rename(node3 = right)
+
+counts_shortPizza <- df_shortPizza |>
+  group_by(condObs, right) |>
+  summarise(count = n()) |>
+  ungroup() |>
+  rename(node3 = right)
+
+counts_longHotdog <- df_longHotdog |>
+  group_by(condObs, right) |>
+  summarise(count = n()) |>
+  ungroup() |>
+  rename(node3 = right)
+
+counts_shortHotdog <- df_shortHotdog |>
+  group_by(condObs, right) |>
+  summarise(count = n()) |>
+  ungroup() |>
+  rename(node3 = right)
+
+
+# 2. ------ Process ces scores --------
 
 # Some processing to remove the unobserved interactions because we're not doing that now, then renormalise
 vector <- c(
@@ -119,7 +175,6 @@ shortHotdog_ces <- merge(
   all = TRUE
 )
 
-# STILL TO DO FOR ALL THE OTHERS AND IS NULTIPLICATION OK???
 longPizza_ces$newProb <- longPizza_ces$postces.x + longPizza_ces$postces.y
 shortPizza_ces$newProb <- shortPizza_ces$postces.x + shortPizza_ces$postces.y
 longHotdog_ces$newProb <- longHotdog_ces$postces.x + longHotdog_ces$postces.y
@@ -151,58 +206,7 @@ shortHotdog_ces <- shortHotdog_ces |>
   ungroup()
 
 
-# ----- Filter df -------
-
-df_longPizza <- df |>
-  filter(
-    str_ends(as.character(tag), '01')
-  ) |>
-  mutate(cond = 'LongPizza')
-
-df_shortPizza <- df |>
-  filter(
-    str_ends(as.character(tag), '00')
-  ) |>
-  mutate(cond = 'ShortPizza')
-
-df_longHotdog <- df |>
-  filter(
-    str_ends(as.character(tag), '11')
-  ) |>
-  mutate(cond = 'LongHotdog')
-
-df_shortHotdog <- df |>
-  filter(
-    str_ends(as.character(tag), '10')
-  ) |>
-  mutate(cond = 'ShortHotdog')
-
-
-# ----
-
-counts_longPizza <- df_longPizza |>
-  group_by(condObs, right) |>
-  summarise(count = n()) |>
-  ungroup() |>
-  rename(node3 = right)
-
-counts_shortPizza <- df_shortPizza |>
-  group_by(condObs, right) |>
-  summarise(count = n()) |>
-  ungroup() |>
-  rename(node3 = right)
-
-counts_longHotdog <- df_longHotdog |>
-  group_by(condObs, right) |>
-  summarise(count = n()) |>
-  ungroup() |>
-  rename(node3 = right)
-
-counts_shortHotdog <- df_shortHotdog |>
-  group_by(condObs, right) |>
-  summarise(count = n()) |>
-  ungroup() |>
-  rename(node3 = right)
+# ----------
 
 # counts_longPizza <- counts_longPizza |>
 #   group_by(condObs) |>

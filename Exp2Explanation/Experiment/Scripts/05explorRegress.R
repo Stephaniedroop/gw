@@ -7,7 +7,30 @@ library(lme4)
 library(broom.mixed)
 
 # Load the combined data called ratedExplans
-load(here('Exp2Explanation', 'Experiment', 'Data', 'ratedExplans.rda')) # 2040 of 20
+load(here('Exp2Explanation', 'Experiment', 'Data', 'claudeProcessed.rda')) # 1809 of 14 - was 1887 of 11 (because I took out 300 as training data ) then removed unclear
+
+# NOT DONE YET
+# Step 1: fast, no random effects, sanity check
+library(nnet)
+m_nnet <- multinom(
+  node3 ~ Pref + Know + Char + Start + Food + Path,
+  data = df,
+  maxit = 200
+)
+summary(m_nnet)
+
+# Get p-values (multinom doesn't give them directly)
+library(broom)
+tidy(m_nnet, conf.int = TRUE, exponentiate = FALSE)
+
+# Step 2: with random effects once Step 1 looks sensible
+library(mclogit)
+m_mblogit <- mblogit(
+  node3 ~ pref + know + char + start + food + path,
+  random = ~ 1 | mindsCode,
+  data = df
+)
+
 
 # Now filter for each outcome, and do a separate binomial regression for each
 # First a function to run the glmer on an input and an output column
