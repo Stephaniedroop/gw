@@ -29,39 +29,6 @@ bpix <- which.min(fitted_path_mods$kl) # 8:
 bfix <- which.min(fitted_food_mods$kl) # 78:
 
 
-# -------- Complexity penalisation -------------
-
-# Penalise complexity (number of edges) to avoid overfitting
-#complexity_penalisation <- 0.003 # Tried variety, see below, settled on .003 as both path and dest have become stable there
-
-# With complexity 0
-# bpix was 25874 which gives structure 0, 1, -1, 0, 0, 0, 1, 1, -1, 0
-# bdix was 58713 which gives structure 1, 0, 0, 1, 0, 0, 1, 1, 1, 1
-
-# With complexity .001
-# bpix was 31679 which gives structure 0  1 -1 -1  0  0  0  1  0  0
-# bdix was 58713 which gives structure 1  0  0  1  0  0  1  1  1  1
-
-# With complexity .002
-# bpix was 22967 which gives structure 0  1  0  0  0  0  0  0 -1  0
-# bdix was 58713 which gives structure 1  0  0  1  0  0  1  1  1  1
-
-# With complexity .003
-# bpix was 22967 which gives structure 0  1  0  0  0  0  0  0 -1  0 same as at .002
-# bdix was 56499 which gives structure 1  0  0  0  0  0  1  0  1  1 few less edges
-
-# With complexity .004
-# bpix was 22967 which gives structure 0  1  0  0  0  0  0  0 -1  0
-# bdix was 56499 which gives structure 1  0  0  0  0  0  1  0  1  1
-
-# Make the KL bigger for each edge so to penalise complexity and so avoid saturated fully connected model
-# bpix <- which.min(
-#   fitted_path_mods$kl + fitted_path_mods$n_edge * complexity_penalisation
-# ) # 22967
-# bfix <- which.min(
-#   fitted_food_mods$kl + fitted_food_mods$n_edge * complexity_penalisation
-# ) # 58713
-
 # Btw, some reporting stats about this distribution:
 mean(fitted_path_mods$kl) # .388
 sd(fitted_path_mods$kl) # .188

@@ -10,9 +10,17 @@ set.seed(12)
 # Load utils
 source(here('Exp2Explanation', 'Model', 'Scripts', 'cesmUtils.R'))
 
+# Running a new series of 'simple' causal model (w/o interactions). Rename scripts if it all works and I decide to go with this as main arc
+
+source(here('Exp2Explanation', 'Model', 'Scripts', '02getParamsSimple.R')) # input modelSimple.rda from Exp1; output paramsSimple.rda
+source(here('Exp2Explanation', 'Model', 'Scripts', '03getProbsSimple.R'))
+source(here('Exp2Explanation', 'Model', 'Scripts', '04getSemSimple.R'))
+
+# still to do - check these then get predictions
+
 # Run source scripts
 # 1 and 2 are equiavalent to get_world_combos in collider proj
-source(here('Exp2Explanation', 'Model', 'Scripts', '01getPs.R')) # gets probability of each of 4 outcomes in each of the 16 worlds, ie 64 combos
+#source(here('Exp2Explanation', 'Model', 'Scripts', '01getPs.R')) # gets probability of each of 4 outcomes in each of the 16 worlds, ie 64 combos
 # But we dont use it any more, because I could only get it separately, and I'm trying now to do it altogether
 
 # It's likely the structure of all these will change a bit . pchoice is too simplistic and doesnt do likelihood

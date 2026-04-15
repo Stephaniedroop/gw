@@ -3,10 +3,10 @@
 # ==============================================================================
 
 # Or call this in the same place you call the cesm functions too: these functions use those ones
-source(here('Exp2Explanation', 'Model', 'Scripts', 'semUtils.R')) # for pathlik and foodlik functions
+#source(here('Exp2Explanation', 'Model', 'Scripts', 'semUtilsSimple.R')) # for pathlik and foodlik functions
 
 #
-get_cesm <- function(df, structure, params) {
+get_cesm <- function(df, gen_pairs, prev_pairs, params) {
   n_causes <- length(causes1)
   p <- params[[2]] # p(var==1)
   pvec <- rep(p, times = N_cf) # Turn it into a 40k vec
@@ -40,16 +40,7 @@ get_cesm <- function(df, structure, params) {
     # Tag the world index
     cfs$world_index <- c_ix
 
-    # First the interaction nodes
-    cfs <- add_interactions(cfs, base_causes)
-
-    # Recalculate determinative effect for these simulated cf worlds (use functions defined in semUtils)
-    if (structure == "path") {
-      cfs$E <- pathlik_vec(cfs)
-    }
-    if (structure == "food") {
-      cfs$E <- foodlik_vec(cfs)
-    }
+    cfs$E <- sem_lik(cfs, gen_pairs = gen_pairs, prev_pairs = prev_pairs)
 
     # Add column T/F for whether the Effect in the cf worlds matches the real world
     cfs$Match <- cfs$E == case$sem
