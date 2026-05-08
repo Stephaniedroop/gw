@@ -5,8 +5,60 @@
 # Or call this in the same place you call the cesm functions too: these functions use those ones
 #source(here('Exp2Explanation', 'Model', 'Scripts', 'semUtilsSimple.R')) # for pathlik and foodlik functions
 
-#
+# ---- Only save mp --------
 get_cesm <- function(df, gen_pairs, prev_pairs, params) {
+  n_causes <- length(causes1)
+  p <- params[[2]]
+  pvec <- rep(p, times = N_cf)
+  mp <- df
+
+  # Next 3 rows put empty spaces in the mp df to be filled with the CES and cf counts for each cause, and the E count
+  ces_cols <- paste0(causes1, "ces")
+  cfcounts <- paste0(causes1, "cfs")
+  mp[c(ces_cols, cfcounts)] <- NA
+
+  worlds <- nrow(mp)
+  pb <- txtProgressBar(min = 0, max = worlds, style = 3)
+
+  for (c_ix in 1:worlds) {
+    resample <- runif(n_causes * N_cf) > s
+    case <- mp[c_ix, ]
+    cf_csrep <- rep(as.numeric(case[causes1]), times = N_cf)
+    cf_csrep[resample] <- rbinom(sum(resample), size = 1, prob = pvec[resample])
+    cfs <- data.frame(matrix(cf_csrep, nrow = N_cf, byrow = TRUE))
+    colnames(cfs) <- causes1
+    cfs$E <- sem_lik(cfs, gen_pairs = gen_pairs, prev_pairs = prev_pairs)
+    cfs$Match <- cfs$E == case$sem
+    cor_sizes <- rep(NA, n_causes)
+    realcfs <- rep(NA, n_causes)
+
+    for (cause in 1:n_causes) {
+      cause_vec <- cfs[[causes1[cause]]]
+      actual_val <- as.numeric(case[[causes1[cause]]])
+      sign_flip <- c(-1, 1)[actual_val + 1]
+      realcfs[cause] <- sum(cause_vec != actual_val)
+      if (sd(cause_vec) == 0 || sd(cfs$Match) == 0) {
+        cor_sizes[cause] <- 0
+      } else {
+        cor_sizes[cause] <- cor(cause_vec, cfs$Match, method = 'pearson') *
+          sign_flip
+      }
+    }
+
+    mp[c_ix, ces_cols] <- t(cor_sizes)
+    mp[c_ix, cfcounts] <- t(realcfs)
+    mp[c_ix, "E_count"] <- sum(cfs$E == case$sem)
+    setTxtProgressBar(pb, c_ix)
+  }
+
+  close(pb)
+  mp
+}
+
+
+# ---- A chunky version that saves all the cfs. V heavy -------
+# Differences: def cfs_list, set world index, returns cfs as well as mp
+get_cesm_cfs <- function(df, gen_pairs, prev_pairs, params) {
   n_causes <- length(causes1)
   p <- params[[2]] # p(var==1)
   pvec <- rep(p, times = N_cf) # Turn it into a 40k vec
@@ -48,16 +100,27 @@ get_cesm <- function(df, gen_pairs, prev_pairs, params) {
     # Set up empty vector of correlations (ie causal effect sizes), one for each cause
     cor_sizes <- rep(NA, n_causes)
     realcfs <- rep(NA, n_causes)
+
+    # Get the CES (cor)
     for (cause in 1:n_causes) {
-      # ..And then populate! (the second part sets correlation negative when cause pushes against effect taking state it took)
-      cor_sizes[cause] <- cor(
-        cfs[[causes1[cause]]],
-        cfs$Match,
-        method = 'pearson'
-      ) *
-        (c(-1, 1)[as.numeric(case[[causes1[cause]]]) + 1])
-      realcfs[cause] <- sum(cfs[[causes1[cause]]] != case[[causes1[cause]]]) # counts how many cf worlds changed the cause
+      # Extract some key parts so as not to repeat them in the cor() function and make it more readable.
+      cause_vec <- cfs[[causes1[cause]]]
+      actual_val <- as.numeric(case[[causes1[cause]]])
+      # Make the correlation negative when the cause pushes against the effect
+      sign_flip <- c(-1, 1)[actual_val + 1]
+
+      # Get actual counts of cfs, to check it works
+      realcfs[cause] <- sum(cause_vec != actual_val)
+
+      # Assogn 0 is no cfs instead of NA so it doesn't break the rest; 0 is still maeningful eg in var S when there are other preventions
+      if (sd(cause_vec) == 0 || sd(cfs$Match) == 0) {
+        cor_sizes[cause] <- 0
+      } else {
+        cor_sizes[cause] <- cor(cause_vec, cfs$Match, method = 'pearson') *
+          sign_flip
+      }
     }
+
     # Now put these correlations in the mp df, along with the number of actual cfs simulated, and how many times the Effect matched
     mp[c_ix, ces_cols] <- t(cor_sizes)
     mp[c_ix, cfcounts] <- t(realcfs)

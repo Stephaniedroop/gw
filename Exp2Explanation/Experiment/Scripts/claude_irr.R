@@ -8,53 +8,86 @@ library(forcats)
 
 
 # Read in the data
-df <- read.csv(here(
+# df <- read.csv(here(
+#   'Exp2Explanation',
+#   'Experiment',
+#   'Data',
+#   'trainingAnnCChat.csv'
+# )) #
+
+# Split the text from the rating
+# split <- strsplit(as.character(df$response), "_")
+# left <- sapply(split, function(x) trimws(x[1]))
+# right <- sapply(split, function(x) trimws(x[2]))
+#
+#
+# # Now put left in the data frame after response, and right at the far right
+# df <- df |>
+#   mutate(left = left) |>
+#   mutate(right = right)
+# #select(-response) |>
+#
+# #select(1:5, left, everything())
+
+# Import my ratings
+mixed <- read.csv(here(
   'Exp2Explanation',
   'Experiment',
   'Data',
-  'trainingAnnCChat.csv'
-)) #
+  'validation1PlussAnnotation.csv'
+))
 
-# Split the text from the rating
-split <- strsplit(as.character(df$response), "_")
-left <- sapply(split, function(x) trimws(x[1]))
-right <- sapply(split, function(x) trimws(x[2]))
-
-
-# Now put left in the data frame after response, and right at the far right
-df <- df |>
-  mutate(left = left) |>
-  mutate(right = right)
-#select(-response) |>
-
-#select(1:5, left, everything())
-
-# Import my ratings
-my <- read.csv(here('Exp2Explanation', 'Experiment', 'Data', 'train1.csv'))
+mixed <- read.csv(here(
+  'Exp2Explanation',
+  'Experiment',
+  'Data',
+  'annotatedvalidation.csv'
+))
 
 # cohen's kappa needs matrix of ratings. think it's just the totals, not per position. so one could cancel out another?
-mixed <- cbind(df$right, my$Myrate)
-
-mixed[, 1] <- as.character(mixed[, 1])
-mixed[, 2] <- as.character(mixed[, 2])
+# mixed <- cbind(df$right, my$Myrate)
+#
+mixed[, 11] <- as.character(mixed[, 11])
+mixed[, 12] <- as.character(mixed[, 12])
+mixed[, 13] <- as.character(mixed[, 13])
 
 allops <- c(
   'P=0',
   'P=1',
+  'P',
   'K=0',
   'K=1',
+  'K',
   'C=0',
   'C=1',
+  'C',
   'S=0',
   'S=1',
+  'S',
   'Pu=0',
   'Pu=1',
+  'Pu',
   'Ku=0',
   'Ku=1',
-  'Cu=0',
-  'Cu=1',
-  'Su=0',
-  'Su=1',
+  'Ku',
+  'Cu_p=0',
+  'Cu_p=1',
+  'Cu_p',
+  'Cu_f=0',
+  'Cu_f=1',
+  'Cu_f',
+  'Su_p=0',
+  'Su_p=1',
+  'Su_p',
+  'Su_f=0',
+  'Su_f=1',
+  'Su_f',
+  'br_p=0',
+  'br_p=1',
+  'br_p',
+  'br_f=0',
+  'br_f=1',
+  'br_f',
   'Unclear'
 )
 
@@ -65,16 +98,15 @@ colnames(mat) <- allops
 
 # For each row in mixed, add 1 to the matrix, down the way for col1 and across the way for col2
 for (i in 1:nrow(mixed)) {
-  rater1 <- mixed[i, 1]
-  rater2 <- mixed[i, 2]
-
+  rater1 <- mixed[i, 11]
+  rater2 <- mixed[i, 12]
   mat[rater1, rater2] <- mat[rater1, rater2] + 1
 }
 
-setdiff(mixed[, 1], allops)
-setdiff(mixed[, 2], allops)
+setdiff(mixed[, 13], allops)
+setdiff(mixed[, 12], allops)
 
-# Now get cohens k - copy function from other script old get_irr
+# Now get cohens k
 get_kappa <- function(matrix) {
   stopifnot("input must be single matrix" = is.matrix(matrix))
   diags <- diag(matrix)
@@ -88,6 +120,7 @@ get_kappa <- function(matrix) {
 }
 
 k <- get_kappa(mat)
-print(k) # 64.9 yeah it's fine by me
+print(k) # 65.3 for claude sonnet first try, 64.1 with claude opus, 74.2 between the two claudes
+# Better for sonnet but both acceptable
 
 # Next steps then: its ratings are fine, so combine its ratings with the single predictions from the model

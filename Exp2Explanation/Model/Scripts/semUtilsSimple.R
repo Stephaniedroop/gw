@@ -37,19 +37,13 @@ base_causes <- c("P", "K", "C", "S") # probably rewrite alphabetically? If want 
 # path_uvar <- c("Ku", "Cu", "Su")
 #
 #
-# uvars <- c(
-#   "Pu",
-#   "Ku",
-#   "Cu",
-#   "Su",
-#   # "PKu",
-#   # "PCu",
-#   # "PSu",
-#   # "KCu",
-#   # "KSu",
-#   # "CSu",
-#   "br"
-# ) # change when decide whether rename _p and _f
+uvars <- c(
+  "Pu",
+  "Ku",
+  "Cu",
+  "Su",
+  "br"
+) # change when decide whether rename _p and _f
 
 #orig_nodes <- c("P", "Pu", "K", "Ku", "C", "Cu", "S", "Su", "br") # br and interaction will be renamed in the specific ones
 #interaction_u <- c("PKu", "PCu", "PSu", "KCu", "KSu", "CSu")

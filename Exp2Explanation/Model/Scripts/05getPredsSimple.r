@@ -21,7 +21,7 @@ causes1 <- vars
 
 set.seed(12)
 
-# Test - not working - some cases getting no cfs and hence no SDs
+# Get the model predictions! (There is a much heavier version that saves the cfs too but this is not it)
 path_preds <- get_cesm(
   all_path,
   gen_pairs = path_pairs$gen,
@@ -34,7 +34,7 @@ food_preds <- get_cesm(
   gen_pairs = food_pairs$gen,
   prev_pairs = food_pairs$prev,
   params = params_food
-) # saved as 'foodtest.csv' to check
+) #
 
 # If it all worked, then restructure and tidy getParams
 
@@ -49,5 +49,5 @@ food_preds <- get_cesm(
 save(
   food_preds,
   path_preds,
-  file = here('Exp2Explanation', 'Model', 'Data', 'modelData.rda')
+  file = here('Exp2Explanation', 'Model', 'Data', 'modelDataSimple.rda')
 ) # 1440 of 27
