@@ -21,7 +21,7 @@ import os
 
 # ── CONFIGURATION ─────────────────────────────────────────────────────────────
 
-MODEL = "claude-sonnet-4-6"  # Change to "claude-sonnet-4-6" for cheaper test runs
+MODEL = "claude-sonnet-4-6"  # Change to "claude-opus-4-6" for extra reasoning but the IRR doesnt change so not needed
 
 VALID_LABELS = [
     'P=0',
@@ -36,24 +36,22 @@ VALID_LABELS = [
   'S=0',
   'S=1',
   'S',
-  'Pu=0',
-  'Pu=1',
-  'Pu',
-  'Ku=0',
-  'Ku=1',
-  'Ku',
-  'Cu_p=0',
-  'Cu_p=1',
-  'Cu_p',
-  'Cu_f=0',
-  'Cu_f=1',
-  'Cu_f',
-  'Su_p=0',
-  'Su_p=1',
-  'Su_p',
-  'Su_f=0',
-  'Su_f=1',
-  'Su_f',
+  'Pu_f=0',
+  'Pu_f=1',
+  'Pu_f',
+  'Pu_p=0',
+  'Pu_p=1',
+  'Pu_p'
+  'Ku_f=0',
+  'Ku_f=1',
+  'Ku_f',
+  'Ku_p=0',
+  'Ku_p=1',
+  'Ku_p',
+  'Cu=0',
+  'Cu=1',
+  'Su=0',
+  'Su=1',
   'br_p=0',
   'br_p=1',
   'br_p',

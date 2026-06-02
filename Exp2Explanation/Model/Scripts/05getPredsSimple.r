@@ -7,7 +7,7 @@ library(tidyverse)
 #load(here('Exp2Explanation', 'Model', 'Data', 'pChoice.rda'))
 load(here('Exp2Explanation', 'Model', 'Data', 'scenariosSimple.rda')) # loads all_food and all_path, from getProbs.R?
 # Load data from the previous getParams script
-load(here('Exp2Explanation', 'Model', 'Data', 'paramsSimple.rda'))
+load(here('Exp2Explanation', 'Model', 'Data', 'paramsSimple.rda')) # params_food and params_path from 02getParamsSimple.r
 
 
 source(here('Exp2Explanation', 'Model', 'Scripts', 'semUtilsSimple.R')) #

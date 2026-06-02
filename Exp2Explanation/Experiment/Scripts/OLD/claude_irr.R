@@ -7,6 +7,9 @@ library(tidyverse)
 library(forcats)
 
 
+# This was done Apr 2026 but then the rating schema got changed slightly The claude ratings seem good enough to not rerun this
+# so this exercise is old.
+
 # Read in the data
 # df <- read.csv(here(
 #   'Exp2Explanation',

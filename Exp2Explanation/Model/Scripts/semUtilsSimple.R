@@ -11,32 +11,6 @@ load(here('Exp1Prediction', 'Model', 'Data', 'modelSimple.rda')) # loads best_fo
 base_causes <- c("P", "K", "C", "S") # probably rewrite alphabetically? If want to do that, also go back to much earlier Exp1 model
 
 
-# Used more in getPreds than in getProbs
-# causes1 <- c(
-#   "P",
-#   "K",
-#   "C",
-#   "S",
-#   "Pu",
-#   "Ku",
-#   "Cu",
-#   "Su",
-#   # "PKu",
-#   # "PCu",
-#   # "KCu",
-#   # "KSu",
-#   # "PSu",
-#   # "CSu",
-#   "br"
-# )
-
-# These definitely needed for the sem outcomes
-# path_obs <- c("K", "C", "S")
-# food_obs <- c("P", "C", "S")
-# food_uvar <- c("Pu", "Cu", "Su")
-# path_uvar <- c("Ku", "Cu", "Su")
-#
-#
 uvars <- c(
   "Pu",
   "Ku",
@@ -45,24 +19,9 @@ uvars <- c(
   "br"
 ) # change when decide whether rename _p and _f
 
-#orig_nodes <- c("P", "Pu", "K", "Ku", "C", "Cu", "S", "Su", "br") # br and interaction will be renamed in the specific ones
-#interaction_u <- c("PKu", "PCu", "PSu", "KCu", "KSu", "CSu")
-#vars <- c(orig_nodes) #, interaction_u
-
 vars <- c("P", "Pu", "K", "Ku", "C", "Cu", "S", "Su", "br")
 
 # --------- Define causal structures as data -----------
-
-# Just done this manually for now
-# Define causal structure as data
-# path_gen <- list(c(obs = "K", uvar = "Ku"))
-# path_prev <- list(c(obs = "C", uvar = "Cu")) # whatever selection gives
-#
-# food_gen <- list(
-#   c(obs = "P", uvar = "Pu"),
-#   c(obs = "K", uvar = "Ku") # again, whatever simplified selection gives
-# )
-# food_prev <- list() # empty for now
 
 # ---------- Structure model to pairs ----------
 

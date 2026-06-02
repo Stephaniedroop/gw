@@ -18,6 +18,7 @@ source(here('Exp1Prediction', 'Model', 'Scripts', 'modelUtils.R'))
 
 # The first run was complicated, with 6 interaction terms. In April 2026 I reran with just the four base vars.
 # This new model got almost the same KL, and was different only in Food situation 1000. Acceptable.
+# EXCEPT - the old target dist had a bug! (factor ordering). So the old model is meaningless. Redid it.
 
 # Run source scripts
 source(here('Exp1Prediction', 'Model', 'Scripts', '01targetDist.R')) # obtain target distribution from cleaned Exp1 behavioural data

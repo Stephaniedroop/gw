@@ -159,7 +159,7 @@ df <- df |>
       labels = 1:length(unique(mindsCode))
     )
   ) |>
-  arrange(id, S, C, K, P)
+  arrange(id, P, K, C, S)
 
 
 df <- df |>

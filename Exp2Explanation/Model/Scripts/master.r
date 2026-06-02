@@ -8,15 +8,20 @@ library(tidyverse)
 set.seed(12)
 
 # Load utils
-source(here('Exp2Explanation', 'Model', 'Scripts', 'cesmUtils.R'))
+source(here('Exp2Explanation', 'Model', 'Scripts', 'cesmUtilsSimple.R'))
 
 # Running a new series of 'simple' causal model (w/o interactions). Rename scripts if it all works and I decide to go with this as main arc
+# these then in turn redone 7 May to include ces preds for all br and all options given in the annotation schema
 
 source(here('Exp2Explanation', 'Model', 'Scripts', '02getParamsSimple.R')) # input modelSimple.rda from Exp1; output paramsSimple.rda
 source(here('Exp2Explanation', 'Model', 'Scripts', '03getProbsSimple.R'))
 source(here('Exp2Explanation', 'Model', 'Scripts', '04getSemSimple.R'))
 
-# still to do - check these then get predictions
+source(here('Exp2Explanation', 'Model', 'Scripts', '05getPredsSimple.R'))
+source(here('Exp2Explanation', 'Model', 'Scripts', '06processPredsSimple.R'))
+# ^^^^ I've been running these, after with simple, but before splitting out the ces scores for different brs and different ratings
+source(here('Exp2Explanation', 'Model', 'Scripts', '09plotCESSimple.R')) # MOST UTD 12 MAY
+
 
 # Run source scripts
 # 1 and 2 are equiavalent to get_world_combos in collider proj

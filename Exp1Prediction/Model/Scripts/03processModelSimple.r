@@ -25,8 +25,8 @@ print(min(fitted_food_mods$kl)) # .0393 - it was .025 before
 
 
 # ------ Without complexity -----------
-bpix <- which.min(fitted_path_mods$kl) # 8:
-bfix <- which.min(fitted_food_mods$kl) # 78:
+bpix <- which.min(fitted_path_mods$kl) # 46
+bfix <- which.min(fitted_food_mods$kl) # 72
 
 
 # Btw, some reporting stats about this distribution:
@@ -40,10 +40,10 @@ mean(fitted_food_mods$n_edge) # 2.67
 sd(fitted_food_mods$n_edge) # .949
 
 # Find the best fitting structures and their parameters
-best_path <- unlist(structures[bpix, ]) # 0 1 -1 -1
+best_path <- unlist(structures[bpix, ]) # !!!! -1 -1 1 0
 best_path_params <- unlist(fitted_path_mods[bpix, ])
 
-best_food <- unlist(structures[bfix, ]) # 1 0 1 1
+best_food <- unlist(structures[bfix, ]) # 1 1 0 1
 best_food_params <- unlist(fitted_food_mods[bfix, ])
 
 # Get model predictions for each situation

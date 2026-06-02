@@ -9,7 +9,7 @@ library(tidyverse)
 source(here('Exp2Explanation', 'Model', 'Scripts', 'semUtilsSimple.R')) # not used apart from def vars
 
 # Load data from the previous getParams script
-load(here('Exp2Explanation', 'Model', 'Data', 'paramsSimple.rda'))
+load(here('Exp2Explanation', 'Model', 'Data', 'paramsSimple.rda')) # 2 dfs
 
 
 # ----- Step 1: Get all_combos ---------------
@@ -59,5 +59,5 @@ save(
   all_food_probs,
   all_path_probs,
   all_combos,
-  file = here('Exp2Explanation', 'Model', 'Data', 'probscombos.rda') # should have renamed probsCombosSimple!
+  file = here('Exp2Explanation', 'Model', 'Data', 'probscombosSimple.rda') # should have renamed probsCombosSimple!
 )

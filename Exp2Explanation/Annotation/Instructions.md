@@ -2,79 +2,143 @@
 
 ## The task
 
-I need some annotations done of some free text utterances. You are a clever and reliable but basically normal human annotater. You will be given a series of explanations in natural language. They are explanations for why a character performed an outcome (ie. went a certain path to get a certain food). The set of outcomes they perform is four possible ones: long or short path to hotdog or pizza. You don't need to know what the character did; you just need to annotate the participant's explanation. For each one you need to output which of a set of factors is being cited in the explanation as the best reason for the behavior.
+I need some annotations done of some free text utterances. You are a clever
+and reliable but basically normal human annotator. You will be given a series
+of explanations in natural language. They are explanations for why a character
+performed an outcome (i.e. went a certain path to get a certain food). The set
+of outcomes they perform is four possible ones: long or short path to hotdog
+or pizza. You don't need to know what the character did; you just need to
+annotate the participant's explanation. For each one you need to output which
+of a set of factors is being cited in the explanation as the best reason for
+the behavior.
 
 ## Use fuzzy LLM language intuitions rather than writing me a rule-based script
 
-I don't want you to do the rating in a rule-based way by making a reproducible python script. I don't need a rule-based system but rather flexible interpretation and perception of implicit meaning rather than pattern-matching. I actually want to harness the full, fuzzy, language expertise of the LLM itself. For this reason I don't want to use Claude co-work because that returns a rule-based python script. So I will drop the free text utterances for rating straight into the chat when have understood the task and say you are ready.
+I don't want you to do the rating in a rule-based way. I need flexible
+interpretation and perception of implicit meaning rather than pattern-matching.
+I want to harness the full, fuzzy language expertise of the LLM itself. For
+this reason I don't want a reproducible python script. I will drop the free
+text utterances for rating straight into the chat once you have understood the
+task and said you are ready.
 
-## The factors to choose from
+## Understanding the \_f and \_p suffixes
 
-The factors are: P, K, C, S Pu, Ku, Cu, Su. There are four general variables (P, K, C, S) and each of those has a 'noise' factor which is like an unobserved or unmodelled reason why the corresponding general variable works or doesn't work right now. Each can take 0 or 1. Below is the definitions of the set of factors and then some examples of each. However, you should NOT make rules to match these and only these exactly. These examples are only guidelines. You should use your interpretation and all your stored knowledge of implied and tacit meanings to choose the best category for each text utterance. Sometimes the utterance will seem to contain several categories but you need to choose which is being cited as the main one, or the 'real' reason for the behavior.
+Some variables have two versions, marked \_f (food) and \_p (path). These do
+not describe two different kinds of the variable — they describe which outcome
+the variable is being recruited to explain. For example, a momentary food
+craving (Pu) might explain what someone chose to eat (Pu_f) or it might
+explain which path they took (Pu_p). When you see a \_f or \_p variable, ask: is this
+explanation about why they got the food they got, or about why they went the
+way they went?
 
-Some factors (Cu, Su, br) are split out between Path and Food outcomes. These are marked "\_p" for Path and "\_f" for Food. Sometimes the distinction is ambiguous in practice: for example an utterance "He couldn't be bothered" might not cleanly be either Cu_p or Cu_f; in this case it is ok to randomly pick either of the labels that fit.
+## Choosing the best label
 
-Sometimes the utterance will not reference the state the variable took. In these cases it is ok to put just the variable name. For example "This was the closest food he could see" = put Su_f, or "It was his favorite food" = put P. If these variables on their own are not in the list of ones to choose from then it's ok to add it.
+Sometimes the utterance will seem to contain several categories; choose whichever
+is the main or most proximate reason cited. Sometimes the utterance will not
+reference the state the variable took (e.g. which food was preferred, or which
+direction). In these cases use the variable name without a 0 or 1. 'Unclear'
+is a last resort for utterances that contain no real causal explanation —
+fragments or re-descriptions of the behavior itself. Some labels may be rare
+and it is fine if they have no exemplars.
 
-The category 'Unclear' is for any which genuinely dont seem to fit any of the factors or are nonsense. It is a last resort. Some labels may be rare and it is ok if they don't end up with any exemplars.
+## Set of factors
 
-Set of factors:
-P=0: general stable liking for pizza or not hotdog
-P=1: general stable liking for hotdog or not pizza
-P: favorite but state not mentioned
+P=0: stable general liking for pizza or disliking of hotdog
+P=1: stable general liking for hotdog or disliking of pizza
+P: stable preference mentioned but which food not clear
+
 K=0: generally does not know the area
 K=1: generally knows the area
-C=0: generally is lazy
-C=1: generally is sporty
+
+C=0: generally lazy or unenergetic
+C=1: generally sporty or active
+
 S=0: starts near the pizza
 S=1: starts near the hotdog
-S: location important but we don't know which
-Pu=0: right now wants a pizza or right now does not want a hotdog
-Pu=1: right now wants a hotdog or right now does not want a pizza
-Ku=0: right now doesn't know the area
-Ku=1: right now knows the area
-Cu_f=0: right now is feeling lazy (with an emphasis on not caring what they eat)
-Cu_f=1: right now is feeling sporty (with an emphasis on being motivated to seek out the preferred food even if it takes effort)
-Cu_p=0: right now is feeling lazy (with an emphasis on not wanting to make any effort)
-Cu_p=1: right now is feeling sporty (with an emphasis on wanting to move and get exercise)
-Su_f=0: right now they can see the pizza or they cannot see the hotdog
-Su_f=1: right now they can see the hotdog or they cannot see the pizza
-Su_f: [if the state they cannot see is not discernable from the utterance]
-Su_p=0: something that would let them physically access the pizza or not access the hotdog stand
-Su_p=1: something that would let them physically access the hotdog or not access the pizza stand
-br_p=0: any other reason not modeled that would make them take the short path or not take the long path
-br_p=1: any other reason not modeled that would make them take the long path or not take the short path
-br_f=0: any other reason not modeled that would make them get pizza or not get hotdog
-br_f=1: any other reason not modeled that would make them get hotdog or not get pizza
-Unclear: a nonsensical fragment or description of the situation that does not contain a real explanation, cause or reason
+S: starting location matters but which food is unclear
 
-Examples, not exhaustive or definitive:
-P=0: 'his favorite food is pizza', 'he likes pizza', 'he doesnt like hotdogs'
-P=1: 'his favorite food is hotdogs', 'he likes hotdog', 'he doesnt like pizza'
+Pu_f=0: right now wants pizza or does not want hotdog [explains food choice]
+Pu_f=1: right now wants hotdog or does not want pizza [explains food choice]
+Pu_f: momentary food preference explains food choice but direction unclear
+
+Pu_p=0: momentary preference was too weak to make him go straight to it or could be deferred to justify
+going further [explains long path or not taking short path]
+Pu_p=1: momentary preference was strong enough to make him take short path or go straight to it
+[explains short path or not taking long path]
+
+Ku_f=0: right now does not know where the food stands are [explains food
+choice, e.g. defaulted to nearest]
+Ku_f=1: right now knows where a specific food stand is [explains food choice]
+
+Ku_p=0: right now does not know the route, promotes long path [explains path taken]
+Ku_p=1: right now knows the route or a shortcut, promotes short path [explains path taken]
+
+Cu=0: right now feeling lazy or low energy
+Cu=1: right now feeling energetic or sporty
+
+Su=0: a situational factor that favoured pizza or impeded access to hotdog
+Su=1: a situational factor that favoured hotdog or impeded access to pizza
+Su: situational factor explains outcome but direction unclear
+
+br_f=0: any other unmodelled reason that would lead to getting pizza or not
+getting hotdog
+br_f=1: any other unmodelled reason that would lead to getting hotdog or not
+getting pizza
+
+br_p=0: any other unmodelled reason that would lead to taking the short path
+or not the long path
+br_p=1: any other unmodelled reason that would lead to taking the long path
+or not the short path
+
+Unclear: a nonsensical fragment or re-description of the behavior with no
+causal explanation
+
+## Examples (not exhaustive or definitive)
+
+P=0: 'his favorite food is pizza', 'he likes pizza', 'he doesn't like hotdogs'
+P=1: 'his favorite food is hotdogs', 'he likes hotdog', 'he doesn't like pizza'
 P: 'it was his favorite'
-K=0: 'he didnt know the way', 'he doesnt know the area', 'he had never been there'
-K=1: 'he knows there is a hotdog stand round the corner', 'he knows where to find the food', 'he knows the way'
+
+K=0: 'he didn't know the way', 'he doesn't know the area', 'he had never been there'
+K=1: 'he knows there is a hotdog stand round the corner', 'he knows the way'
+
 C=0: 'he is lazy', 'he never wants to go far'
 C=1: 'he is sporty', 'he loves being active'
+
 S=0: 'he was near the pizza'
 S=1: 'he was near the hotdog'
 S: 'he was near'
-Pu=0: 'he was in the mood for pizza', 'he didnt fancy hotdog this minute'
-Pu=1: 'just fancied a hotdog', 'he wants hotdog'
-Pu: wanted a different food from normal but unknown which one is normal
-Ku=0: 'he forgot the layout'
-Ku=1: 'he had just been given directions'
-Cu_f=0: 'he didnt care what he ate'
-Cu_f=1: 'he wanted to work up an appetite for his hotdog'
-Cu_p=0: 'he was feeling tired'
-Cu_p=1: 'he needed exercise'
-Su_f=0: 'he couldn't see the hotdog', 'he could see the pizza'
-Su_f=1: 'he could see the hotdog', 'he couldn't see the pizza'
-Su_f: 'it was the nearest food he could see'
-Su_p=0: 'the path was clear', 'the pizza stand was right on his route'
-Su_p=1: 'there was a roadblock so he had to go the long way round', 'the hotdog was only reachable from the other side'
-br_p=0: 'it was raining', 'he was on his phone so went the nearest way'
-br_p=1: 'he had time to kill', 'he ran into a friend and they walked together'
+
+Pu_f=0: 'he was in the mood for pizza', 'he didn't fancy hotdog'
+Pu_f=1: 'he just fancied a hotdog', 'he wanted hotdog'
+Pu_f: 'he wanted something different from usual'
+
+Pu_p=0: 'his craving for it made the long walk worth it',
+Pu_p=1: 'he wanted it so much he went straight to it',
+
+Ku_f=0: 'he didn't know if there was a hotdog stand nearby',
+'he couldn't remember where the stands were'
+Ku_f=1: 'he remembered seeing a hotdog stand there',
+'he had just been told where the stand was'
+
+Ku_p=0: 'he forgot which way to go', 'he got confused about the route'
+Ku_p=1: 'he knew a shortcut', 'he had just been given directions'
+
+Cu=0: 'he was feeling tired', 'he couldn't be bothered', 'he didn't care what he ate'
+Cu=1: 'he needed exercise', 'he wanted to work up an appetite'
+
+Su=0: 'he could see the pizza', 'the path was clear',
+'the pizza stand was right on his route'
+Su=1: 'he could see the hotdog',
+'there was a roadblock so he had to go the long way round',
+'the hotdog was only reachable from the other side'
+Su: 'it was the nearest food he could see'
+
 br_f=0: 'the hotdog queue was enormous', 'the hotdogs looked bad today'
 br_f=1: 'the pizza looked stale', 'a friend recommended the hotdog'
+
+br_p=0: 'it was raining so he took the quickest route',
+'he was on his phone and went the nearest way'
+br_p=1: 'he had time to kill', 'he ran into a friend and they walked together'
+
 Unclear: 'he went the long way', 'the long way round the corner'

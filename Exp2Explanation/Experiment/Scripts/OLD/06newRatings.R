@@ -1,4 +1,10 @@
-load(here('Exp2Explanation', 'Experiment', 'Data', 'processedData.Rda')) # df. This 2040 already has 24 duplictaes removed
+# ---------------------------------------------------------
+# -----  Get data to csv for going between R and python   -------------
+# ---------------------------------------------------------
+
+load(here('Exp2Explanation', 'Experiment', 'Data', 'processedData.Rda')) # df. This 2040 already has 24 duplicates removed
+
+# OLD... after this I used 07getValidation and there I saved annotateall.csv
 
 # I want to remove 15% of df as a test set
 set.seed(12)
