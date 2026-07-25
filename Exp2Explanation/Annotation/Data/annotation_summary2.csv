@@ -1,0 +1,65 @@
+"","br_f=0","br_f=1","br_p=0","br_p=1","C=0","C=1","Cu=0","Cu=1","K=0","K=1","Ku_f=0","Ku_f=1","Ku_p=0","Ku_p=1","P=0","P=1","Pu_f=0","Pu_f=1","Pu_p=0","Pu_p=1","S=0","S=1","Su=0","Su=1"
+"No preference for hotdog, Doesn't know area, Lazy, Starts near hotdog. Gets hotdog by long route.",0,1,0,1,1,1,0,3,16,0,1,0,1,0,0,6,0,0,0,0,0,0,0,0
+"No preference for hotdog, Doesn't know area, Lazy, Starts near hotdog. Gets hotdog by short route.",0,0,0,0,14,0,0,0,2,0,4,0,0,0,0,1,0,1,0,0,0,1,1,7
+"No preference for hotdog, Doesn't know area, Lazy, Starts near hotdog. Gets pizza by long route.",2,0,0,0,0,0,0,1,8,0,1,0,2,0,10,0,7,0,0,0,0,0,0,0
+"No preference for hotdog, Doesn't know area, Lazy, Starts near hotdog. Gets pizza by short route.",0,0,2,2,10,0,0,0,3,0,2,0,0,0,8,0,2,0,0,0,0,0,1,0
+"No preference for hotdog, Doesn't know area, Lazy, Starts near pizza. Gets hotdog by long route.",0,2,0,1,2,0,0,0,6,0,0,0,3,0,0,8,0,6,0,0,0,0,0,1
+"No preference for hotdog, Doesn't know area, Lazy, Starts near pizza. Gets hotdog by short route.",0,0,2,1,3,0,0,0,3,0,4,0,0,1,1,6,0,10,0,0,0,0,0,2
+"No preference for hotdog, Doesn't know area, Lazy, Starts near pizza. Gets pizza by long route.",1,0,0,1,1,4,0,0,11,0,1,0,2,0,5,0,4,0,0,0,0,0,0,0
+"No preference for hotdog, Doesn't know area, Lazy, Starts near pizza. Gets pizza by short route.",0,0,3,0,20,0,0,0,0,0,3,0,0,1,1,0,1,0,0,0,0,0,3,0
+"No preference for hotdog, Doesn't know area, Sporty, Starts near hotdog. Gets hotdog by long route.",0,0,0,3,0,15,0,6,4,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0
+"No preference for hotdog, Doesn't know area, Sporty, Starts near hotdog. Gets hotdog by short route.",0,0,0,0,0,0,1,0,8,0,4,0,0,0,0,3,0,1,0,1,0,0,0,12
+"No preference for hotdog, Doesn't know area, Sporty, Starts near hotdog. Gets pizza by long route.",0,0,0,2,0,9,0,6,4,0,0,0,0,0,3,0,6,0,0,0,0,0,1,0
+"No preference for hotdog, Doesn't know area, Sporty, Starts near hotdog. Gets pizza by short route.",0,0,1,1,1,5,0,1,7,0,3,0,0,0,5,0,6,0,0,0,0,0,1,0
+"No preference for hotdog, Doesn't know area, Sporty, Starts near pizza. Gets hotdog by long route.",0,0,0,3,0,14,0,3,3,0,0,0,1,0,1,2,0,3,0,0,0,0,0,1
+"No preference for hotdog, Doesn't know area, Sporty, Starts near pizza. Gets hotdog by short route.",0,1,1,2,0,4,0,2,8,0,0,0,0,0,0,5,0,5,0,0,0,0,0,4
+"No preference for hotdog, Doesn't know area, Sporty, Starts near pizza. Gets pizza by long route.",0,0,0,3,0,15,0,5,5,0,0,0,0,0,2,1,0,0,0,0,0,0,0,0
+"No preference for hotdog, Doesn't know area, Sporty, Starts near pizza. Gets pizza by short route.",0,0,0,0,0,1,0,0,4,0,6,1,1,1,3,0,2,0,0,2,0,0,10,0
+"No preference for hotdog, Knows area, Lazy, Starts near hotdog. Gets hotdog by long route.",0,1,0,5,2,0,0,10,2,1,1,0,1,0,0,2,0,3,0,0,0,0,0,1
+"No preference for hotdog, Knows area, Lazy, Starts near hotdog. Gets hotdog by short route.",0,0,1,0,19,0,0,0,0,0,0,1,0,2,0,3,0,2,0,1,0,0,0,3
+"No preference for hotdog, Knows area, Lazy, Starts near hotdog. Gets pizza by long route.",2,0,1,3,0,0,0,4,0,0,1,0,0,1,7,0,10,0,0,0,0,0,1,1
+"No preference for hotdog, Knows area, Lazy, Starts near hotdog. Gets pizza by short route.",0,0,2,0,3,0,0,0,0,3,1,4,0,0,8,0,9,0,0,0,0,0,2,0
+"No preference for hotdog, Knows area, Lazy, Starts near pizza. Gets hotdog by long route.",0,2,0,4,0,1,0,4,0,1,2,0,0,0,0,7,1,5,0,0,0,0,0,3
+"No preference for hotdog, Knows area, Lazy, Starts near pizza. Gets hotdog by short route.",0,0,1,0,3,0,0,0,0,1,0,1,0,2,0,10,0,12,0,0,0,0,0,0
+"No preference for hotdog, Knows area, Lazy, Starts near pizza. Gets pizza by long route.",3,0,0,6,1,1,1,4,1,1,3,0,0,0,3,0,6,1,0,0,0,0,0,1
+"No preference for hotdog, Knows area, Lazy, Starts near pizza. Gets pizza by short route.",0,0,0,0,22,0,0,0,0,0,0,0,0,2,3,0,0,0,0,0,0,0,3,1
+"No preference for hotdog, Knows area, Sporty, Starts near hotdog. Gets hotdog by long route.",0,0,0,0,0,18,0,9,0,2,1,0,0,0,0,0,1,0,0,0,0,0,0,0
+"No preference for hotdog, Knows area, Sporty, Starts near hotdog. Gets hotdog by short route.",0,0,4,0,0,1,3,0,0,2,0,0,0,2,0,8,0,7,0,0,0,0,0,4
+"No preference for hotdog, Knows area, Sporty, Starts near hotdog. Gets pizza by long route.",1,0,0,0,0,13,0,7,0,1,0,0,1,0,3,1,5,0,0,0,0,0,0,0
+"No preference for hotdog, Knows area, Sporty, Starts near hotdog. Gets pizza by short route.",1,0,0,0,3,2,0,1,0,1,0,1,0,3,6,0,11,0,0,0,1,0,1,0
+"No preference for hotdog, Knows area, Sporty, Starts near pizza. Gets hotdog by long route.",0,0,0,0,0,17,0,8,1,0,0,1,0,0,0,1,0,4,0,0,0,0,0,0
+"No preference for hotdog, Knows area, Sporty, Starts near pizza. Gets hotdog by short route.",0,0,1,0,0,2,0,3,0,2,0,0,0,3,0,9,0,10,0,0,0,0,0,1
+"No preference for hotdog, Knows area, Sporty, Starts near pizza. Gets pizza by long route.",0,0,0,3,0,14,0,8,1,1,1,0,0,0,3,0,0,0,0,0,0,0,0,0
+"No preference for hotdog, Knows area, Sporty, Starts near pizza. Gets pizza by short route.",0,0,1,0,5,0,1,0,1,2,0,3,0,1,6,0,6,0,0,3,0,0,4,0
+"Preference for hotdog, Doesn't know area, Lazy, Starts near hotdog. Gets hotdog by long route.",0,1,0,5,0,0,0,2,11,0,2,0,4,0,0,3,0,3,0,0,0,0,0,0
+"Preference for hotdog, Doesn't know area, Lazy, Starts near hotdog. Gets hotdog by short route.",0,0,2,1,7,0,0,0,1,0,1,1,0,0,0,13,0,0,0,0,0,0,0,4
+"Preference for hotdog, Doesn't know area, Lazy, Starts near hotdog. Gets pizza by long route.",3,0,0,3,3,0,0,2,6,0,1,0,1,0,1,0,9,0,1,0,0,0,1,0
+"Preference for hotdog, Doesn't know area, Lazy, Starts near hotdog. Gets pizza by short route.",1,0,1,3,2,0,0,0,8,0,6,0,2,0,1,0,1,1,0,0,0,0,6,0
+"Preference for hotdog, Doesn't know area, Lazy, Starts near pizza. Gets hotdog by long route.",0,0,0,0,2,2,0,3,6,0,2,0,4,0,0,7,0,5,0,0,0,0,0,0
+"Preference for hotdog, Doesn't know area, Lazy, Starts near pizza. Gets hotdog by short route.",0,0,4,0,1,0,0,0,0,0,0,0,0,2,0,17,0,6,0,1,0,0,0,1
+"Preference for hotdog, Doesn't know area, Lazy, Starts near pizza. Gets pizza by long route.",5,0,0,5,1,1,0,0,12,0,3,0,0,0,2,0,3,0,0,0,0,0,0,0
+"Preference for hotdog, Doesn't know area, Lazy, Starts near pizza. Gets pizza by short route.",0,0,0,0,18,0,0,0,1,0,4,0,0,0,2,0,0,0,0,0,0,0,5,1
+"Preference for hotdog, Doesn't know area, Sporty, Starts near hotdog. Gets hotdog by long route.",0,0,0,3,0,11,0,3,5,0,1,0,1,0,0,5,0,1,0,0,0,0,0,0
+"Preference for hotdog, Doesn't know area, Sporty, Starts near hotdog. Gets hotdog by short route.",0,0,0,0,0,0,0,0,2,0,1,0,1,1,0,15,0,2,0,1,0,1,0,7
+"Preference for hotdog, Doesn't know area, Sporty, Starts near hotdog. Gets pizza by long route.",4,0,0,0,0,9,0,3,4,0,4,0,1,0,0,0,5,0,0,0,0,0,1,0
+"Preference for hotdog, Doesn't know area, Sporty, Starts near hotdog. Gets pizza by short route.",1,0,1,2,0,4,0,2,7,0,3,0,1,0,4,0,5,0,0,0,0,0,1,0
+"Preference for hotdog, Doesn't know area, Sporty, Starts near pizza. Gets hotdog by long route.",0,0,0,1,0,8,0,8,5,0,0,0,3,0,1,2,0,4,0,0,0,0,0,0
+"Preference for hotdog, Doesn't know area, Sporty, Starts near pizza. Gets hotdog by short route.",0,0,0,1,0,5,0,1,2,0,0,0,0,0,0,15,1,6,0,0,0,0,0,1
+"Preference for hotdog, Doesn't know area, Sporty, Starts near pizza. Gets pizza by long route.",2,0,0,0,0,10,0,3,4,0,1,0,0,0,3,0,7,0,0,0,0,0,0,0
+"Preference for hotdog, Doesn't know area, Sporty, Starts near pizza. Gets pizza by short route.",1,0,0,0,1,0,0,0,6,0,8,0,1,0,0,1,2,1,0,4,0,0,6,1
+"Preference for hotdog, Knows area, Lazy, Starts near hotdog. Gets hotdog by long route.",0,0,0,9,1,0,0,6,2,1,2,0,1,0,0,2,1,4,0,0,0,0,0,1
+"Preference for hotdog, Knows area, Lazy, Starts near hotdog. Gets hotdog by short route.",0,0,2,0,6,0,0,0,0,1,0,1,0,2,0,12,0,4,0,0,0,0,0,4
+"Preference for hotdog, Knows area, Lazy, Starts near hotdog. Gets pizza by long route.",6,0,0,2,0,1,0,1,0,1,1,0,0,0,2,1,13,1,0,0,0,0,0,0
+"Preference for hotdog, Knows area, Lazy, Starts near hotdog. Gets pizza by short route.",1,0,0,1,8,0,0,0,0,0,0,2,0,1,1,1,10,1,0,0,1,0,5,0
+"Preference for hotdog, Knows area, Lazy, Starts near pizza. Gets hotdog by long route.",0,1,0,7,0,1,0,6,1,1,0,1,1,0,0,8,0,4,0,0,0,0,0,2
+"Preference for hotdog, Knows area, Lazy, Starts near pizza. Gets hotdog by short route.",0,0,2,0,1,2,0,0,0,1,1,0,0,1,0,17,0,5,0,1,0,0,0,0
+"Preference for hotdog, Knows area, Lazy, Starts near pizza. Gets pizza by long route.",4,0,0,4,5,0,0,4,2,1,2,0,1,0,1,0,5,0,0,0,0,0,0,0
+"Preference for hotdog, Knows area, Lazy, Starts near pizza. Gets pizza by short route.",0,0,1,0,23,0,0,0,0,1,0,0,0,0,1,1,0,0,0,1,0,0,4,0
+"Preference for hotdog, Knows area, Sporty, Starts near hotdog. Gets hotdog by long route.",0,0,0,2,1,13,0,10,1,0,0,0,0,0,0,3,0,1,0,0,0,1,0,0
+"Preference for hotdog, Knows area, Sporty, Starts near hotdog. Gets hotdog by short route.",0,1,2,0,0,1,0,0,0,4,0,1,0,1,0,16,0,4,0,1,0,0,0,2
+"Preference for hotdog, Knows area, Sporty, Starts near hotdog. Gets pizza by long route.",1,0,1,2,0,14,0,6,0,0,0,0,0,0,1,0,6,0,0,0,0,0,0,0
+"Preference for hotdog, Knows area, Sporty, Starts near hotdog. Gets pizza by short route.",0,0,2,0,1,2,0,3,0,1,0,0,0,0,3,0,16,0,0,1,0,0,2,0
+"Preference for hotdog, Knows area, Sporty, Starts near pizza. Gets hotdog by long route.",0,0,0,0,0,16,0,7,0,0,0,0,0,0,0,5,1,1,0,0,0,0,0,0
+"Preference for hotdog, Knows area, Sporty, Starts near pizza. Gets hotdog by short route.",0,0,1,1,0,0,0,0,0,3,0,0,1,4,0,13,0,4,0,2,0,0,0,2
+"Preference for hotdog, Knows area, Sporty, Starts near pizza. Gets pizza by long route.",1,0,0,2,0,12,0,8,2,0,0,0,0,0,2,0,5,0,0,0,0,0,0,0
+"Preference for hotdog, Knows area, Sporty, Starts near pizza. Gets pizza by short route.",1,0,4,0,2,0,0,0,0,1,0,2,0,0,1,0,12,2,0,2,0,0,3,0
