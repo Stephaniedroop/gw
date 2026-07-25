@@ -70,6 +70,19 @@ td_sd <- df |>
   ) |>
   data.frame()
 
+# Actually put the sd back to a list
+list <- list(
+  td_sd$sd_short_pizza,
+  td_sd$sd_long_pizza,
+  td_sd$sd_short_hotdog,
+  td_sd$sd_long_hotdog
+)
+list2 <- unlist(list)
+
+max(list2) # .153
+min(list2) # .050
+mean(list2) # .097
+
 # Print a latex table of the sds
 kable(
   td_sd,

@@ -14,7 +14,7 @@ library(here)
 library(gander)
 
 # Load utils
-source(here('Exp1Prediction', 'Model', 'Scripts', 'modelUtils.R'))
+source(here('Exp1Prediction', 'Model', 'Scripts', 'modelUtilsSimple.R'))
 
 # The first run was complicated, with 6 interaction terms. In April 2026 I reran with just the four base vars.
 # This new model got almost the same KL, and was different only in Food situation 1000. Acceptable.
@@ -22,7 +22,7 @@ source(here('Exp1Prediction', 'Model', 'Scripts', 'modelUtils.R'))
 
 # Run source scripts
 source(here('Exp1Prediction', 'Model', 'Scripts', '01targetDist.R')) # obtain target distribution from cleaned Exp1 behavioural data
-source(here('Exp1Prediction', 'Model', 'Scripts', '02findModel.R')) # to find best fitting causal model from target distibution
-source(here('Exp1Prediction', 'Model', 'Scripts', '03tidyModel.R')) # to tidy up the model output
+source(here('Exp1Prediction', 'Model', 'Scripts', '02findModelSimple.R')) # to find best fitting causal model from target distibution
+source(here('Exp1Prediction', 'Model', 'Scripts', '03processModelSimple.R')) # to tidy up the model output
 source(here('Exp1Prediction', 'Model', 'Scripts', '04graphs.R')) # a function to make formulas from the best fitting model structure, to send to dagify, daggity, ggdag
 # Done for path but not yet for destination (can prob use same function). Btw I deleted all the old script. Look on gwnotes for graphing or .rmd if you still need it

@@ -6,21 +6,17 @@ library(here)
 library(tidyverse)
 library(stringr)
 library(xtable)
+#library(mclogit)
+library(vcd)
 
-
-# Don't think we need this?
-#load(here('Exp1Prediction', 'Experiment', 'Data', 'gwExp1data.Rda')) # df, 1421 obs of 27
-#load(here('Exp1Prediction', 'Model', 'Data', 'targetDist.Rda'))
-
+# 2040 of 11
 df <- read.csv(here(
   'Exp2Explanation',
   'Annotation',
   'Data',
   'annotatedNewModelall.csv'
 )) # annotatedall is from the .py script call to api. with 2 is manually through chat obtaining rest when my fund ran out
-
-# looks like the separate dfs of food and path ces might already have all i need
-# now to process and merge the claude ratings
+# 'annotatedNewModel' is partway manually reconciled - the api call missed some
 
 # ---------- 1. Process df the claude rated explanations -----------------
 
@@ -29,11 +25,6 @@ df <- df |> # 2040
   rename(node3 = annotation)
 
 df$condObs <- as.factor(df$condObs)
-
-# Still trying to find the right place to retag with Verbose - maybe not here but once it has been merged back again?
-# If so, don't need the exp1 dist tags here but later
-# df$condVerb <- df$condObs
-# levels(df$condVerb) <- levels(situationsVerbose) # this from the target distribution from Exp1
 
 # Add a column of the outcome in words:
 df <- df |>
@@ -46,7 +37,6 @@ df <- df |>
       TRUE ~ 'Other'
     )
   )
-
 
 # Remove rows where column right contains Unclear - now 1993 - 47 Unclear
 df <- df |>
@@ -92,6 +82,33 @@ bare_rows_fixed <- bare_rows_fixed |>
 
 # recombine to get 1991 rows
 df_fixed <- bind_rows(full_rows, bare_rows_fixed)
+
+df_fixed <- df_fixed |>
+  mutate(
+    node3 = factor(node3),
+    condObs = factor(condObs),
+    choice = factor(choice),
+    mindsCode = factor(mindsCode),
+    tag = factor(tag),
+    State = factor(State)
+  )
+
+# ---------- Quick check of signal ----------
+tab <- table(df_fixed$tag, df_fixed$node3) # Print this in appendices if necessary? A good way of showing it.
+
+annotation_summary <- as.data.frame.matrix(tab)
+
+# Save as csv in Data folder
+write.csv(
+  annotation_summary,
+  here('Exp2Explanation', 'Annotation', 'Data', 'annotation_summary.csv'),
+  row.names = TRUE
+)
+
+chisq.test(tab, simulate.p.value = TRUE, B = 10000) # 4990.6, df = NA, p-value = 9.999e-05 - can't really interpret
+
+assocstats(tab) # to get Cramer's V
+
 
 # ---- this if we don't split out br -------
 
