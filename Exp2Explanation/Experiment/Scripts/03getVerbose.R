@@ -134,7 +134,7 @@ widget <- datatable(
       list(targets = 1, width = "30%") # give the text column room
     )
   )
-) %>%
+) |>
   formatStyle(columns = "condition_verbose", `white-space` = "normal")
 
 widget
@@ -145,9 +145,18 @@ saveWidget(
   selfcontained = TRUE
 )
 
+# At 25 July, the widget not showing on github so no point putting it there. Better on OSF (but I haven't made an OSF page yet)
+# Can reuse this for the other tables and scripts if I want to put them as verbose too
+
 # save df2 as csv
 write.csv(
   df2,
   here('Exp2Explanation', 'Experiment', 'Data', 'explanations_verbosekey.csv'),
   row.names = FALSE
+)
+
+# Save key for later
+write.csv(
+  key,
+  here('Exp2Explanation', 'Experiment', 'Data', 'key.csv')
 )

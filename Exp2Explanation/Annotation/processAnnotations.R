@@ -18,7 +18,19 @@ df <- read.csv(here(
 )) # annotatedall is from the .py script call to api. with 2 is manually through chat obtaining rest when my fund ran out
 # 'annotatedNewModel' is partway manually reconciled - the api call missed some
 
+key <- read.csv(here(
+  'Exp2Explanation',
+  'Experiment',
+  'Data',
+  'key.csv'
+)) # key is the mapping of the condition tags to verbose
+
+
 # ---------- 1. Process df the claude rated explanations -----------------
+
+# Take a copy as the orig for keep unclear
+df2 <- df
+
 
 df <- df |> # 2040
   mutate(condObs = substr(as.character(tag), 2, 5)) |>
@@ -89,14 +101,46 @@ df_fixed <- df_fixed |>
     condObs = factor(condObs),
     choice = factor(choice),
     mindsCode = factor(mindsCode),
-    tag = factor(tag),
-    State = factor(State)
+    tag = factor(tag) #,
+    #State = factor(State)
   )
 
 # ---------- Quick check of signal ----------
 tab <- table(df_fixed$tag, df_fixed$node3) # Print this in appendices if necessary? A good way of showing it.
-
 annotation_summary <- as.data.frame.matrix(tab)
+
+annsumm <- df_fixed
+
+## ---- Direct lookup and replace ----
+annsumm <- annsumm |>
+  left_join(key, by = c("tag" = "tag")) |>
+  rename(condition_verbose = label)
+
+annsumm2 <- annsumm |>
+  select(tag, condition_verbose, response, node3)
+
+write.csv(
+  annsumm2,
+  here('Exp2Explanation', 'Annotation', 'Data', 'annotations_verbose_long.csv'),
+  row.names = FALSE
+)
+
+annsumm3 <- annsumm2 |>
+  group_by(tag, condition_verbose, node3) |>
+  summarise(count = n()) |>
+  ungroup()
+
+write.csv(
+  annsumm3,
+  here(
+    'Exp2Explanation',
+    'Annotation',
+    'Data',
+    'annotations_verbose_summary.csv'
+  ),
+  row.names = FALSE
+)
+
 
 # Save as csv in Data folder
 write.csv(
