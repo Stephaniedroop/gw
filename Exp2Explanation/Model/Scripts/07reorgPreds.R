@@ -7,11 +7,7 @@ library(tidyverse)
 library(ggplot2)
 library(stringr)
 
-
-#load(here('Exp2Explanation', 'Model', 'Data', 'tag_counts.Rda'))
-load(here('Exp2Explanation', 'Model', 'Data', 'ces_sepSimpleN.Rda')) # 406-418 of 5 vars came from script 6 nothing in between
-#df <- read.csv(here('Exp2Explanation', 'Experiment', 'Data', 'maincoded.csv')) # 1887 of 11
-# All the vars are there but they are not called the same things as in annotated data
+load(here('Exp2Explanation', 'Model', 'Data', 'ces_sepSimpleN.Rda'))
 
 # 2. ------ Process ces scores --------
 
@@ -100,11 +96,18 @@ shortHotdog_ces <- merge(
 # CURRENT PROBLEM 12 MAY
 # The annotation has different ratings for food and path br and vars. This must be solved before merging them, otherwise they are being equated
 
-# Combine ces scores for path and food. Decision here to add but could also multiply - change if necessary?
-longPizza_ces$newProb <- longPizza_ces$postces.x * longPizza_ces$postces.y
-shortPizza_ces$newProb <- shortPizza_ces$postces.x * shortPizza_ces$postces.y
-longHotdog_ces$newProb <- longHotdog_ces$postces.x * longHotdog_ces$postces.y
-shortHotdog_ces$newProb <- shortHotdog_ces$postces.x * shortHotdog_ces$postces.y
+# Combine ces scores for path and food. Make decision between add and multiply
+# It should be ADD because otherwise ones not present in x or y will 0 out the other one
+longPizza_ces$newProb <- (longPizza_ces$postces.x + longPizza_ces$postces.y) / 2
+shortPizza_ces$newProb <- (shortPizza_ces$postces.x +
+  shortPizza_ces$postces.y) /
+  2
+longHotdog_ces$newProb <- (longHotdog_ces$postces.x +
+  longHotdog_ces$postces.y) /
+  2
+shortHotdog_ces$newProb <- (shortHotdog_ces$postces.x +
+  shortHotdog_ces$postces.y) /
+  2
 
 # longPizza_ces[is.na(longPizza_ces)] <- 0
 # shortPizza_ces[is.na(shortPizza_ces)] <- 0
@@ -112,7 +115,7 @@ shortHotdog_ces$newProb <- shortHotdog_ces$postces.x * shortHotdog_ces$postces.y
 # shortHotdog_ces[is.na(shortHotdog_ces)] <- 0
 
 # SET THIS BY HAND: .01 is way flat and equal. .001 is very peaky
-tau <- .005
+tau <- .25
 
 longPizza_ces <- longPizza_ces |>
   group_by(condObs) |>

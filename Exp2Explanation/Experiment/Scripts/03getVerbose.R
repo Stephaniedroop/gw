@@ -139,6 +139,7 @@ widget <- datatable(
 
 widget
 
+# REMEMBER TO UPDATE SEPARATE GITHUB PAGES REPO FOR THE TABLES IF YOU EVER CHANGE THIS
 saveWidget(
   widget,
   here('Exp2Explanation', 'Experiment', 'docs', 'explanations_verbosekey.html'),

@@ -5,7 +5,7 @@
 library(here)
 library(tidyverse)
 
-load(here('Exp2Explanation', 'Model', 'Data', 'modelDataSimple.rda')) # from getPreds.R: food_preds and path_preds, each 512 of 32
+load(here('Exp2Explanation', 'Model', 'Data', 'modelDataSimpleU.rda')) # from getPreds.R: food_preds and path_preds, each 512 of 32
 
 # Also uses a var, uvar, defined in semUtilsSimple, but set it again here
 uvars <- c(
@@ -73,53 +73,102 @@ foodlong$uvars <- apply(foodlong, 1, function(r) {
 
 # Actually do need an id of grouping of unobs vars otherwise each ces score is made of 16 different ones - check with Neil
 
-# ------ get S_hat (first normalisation step) -----
+# Add on a column for lesioned models
+pathlong$noSelect <- 1
+foodlong$noSelect <- 1
+
+
+# ------ get S_hat (first softmax step) -----
 
 path_S_hat <- pathlong |>
   group_by(condition, uvars) |>
-  mutate(s_hat = exp(ces / .25) / sum(exp(ces / .25))) |>
+  mutate(
+    s_hat_ces = exp(ces / .25) / sum(exp(ces / .25)),
+    s_hat_noSelect = exp(noSelect / .25) / sum(exp(noSelect / .25))
+  ) |>
   ungroup()
 
 food_S_hat <- foodlong |>
   group_by(condition, uvars) |>
-  mutate(s_hat = exp(ces / .25) / sum(exp(ces / .25))) |>
+  mutate(
+    s_hat_ces = exp(ces / .25) / sum(exp(ces / .25)),
+    s_hat_noSelect = exp(noSelect / .25) / sum(exp(noSelect / .25))
+  ) |>
   ungroup()
 
+# This is combined S' and S~
 path_ces <- path_S_hat |>
   group_by(condition, sem, node3) |>
-  summarise(postces = sum(posterior * s_hat)) |>
+  summarise(
+    prior = sum(prior),
+    uprior = sum(uprior),
+    post = sum(posterior),
+    postces = sum(posterior * s_hat_ces),
+    postns = sum(posterior * s_hat_noSelect),
+    noInf = sum(prior * s_hat_ces),
+    noInf_ns = sum(prior * s_hat_noSelect)
+  ) |>
   ungroup()
 
 food_ces <- food_S_hat |>
   group_by(condition, sem, node3) |>
-  summarise(postces = sum(posterior * s_hat)) |>
+  summarise(
+    prior = sum(prior),
+    uprior = sum(uprior),
+    post = sum(posterior),
+    postces = sum(posterior * s_hat_ces),
+    postns = sum(posterior * s_hat_noSelect),
+    noInf = sum(prior * s_hat_ces),
+    noInf_ns = sum(prior * s_hat_noSelect)
+  ) |>
   ungroup()
 
-# Get the marginalised ces scores for each variables - S~ from collider paper
+# HERE would be info gain if we do it
 
-# THESE OR the ones above
-
-# path_ces <- pathlong |>
-#   group_by(condition, sem, node3) |>
-#   summarise(postces = sum(posterior * ces)) |>
+# Might not need these?
+# 418
+# path_ces <- path_ces |>
+#   group_by(condition) |>
+#   mutate(
+#     n_postces = postces / sum(postces),
+#     n_postns = postns / sum(postns),
+#     n_noInf = noInf / sum(noInf),
+#     n_noInf_ns = noInf_ns / sum(noInf_ns)
+#   ) |>
 #   ungroup()
 #
-# food_ces <- foodlong |>
-#   group_by(condition, sem, node3) |>
-#   summarise(postces = sum(posterior * ces)) |>
+# # 406
+# food_ces <- food_ces |>
+#   group_by(condition) |>
+#   mutate(
+#     n_postces = postces / sum(postces),
+#     n_postns = postns / sum(postns),
+#     n_noInf = noInf / sum(noInf),
+#     n_noInf_ns = noInf_ns / sum(noInf_ns)
+#   ) |>
 #   ungroup()
 
-# --- keep this ---
-
-path_ces <- path_ces |>
-  group_by(condition) |>
-  mutate(postces_norm = postces / sum(postces)) |>
-  ungroup()
-
-food_ces <- food_ces |>
-  group_by(condition) |>
-  mutate(postces_norm = postces / sum(postces)) |>
-  ungroup()
+# How many rows are in each condition? (This was for writing up the computational step for s_hat)
+# pc <- path_ces |>
+#   group_by(condition) |>
+#   summarise(n = n()) |>
+#   ungroup()
+#
+# fc <- food_ces |>
+#   group_by(condition) |>
+#   summarise(n = n()) |>
+#   ungroup()
+#
+# # Now count how many times each N occurs: this is the N in the first softmax, for S_hat
+# pcc <- pc |>
+#   group_by(n) |>
+#   summarise(count = n()) |>
+#   ungroup()
+#
+# fcc <- fc |>
+#   group_by(n) |>
+#   summarise(count = n()) |>
+#   ungroup()
 
 # meanrawpath <- pathlong |>
 #   group_by(condition, node3) |>
@@ -131,68 +180,3 @@ save(
   food_ces,
   file = here('Exp2Explanation', 'Model', 'Data', 'ces_sepSimpleN.rda')
 )
-
-# Jump straight to 09plotCESsimple
-
-# A version with no unobserved interactions vars
-# or do it right there in script 8
-
-# Get ig [[[LATER]]]
-
-# getpostp <- pathlong |>
-#   #filter(!node2 %in% c('A', 'B')) |>
-#   group_by(condition, node3, .drop = F) |> # or condition?!
-#   summarise(prior = sum(prior), post = sum(posterior), ces = sum(ces)) # can't just sum the prior without dividing out the unused ones
-#
-# getpostf <- foodlong |>
-#   #filter(!node2 %in% c('A', 'B')) |>
-#   group_by(condition, node3, .drop = F) |> # or condition?!
-#   summarise(prior = sum(prior), post = sum(posterior), ces = sum(ces))
-#
-# # These then treat further: multiply post and ces
-# getpostf <- getpostf |>
-#   mutate(postces = post * ces)
-#
-# getpostp <- getpostp |>
-#   mutate(postces = post * ces)
-#
-# # And normalise. But this can't be right, cos the ces is not meant to have options with negative ces?!
-# getpostf <- getpostf |>
-#   group_by(condition) |>
-#   mutate(postces_norm = postces / sum(postces)) |>
-#   ungroup()
-#
-# # 16 Mar the problem is how to marginalise. get the code from collider - where the first normalisation happens - were some scores there not constrained to 1?
-# # find the note to Neil about posterior normalisation in slack
-# # If we were really following the collider paper, there would be the first softmax here: for each combination of vars even not allowable, normalise the ces
-# # Try from collider for the 'goOptim.rda' and see how it is done there.
-#
-# # ---- Later .... ------
-#
-# # Simple ig of each pair of unobserved vars
-# # unobs_igp <- getpostp |>
-# #   group_by(condition, node3) |> # what about u_set as well
-# #   summarise(
-# #     prior_entropy = round(-sum(prior * log2(prior + 1e-10)), 3),
-# #     post_entropy = round(-sum(post * log2(post + 1e-10)), 3),
-# #     ig = round(prior_entropy - post_entropy, 3)
-# #   ) |>
-# #   ungroup()
-# #
-# # # This will be 288 obs, same size as data and ppts, in the eventual likelihood, remember to save it with mp
-# # ig <- unobs_ig |>
-# #   select(condition, ig)
-#
-# # Other considerations
-# # - then map to participant data
-# # - set actual?
-# # - all this before any kind of plotting
-#
-# # Think along lines of structure it eventually as the four observed variables and the two outcomes: 64
-# # For presenting is different than the causal modelling.
-#
-# # The two outcomes then get MERGED as a multiplication of p=1*p=1 etc
-#
-# # This might happen before the optimisation etc?
-#
-# # ----------- FOOD -----------------

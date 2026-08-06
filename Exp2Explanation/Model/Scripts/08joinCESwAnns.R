@@ -99,12 +99,16 @@ cor_longPizza <- longPizza_join |>
 corlP <- cor_longPizza |>
   summarise(mean_corr = mean(corr), sd_corr = sd(corr))
 
+corlP
+
 cor_shortPizza <- shortPizza_join |>
   group_by(condObs) |>
   summarise(corr = cor(count_norm, postces_norm, use = "complete.obs"))
 
 corsP <- cor_shortPizza |>
   summarise(mean_corr = mean(corr), sd_corr = sd(corr))
+
+corsP
 
 cor_longHotdog <- longHotdog_join |>
   group_by(condObs) |>
@@ -113,12 +117,16 @@ cor_longHotdog <- longHotdog_join |>
 corlH <- cor_longHotdog |>
   summarise(mean_corr = mean(corr), sd_corr = sd(corr))
 
+corlH
+
 cor_shortHotdog <- shortHotdog_join |>
   group_by(condObs) |>
   summarise(corr = cor(count_norm, postces_norm, use = "complete.obs"))
 
 corsH <- cor_shortHotdog |>
   summarise(mean_corr = mean(corr), sd_corr = sd(corr))
+
+corsH
 
 # Put together as one big df - 1233 obs
 all <- rbind(shortPizza_join, longPizza_join, shortHotdog_join, longHotdog_join)
@@ -138,7 +146,7 @@ all <- all |>
   mutate(cause = coalesce(present_causes.x, present_causes.y))
 
 allP <- allP |>
-  select(condObs, choice, pChoiceNorm)
+  select(condObs, choice, pChoice)
 
 # Merge in the allP
 all2 <- merge(
@@ -150,7 +158,7 @@ all2 <- merge(
 
 # This gives several model points per plot so aggregate the model scores
 forplot <- all2 |>
-  group_by(choice, condObs, pChoiceNorm, condVerb, cause) |>
+  group_by(choice, condObs, pChoice, condVerb, cause) |>
   summarise(
     model = sum(postces_norm, na.rm = T),
     ppts = sum(count_norm, na.rm = T),
@@ -159,12 +167,3 @@ forplot <- all2 |>
 
 save(all, forplot, file = here('Exp2Explanation', 'Model', 'Data', 'all.rda'))
 write.csv(all, 'all.csv')
-
-# Save
-# save(
-#   longHotdog_join,
-#   longPizza_join,
-#   shortHotdog_join,
-#   shortPizza_join,
-#   file = here('Exp2Explanation', 'Model', 'Data', 'joined.rda')
-# )

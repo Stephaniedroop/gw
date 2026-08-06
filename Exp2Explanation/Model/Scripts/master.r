@@ -18,7 +18,7 @@ source(here('Exp2Explanation', 'Model', 'Scripts', '03getProbsSimple.R'))
 source(here('Exp2Explanation', 'Model', 'Scripts', '04getSemSimple.R'))
 
 source(here('Exp2Explanation', 'Model', 'Scripts', '05getPredsSimple.R'))
-source(here('Exp2Explanation', 'Model', 'Scripts', '06processPredsSimple.R'))
+source(here('Exp2Explanation', 'Model', 'Scripts', '06processPredsSimple.R')) # this is where s_hat happensin s
 # ^^^^ I've been running these, after with simple, but before splitting out the ces scores for different brs and different ratings
 source(here('Exp2Explanation', 'Model', 'Scripts', '09plotCESSimple.R')) # MOST UTD 12 MAY
 

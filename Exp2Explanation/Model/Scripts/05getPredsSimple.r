@@ -45,9 +45,8 @@ food_preds <- get_cesm(
 # Remember that when merging
 # To change it, need to change the 'structure' part of semUtils and cesmUtils
 
-# This is with 50k sims and only 1 runs
 save(
   food_preds,
   path_preds,
-  file = here('Exp2Explanation', 'Model', 'Data', 'modelDataSimple.rda')
+  file = here('Exp2Explanation', 'Model', 'Data', 'modelDataSimpleU.rda')
 ) # 1440 of 27

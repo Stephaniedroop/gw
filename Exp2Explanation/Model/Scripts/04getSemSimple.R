@@ -33,9 +33,15 @@ all_path$sem <- sem_lik(
   prev_pairs = path_pairs$prev
 )
 
-# Get prior of unobs settings for both GET NUMBER
-all_food$prior <- Reduce(`*`, all_food_probs[vars]) # QUESTION: all sampled vars, or just the unobserved?!
+# Need two priors: one for the whole situation, and one for the uvars
+all_food$prior <- Reduce(`*`, all_food_probs[vars]) # whole situation
 all_path$prior <- Reduce(`*`, all_path_probs[vars])
+
+#all_food$baseprior <- Reduce(`*`, all_food_probs[base_causes]) # whole situation
+#all_path$baseprior <- Reduce(`*`, all_path_probs[base_causes])
+
+all_food$uprior <- Reduce(`*`, all_food_probs[uvars]) # just uvars
+all_path$uprior <- Reduce(`*`, all_path_probs[uvars])
 
 # Get condition tag
 all_path <- all_path |>
@@ -54,25 +60,31 @@ all_food$condition <- as.factor(all_food$condition)
 
 
 # Now group by condition to give id for unobs setting and also get posterior
+# THIS posterior, still separate, is what goes to 06processPreds for calc with s_hat
 all_food <- all_food |>
   group_by(condition) |> # or group! depends what you decide later on
-  mutate(posterior = prior / sum(prior)) |> # IF IT IS PRIO OF UNOBSERVED ONLY THEN IN 05PROCESS THE GETPOST NEEDS THE WHOLE CONDIITON
+  mutate(posterior = uprior / sum(uprior)) |> # IF IT IS PRIO OF UNOBSERVED ONLY THEN IN 05PROCESS THE GETPOST NEEDS THE WHOLE CONDIITON
   ungroup()
 
 all_path <- all_path |>
   group_by(condition) |> # or group! depends what you decide later on
-  mutate(posterior = prior / sum(prior)) |> # IF IT IS PRIO OF UNOBSERVED ONLY THEN IN 05PROCESS THE GETPOST NEEDS THE WHOLE CONDIITON
+  mutate(posterior = uprior / sum(uprior)) |> # IF IT IS PRIO OF UNOBSERVED ONLY THEN IN 05PROCESS THE GETPOST NEEDS THE WHOLE CONDIITON
   ungroup()
 
-# Also we need pChoice to get surprisingness NEEDS BETTER - this just gets the posterior of 1 for each. Need to combine Path and Food before
+
+#  so column 1:
+#pFood*pPath, column 2: pFood*(1-pPath), column 3: (1-pFood)*pPath, column 4: (1-pFood)*(1-pPath)
+
+# Also we need pChoice to get surprisingness
+# This is a different prior from before: this is just for the whole situation, not individual variables
 pFood <- all_food |>
   group_by(P, K, C, S, sem) |>
-  summarise(prior = sum(prior)) |>
+  summarise(prior = sum(uprior)) |>
   ungroup()
 
 pPath <- all_path |>
   group_by(P, K, C, S, sem) |>
-  summarise(prior = sum(prior)) |>
+  summarise(prior = sum(uprior)) |>
   ungroup()
 
 allP <- merge(
@@ -81,11 +93,12 @@ allP <- merge(
   by = c('P', 'K', 'C', 'S'),
   suffixes = c('_food', '_path')
 )
-allP$pChoice <- allP$prior_food * allP$prior_path # no this is only intermediate step
-allP <- allP |>
-  group_by(P, K, C, S) |>
-  mutate(pChoiceNorm = pChoice / sum(pChoice)) |>
-  ungroup()
+allP$pChoice <- allP$prior_food * allP$prior_path
+
+# allP <- allP |>
+#   group_by(P, K, C, S) |>
+#   mutate(pChoiceNorm = pChoice / sum(pChoice)) |>
+#   ungroup()
 
 allP$condObs <- paste0(allP$P, allP$K, allP$C, allP$S)
 
