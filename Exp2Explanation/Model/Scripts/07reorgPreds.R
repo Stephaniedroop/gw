@@ -93,8 +93,6 @@ shortHotdog_ces <- merge(
 ) |>
   mutate(across(where(is.numeric), \(x) replace(x, is.na(x), 0)))
 
-# CURRENT PROBLEM 12 MAY
-# The annotation has different ratings for food and path br and vars. This must be solved before merging them, otherwise they are being equated
 
 # Combine ces scores for path and food. Make decision between add and multiply
 # It should be ADD because otherwise ones not present in x or y will 0 out the other one

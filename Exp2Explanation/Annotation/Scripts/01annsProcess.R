@@ -4,10 +4,7 @@
 
 library(here)
 library(tidyverse)
-#library(stringr)
-#library(xtable)
-#library(mclogit)
-#library(vcd)
+
 
 # 2040 of 11
 df <- read.csv(here(
@@ -53,7 +50,6 @@ unc_summary <- unc |>
   group_by(tag) |>
   summarise(count = n())
 
-# TO DO: report on this
 
 # Remove rows where column right contains Unclear - now 1993 - 47 Unclear
 df <- df |>
@@ -127,10 +123,3 @@ save(
   df_fixed,
   file = here('Exp2Explanation', 'Annotation', 'Data', 'annsFixed.rda')
 )
-
-# Save for use by scripts entropyAnns and splitAnns
-# write.csv(
-#   df_fixed,
-#   here('Exp2Explanation', 'Annotation', 'Data', 'anns_fixed.csv'),
-#   row.names = FALSE
-# )

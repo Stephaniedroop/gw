@@ -21,12 +21,23 @@ fitted_path_mods$n_edge <- rowSums(structures != 0)
 fitted_food_mods$n_edge <- rowSums(structures != 0)
 
 print(min(fitted_path_mods$kl)) # .01300222
-print(min(fitted_food_mods$kl)) # .0393 - it was .025 before
+print(min(fitted_food_mods$kl)) # .0393014 - it was .025 before
 
+# Now get the NEXT min of each
 
 # ------ Without complexity -----------
 bpix <- which.min(fitted_path_mods$kl) # 46
 bfix <- which.min(fitted_food_mods$kl) # 72
+
+
+# I don't want just the min but ordered
+ordp <- order(fitted_path_mods$kl) # indices sorted from best (lowest kl) to worst
+bpix <- ordp[1] # best model
+second_ix <- ordp[2] # second-best model == 22
+
+ordf <- order(fitted_food_mods$kl) # indices sorted from best (lowest kl) to worst
+bfix <- ordf[1] # best model
+second_ixf <- ordf[2] # 69
 
 
 # Btw, some reporting stats about this distribution:
@@ -45,6 +56,14 @@ best_path_params <- unlist(fitted_path_mods[bpix, ])
 
 best_food <- unlist(structures[bfix, ]) # 1 1 0 1
 best_food_params <- unlist(fitted_food_mods[bfix, ])
+
+# Second best
+bp2 <- unlist(structures[second_ix, ]) # -1 0 1 -1
+bf2 <- unlist(structures[second_ixf, ]) # 1 0 0 1
+
+fitted_food_mods[second_ixf, ] # 0.03930882
+fitted_path_mods[second_ix, ] # 0.01460608
+
 
 # Get model predictions for each situation
 tmp <- fitted_path_mods[bpix, ] # There must be a better way because these are basically the same but best_path_params is unlisted?!

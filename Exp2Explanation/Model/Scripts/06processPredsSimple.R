@@ -67,9 +67,6 @@ foodlong$uvars <- apply(foodlong, 1, function(r) {
   paste0(r[uvars], collapse = "")
 })
 #
-# # Now an id of each grouping of uvars
-# pathlong$uvars_id <- as.numeric(factor(pathlong$uvars))
-# foodlong$uvars_id <- as.numeric(factor(foodlong$uvars))
 
 # Actually do need an id of grouping of unobs vars otherwise each ces score is made of 16 different ones - check with Neil
 
@@ -77,6 +74,17 @@ foodlong$uvars <- apply(foodlong, 1, function(r) {
 pathlong$noSelect <- 1
 foodlong$noSelect <- 1
 
+
+# New section, testing it out, teking a new bit to a separate call script, and 6,7 become fucntions it calls
+
+save(
+  pathlong,
+  foodlong,
+  file = here('Exp2Explanation', 'Model', 'Data', 'preds_long.rda')
+)
+
+
+# OLD>>>>> haven't decided whether to keep yet
 
 # ------ get S_hat (first softmax step) -----
 
@@ -100,8 +108,8 @@ food_S_hat <- foodlong |>
 path_ces <- path_S_hat |>
   group_by(condition, sem, node3) |>
   summarise(
-    prior = sum(prior),
-    uprior = sum(uprior),
+    # prior = sum(prior),
+    # uprior = sum(uprior),
     post = sum(posterior),
     postces = sum(posterior * s_hat_ces),
     postns = sum(posterior * s_hat_noSelect),
@@ -113,8 +121,8 @@ path_ces <- path_S_hat |>
 food_ces <- food_S_hat |>
   group_by(condition, sem, node3) |>
   summarise(
-    prior = sum(prior),
-    uprior = sum(uprior),
+    # prior = sum(prior),
+    # uprior = sum(uprior),
     post = sum(posterior),
     postces = sum(posterior * s_hat_ces),
     postns = sum(posterior * s_hat_noSelect),
@@ -123,57 +131,41 @@ food_ces <- food_S_hat |>
   ) |>
   ungroup()
 
-# HERE would be info gain if we do it
+# Intersperse with unmodell-able node3 vals: some ppl did select them (but in a principled way not noise, so won't use eps)
+nodes <- unique(sub("=.*", "", pathlong$node3))
+all_node3 <- paste0(rep(nodes, each = 2), "=", 0:1)
 
-# Might not need these?
-# 418
-# path_ces <- path_ces |>
-#   group_by(condition) |>
-#   mutate(
-#     n_postces = postces / sum(postces),
-#     n_postns = postns / sum(postns),
-#     n_noInf = noInf / sum(noInf),
-#     n_noInf_ns = noInf_ns / sum(noInf_ns)
-#   ) |>
-#   ungroup()
-#
-# # 406
-# food_ces <- food_ces |>
-#   group_by(condition) |>
-#   mutate(
-#     n_postces = postces / sum(postces),
-#     n_postns = postns / sum(postns),
-#     n_noInf = noInf / sum(noInf),
-#     n_noInf_ns = noInf_ns / sum(noInf_ns)
-#   ) |>
-#   ungroup()
+path_ces <- path_ces |>
+  group_by(condition) |>
+  complete(
+    node3 = all_node3,
+    fill = list(
+      # prior = 0,
+      # uprior = 0,
+      post = 0,
+      postces = 0,
+      postns = 0,
+      noInf = 0,
+      noInf_ns = 0
+    )
+  ) |>
+  ungroup()
 
-# How many rows are in each condition? (This was for writing up the computational step for s_hat)
-# pc <- path_ces |>
-#   group_by(condition) |>
-#   summarise(n = n()) |>
-#   ungroup()
-#
-# fc <- food_ces |>
-#   group_by(condition) |>
-#   summarise(n = n()) |>
-#   ungroup()
-#
-# # Now count how many times each N occurs: this is the N in the first softmax, for S_hat
-# pcc <- pc |>
-#   group_by(n) |>
-#   summarise(count = n()) |>
-#   ungroup()
-#
-# fcc <- fc |>
-#   group_by(n) |>
-#   summarise(count = n()) |>
-#   ungroup()
-
-# meanrawpath <- pathlong |>
-#   group_by(condition, node3) |>
-#   summarise(meances = mean(ces)) |>
-#   ungroup()
+food_ces <- food_ces |>
+  group_by(condition) |>
+  complete(
+    node3 = all_node3,
+    fill = list(
+      # prior = 0,
+      # uprior = 0,
+      post = 0,
+      postces = 0,
+      postns = 0,
+      noInf = 0,
+      noInf_ns = 0
+    )
+  ) |>
+  ungroup()
 
 save(
   path_ces,

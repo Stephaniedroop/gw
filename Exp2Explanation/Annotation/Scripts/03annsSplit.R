@@ -12,15 +12,8 @@ library(tidyverse)
 
 # Output goes to '08joinCESwithAnns' for modelling, in Model folder
 
-# Load df_fixed - 1991 obs of 13 vars - anns_fixed is the processed annotations from processAnnotations.R
+# Load df_fixed - 1991 obs of 13 vars - anns_fixed is the processed annotations from annsProcess.R
 load(here('Exp2Explanation', 'Annotation', 'Data', 'annsFixed.rda'))
-
-# df_fixed <- read.csv(here(
-#   'Exp2Explanation',
-#   'Annotation',
-#   'Data',
-#   'anns_fixed.csv'
-# )) #
 
 # ----- Filter df into the 4 separate ones and make it long -------
 
@@ -52,7 +45,7 @@ df_shortHotdog <- df_fixed |>
 # Need counts of number of explanations; this (in proportion form) is actually what will be modeled
 
 counts_longPizza <- df_longPizza |>
-  group_by(condObs, node3) |>
+  group_by(condObs, node3) |> # , response, index, State --- replace with these if we want the actual explanations
   summarise(count = n()) |>
   ungroup()
 
@@ -67,7 +60,7 @@ counts_longHotdog <- df_longHotdog |>
   ungroup()
 
 counts_shortHotdog <- df_shortHotdog |>
-  group_by(condObs, node3) |> # , condVerb, cond,  don't actually need these
+  group_by(condObs, node3) |> # ,
   summarise(count = n()) |>
   ungroup()
 

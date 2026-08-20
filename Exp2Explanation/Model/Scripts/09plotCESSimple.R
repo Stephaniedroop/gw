@@ -9,7 +9,7 @@ library(ggplot2)
 
 
 #load(here('Exp2Explanation', 'Model', 'Data', 'joined.rda'))
-load(here('Exp2Explanation', 'Model', 'Data', 'all.rda'))
+load(here('Exp2Explanation', 'Model', 'Data', 'all.rda')) # all, all2, forplot
 
 # To check if plot works annotaitng iwth prob like this. If it does, go back and cleanly load the ealrier allP ratehr than messily merging it with all in script 9
 annotLP <- forplot |>

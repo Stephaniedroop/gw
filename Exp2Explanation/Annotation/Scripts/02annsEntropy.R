@@ -8,9 +8,9 @@ library(here)
 library(tidyverse)
 library(ggplot2)
 
-# Need allP from Model/04getSEMsimple
-load(here('Exp2Explanation', 'Model', 'Data', 'scenariosSimple.rda'))
-load(here('Exp2Explanation', 'Annotation', 'Data', 'annsFixed.rda'))
+# Need pChoice from allP from Model/04getSEMsimple = scanriosSimple
+load(here('Exp2Explanation', 'Model', 'Data', 'scenariosSimple.rda')) # allpath, allfood, allP
+load(here('Exp2Explanation', 'Annotation', 'Data', 'annsFixed.rda')) # df_fixed, 1991 of 14
 
 
 # Load anns_fixed.csv - 1991 obs of 13 vars
@@ -40,11 +40,11 @@ ent2 <- ent |>
   )
 
 ent2 <- ent2 |>
-  select(condObs, choice, entropy, pChoiceNorm)
+  select(condObs, choice, entropy, pChoice)
 
 
 # Now scatter, with pChoiceNorm on x and entropy on y, and maybe add a line of best fit?
-entplot <- ggplot(ent2, aes(x = pChoiceNorm, y = entropy)) +
+entplot <- ggplot(ent2, aes(x = pChoice, y = entropy)) +
   geom_point() +
   geom_smooth(method = "lm", se = FALSE) +
   labs(
@@ -66,7 +66,7 @@ ggsave(
 )
 
 # Now a version of entplot coloued by choice
-entplot_col <- ggplot(ent2, aes(x = pChoiceNorm, y = entropy, color = choice)) +
+entplot_col <- ggplot(ent2, aes(x = pChoice, y = entropy, color = choice)) +
   geom_point() +
   geom_smooth(method = "lm", se = FALSE) +
   labs(
@@ -82,7 +82,7 @@ entplot_col
 # Now a version of entplot coloured by condObs
 entplot_col2 <- ggplot(
   ent2,
-  aes(x = pChoiceNorm, y = entropy, color = condObs)
+  aes(x = pChoice, y = entropy, color = condObs)
 ) +
   geom_point() +
   geom_smooth(method = "lm", se = FALSE) +

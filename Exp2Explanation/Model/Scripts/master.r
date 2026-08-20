@@ -18,6 +18,27 @@ source(here('Exp2Explanation', 'Model', 'Scripts', '03getProbsSimple.R'))
 source(here('Exp2Explanation', 'Model', 'Scripts', '04getSemSimple.R'))
 
 source(here('Exp2Explanation', 'Model', 'Scripts', '05getPredsSimple.R'))
+
+
+# Hereafter it gets weird. 14 Aug bring in optimisation of tau1 and tau2
+run_les.R
+driver.R
+optimise.R
+00
+fns.R
+
+06
+newWIP.R
+07
+reordpreds.R
+08
+joinCESwithAnns.R
+09
+plotCESgen.R
+13
+uocor.R # for plots of unobs vars
+
+
 source(here('Exp2Explanation', 'Model', 'Scripts', '06processPredsSimple.R')) # this is where s_hat happensin s
 # ^^^^ I've been running these, after with simple, but before splitting out the ces scores for different brs and different ratings
 source(here('Exp2Explanation', 'Model', 'Scripts', '09plotCESSimple.R')) # MOST UTD 12 MAY

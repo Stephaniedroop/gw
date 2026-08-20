@@ -4,6 +4,7 @@
 # Previously this project was called 'ug data rerun' so that name crops up sometimes
 library(tidyverse)
 library(here)
+#library(stringr)
 
 # This is the data 1.5MB saved directly from testable. Also exists in wide format
 data <- read.csv(here('Exp2Explanation', 'Experiment', 'Data', 'rerundata.csv')) # 2838 of 47
@@ -50,7 +51,7 @@ save(
 
 
 # -------------- A separate analysis on demographics ---------------
-# Might as well do demogs now too
+# Might as well do demogs now too - 516
 demogdata <- data |>
   filter(responseType %in% c('dropdown', 'box')) # 516 of 47
 
@@ -60,7 +61,11 @@ demogdata <- demogdata |>
   filter(row_number() <= 2) |>
   ungroup()
 
-# Get counts of gender: F 123; M 129; prefer not say 3
+# Remove duplicates mindsCode from demogdata - no, we keep the first attempts rather than totaly removing
+# demogdata <- demogdata |>
+#   filter(!mindsCode %in% duplicates$mindsCode) # Now 504
+
+# Get counts of gender: F 123; M 129; prefer not say 3 - 255
 sex <- demogdata |>
   filter(responseType == 'dropdown') |>
   group_by(response) |>
