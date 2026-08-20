@@ -1,40 +1,20 @@
 # ==============================================================================
-# DRIVER
+# Get tau1 - fit by hand. Used to be called 'driver'
 # ==============================================================================
 #
-source(here('Exp2Explanation', 'Model', 'Scripts', '00fns.R'))
+
+library(here)
+library(tidyverse)
+
+
+source(here('Exp2Explanation', 'Model', 'Scripts', 'tauUtils.R')) # functions for fitting tau, get ll
 #load(here('Exp2Explanation', 'Model', 'Data', 'ces_sepSimpleN.Rda'))
-source(here('Exp2Explanation', 'Model', 'Scripts', 'get_lesions.R')) # this runs softmax1 to get 's_hat' from collider Exp1 paper
-source(here('Exp2Explanation', 'Model', 'Scripts', '07reorgPredsGen.R'))
-load(here('Exp2Explanation', 'Model', 'Data', 'preds_long.rda'))
-load(here('Exp2Explanation', 'Annotation', 'Data', 'counts.rda'))
-
-
-# Also need pChoice from scenariosSimple from script 04 - if think of a better way put it in separately
-
-#load(here('Exp2Explanation', 'Model', 'Data', 'scenariosSimple.rda'))
-
-# First put the choice label for each of the counts
-counts_longPizza <- counts_longPizza |>
-  mutate(choice = "LongPizza")
-
-counts_shortPizza <- counts_shortPizza |>
-  mutate(choice = "ShortPizza")
-
-counts_longHotdog <- counts_longHotdog |>
-  mutate(choice = "LongHotdog")
-
-counts_shortHotdog <- counts_shortHotdog |>
-  mutate(choice = "ShortHotdog")
-
-
-# Now rbind
-counts_all <- rbind(
-  counts_longPizza,
-  counts_shortPizza,
-  counts_longHotdog,
-  counts_shortHotdog
-)
+#source(here('Exp2Explanation', 'Model', 'Scripts', 'get_lesions.R')) # this runs softmax1 to get 's_hat' from collider Exp1 paper
+#source(here('Exp2Explanation', 'Model', 'Scripts', '07reorgPredsGen.R'))
+load(here('Exp2Explanation', 'Model', 'Data', 'preds_long.rda')) # produced in script 06getLong
+load(here('Exp2Explanation', 'Annotation', 'Data', 'countsAll.rda')) # from earlier
+#source(here('Exp2Explanation', 'Model', 'Scripts', 'reorg_preds.R')) # function
+source(here('Exp2Explanation', 'Model', 'Scripts', 'optimUtils.R'))
 
 
 fit_at_tau1 <- function(tau1) {

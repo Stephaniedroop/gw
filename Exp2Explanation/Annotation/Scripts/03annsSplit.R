@@ -47,21 +47,25 @@ df_shortHotdog <- df_fixed |>
 counts_longPizza <- df_longPizza |>
   group_by(condObs, node3) |> # , response, index, State --- replace with these if we want the actual explanations
   summarise(count = n()) |>
+  mutate(choice = "LongPizza") |>
   ungroup()
 
 counts_shortPizza <- df_shortPizza |>
   group_by(condObs, node3) |>
   summarise(count = n()) |>
+  mutate(choice = "ShortPizza") |>
   ungroup()
 
 counts_longHotdog <- df_longHotdog |>
   group_by(condObs, node3) |>
   summarise(count = n()) |>
+  mutate(choice = "LongHotdog") |>
   ungroup()
 
 counts_shortHotdog <- df_shortHotdog |>
   group_by(condObs, node3) |> # ,
   summarise(count = n()) |>
+  mutate(choice = "ShortHotdog") |>
   ungroup()
 
 
@@ -72,5 +76,17 @@ save(
   counts_shortPizza,
   counts_longHotdog,
   counts_shortHotdog,
-  file = here('Exp2Explanation', 'Annotation', 'Data', 'counts.rda')
+  file = here('Exp2Explanation', 'Annotation', 'Data', 'countsSplit.rda')
+)
+
+counts_all <- rbind(
+  counts_longPizza,
+  counts_shortPizza,
+  counts_longHotdog,
+  counts_shortHotdog
+)
+
+save(
+  counts_all,
+  file = here('Exp2Explanation', 'Annotation', 'Data', 'countsAll.rda')
 )

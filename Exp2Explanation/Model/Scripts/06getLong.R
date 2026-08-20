@@ -1,5 +1,5 @@
 # ==============================================================================
-## Process cesm data and do posterior marg/inference step
+## Process cesm data and do posterior marg/inference step, make it long to later optimize tau1
 # ==============================================================================
 
 library(here)
@@ -75,24 +75,8 @@ foodlong$uvars <- apply(foodlong, 1, function(r) {
 pathlong$noSelect <- 1
 foodlong$noSelect <- 1
 
-
-source(here('Exp2Explanation', 'Model', 'Scripts', 'get_lesions.R'))
-
-TAU1 <- 1
-
-path_ces <- get_lesions(pathlong, TAU1)
-food_ces <- get_lesions(foodlong, TAU1)
-
 save(
-  path_ces,
-  food_ces,
-  file = here('Exp2Explanation', 'Model', 'Data', 'ces_sepSimpleN.rda')
+  pathlong,
+  foodlong,
+  file = here('Exp2Explanation', 'Model', 'Data', 'preds_long.rda')
 )
-
-# New section, testing it out, teking a new bit to a separate call script, and 6,7 become fucntions it calls
-
-# save(
-#   pathlong,
-#   foodlong,
-#   file = here('Exp2Explanation', 'Model', 'Data', 'preds_long.rda')
-# )

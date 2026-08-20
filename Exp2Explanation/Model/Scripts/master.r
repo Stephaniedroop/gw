@@ -18,50 +18,9 @@ source(here('Exp2Explanation', 'Model', 'Scripts', '03getProbsSimple.R'))
 source(here('Exp2Explanation', 'Model', 'Scripts', '04getSemSimple.R'))
 
 source(here('Exp2Explanation', 'Model', 'Scripts', '05getPredsSimple.R'))
+source(here('Exp2Explanation', 'Model', 'Scripts', '06getLong.R')) # saves preds_long, used in
 
+source(here('Exp2Explanation', 'Model', 'Scripts', 'getTau1.R')) # freestanding to get tau1 - calls tauUtils functions and
+source(here('Exp2Explanation', 'Model', 'Scripts', 'optimise.R')) # calls optimUtils
 
-# Hereafter it gets weird. 14 Aug bring in optimisation of tau1 and tau2
-run_les.R
-driver.R
-optimise.R
-00
-fns.R
-
-06
-newWIP.R
-07
-reordpreds.R
-08
-joinCESwithAnns.R
-09
-plotCESgen.R
-13
-uocor.R # for plots of unobs vars
-
-
-source(here('Exp2Explanation', 'Model', 'Scripts', '06processPredsSimple.R')) # this is where s_hat happensin s
-# ^^^^ I've been running these, after with simple, but before splitting out the ces scores for different brs and different ratings
-source(here('Exp2Explanation', 'Model', 'Scripts', '09plotCESSimple.R')) # MOST UTD 12 MAY
-
-
-# Run source scripts
-# 1 and 2 are equiavalent to get_world_combos in collider proj
-#source(here('Exp2Explanation', 'Model', 'Scripts', '01getPs.R')) # gets probability of each of 4 outcomes in each of the 16 worlds, ie 64 combos
-# But we dont use it any more, because I could only get it separately, and I'm trying now to do it altogether
-
-# It's likely the structure of all these will change a bit . pchoice is too simplistic and doesnt do likelihood
-#
-# This doesn't do likelihood either
-# Get posteriors half way down, but not owrking yet - # BUT NOT WORKING - GIVING THE POSTERIOR = PRIOR FOR EACH SET OF UNOBS VARS (ie the combos all show up equally often always come to same total)
-source(here('Exp2Explanation', 'Model', 'Scripts', '02getParams.R')) # get p(var=0), p(var=1) for each variable in a good format and also save adjacency matrices
-
-# From here on not used yet - or old - all the stuff so far is in 02getParams
-source(here('Exp2Explanation', 'Model', 'Scripts', '03getPosts.R')) # get posterior of each combination of unobserved variables for each world
-
-source(here('Exp2Explanation', 'Model', 'Scripts', '04getPreds.R')) # get CESM model predictions using the cesmUtils functions
-
-# Notes and TO DO
-# - currently the dags in exp1 model graphs are still separate - make a combined one. Here they are combined in 03getParams but maybe could have been combined earlier?
-# - expand out all combinations of vars
-# - combine posteriors
-# - the posteriors are not the probs needed to actually run the cesm. The posterior is needed instead later when the cesm is summed for each variable or variable combo
+# scritp 08 and 09 still have important things, TODO tidy

@@ -1,36 +1,26 @@
-# Reordpreds is script 7
+# ==============================================================================
+# Now we know tau1, get tau2
+# ==============================================================================
+#
 
-ces_long <- reorg_preds(path_ces, food_ces)
-
-# Sanity: probabilities sum to 1 in every cell, for every variant
-ces_long |>
-  group_by(choice, condObs, model) |>
-  summarise(tot = sum(newProb), .groups = "drop") |>
-  summarise(worst = max(abs(tot - 1)))
-
-# Sanity: the four variants differ (if any pair is identical, script 06 is
-# writing the same numbers into two columns)
-ces_long |>
-  group_by(model) |>
-  summarise(mean_newProb = mean(newProb), sd_newProb = sd(newProb))
+library(here)
+library(tidyverse)
 
 
-# old <- new.env()
-# load(here('Exp2Explanation','Model','Data','ces4Outcomes.rda'), envir = old)
-# check_against_original(ces_long, old$shortPizza_ces)
-
-save(
-  ces_long,
-  file = here('Exp2Explanation', 'Model', 'Data', 'ces4OutcomesLong.rda')
-)
-
-
-source(here('Exp2Explanation', 'Model', 'Scripts', 'run_les.R'))
-
+load(here('Exp2Explanation', 'Model', 'Data', 'preds_long.rda')) # produced in script 06getLong)
+source(here('Exp2Explanation', 'Model', 'Scripts', 'optimUtils.R'))
+load(here('Exp2Explanation', 'Annotation', 'Data', 'countsAll.rda'))
+load(here('Exp2Explanation', 'Model', 'Data', 'scenariosSimple.rda')) # for allP. There was a verbose allP2 but can't remember where
 
 # --- inputs, at the chosen tau1 -------------------------------------------
-TAU1 <- 1
-ces_long <- reorg_preds(run_ces(pathlong, TAU1), run_ces(foodlong, TAU1))
+TAU1 <- 1.04
+
+ces_long <- reorg_preds(
+  get_lesions(pathlong, TAU1),
+  get_lesions(foodlong, TAU1)
+)
+
+# Before this line was done already... in getLesions.R, but decided to do it here instead
 
 dj <- ces_long |>
   left_join(counts_all, by = c("choice", "condObs", "node3")) |>
@@ -112,6 +102,39 @@ ggplot(cellcor, aes(pChoice, r_pearson)) +
     title = "Where does the model agree with participants?"
   )
 
+# But what is uo... can we get it from here?
+
+# 20 Aug 2026: uo is unclear where it came from. Well,it was scriptp 08joinCESwAnns, but in a weird way.
+# Hope we never go back here... It is ok for now so let's not worry
+
+# UNOBS <- c("Pu", "Ku", "Cu", "Su", "br")
+#
+# uo <- dj |>
+#   mutate(unobs = cause %in% UNOBS) |>
+#   group_by(model, choice, condObs) |>
+#   summarise(
+#     model_unobs = sum(p[unobs]),
+#     ppts_unobs = sum(count[unobs]) / sum(count),
+#     n = sum(count),
+#     .groups = "drop"
+#   ) |>
+#   left_join(allP, by = c("choice", "condObs")) # brings pChoice
+#
+# uo |>
+#   group_by(model) |>
+#   summarise(
+#     model_mean = weighted.mean(model_unobs, n),
+#     ppts_mean = weighted.mean(ppts_unobs, n),
+#     bias = model_mean - ppts_mean,
+#     mae = weighted.mean(abs(model_unobs - ppts_unobs), n)
+#   )
+#
+#
+# # save uo
+# save(
+#   uo,
+#   file = here('Exp2Explanation', 'Model', 'Data', 'uo.rda')
+# )
 
 uo |>
   filter(model == "postces") |>
@@ -143,3 +166,27 @@ uo |>
     se = FALSE
   ) +
   theme_bw()
+
+# ces_long <- reorg_preds(path_ces, food_ces)
+#
+# # Sanity: probabilities sum to 1 in every cell, for every variant
+# ces_long |>
+#   group_by(choice, condObs, model) |>
+#   summarise(tot = sum(newProb), .groups = "drop") |>
+#   summarise(worst = max(abs(tot - 1)))
+#
+# # Sanity: the four variants differ (if any pair is identical, script 06 is
+# # writing the same numbers into two columns)
+# ces_long |>
+#   group_by(model) |>
+#   summarise(mean_newProb = mean(newProb), sd_newProb = sd(newProb))
+#
+#
+# # old <- new.env()
+# # load(here('Exp2Explanation','Model','Data','ces4Outcomes.rda'), envir = old)
+# # check_against_original(ces_long, old$shortPizza_ces)
+#
+# save(
+#   ces_long,
+#   file = here('Exp2Explanation', 'Model', 'Data', 'ces4OutcomesLong.rda')
+# )
