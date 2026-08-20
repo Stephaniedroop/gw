@@ -6,6 +6,7 @@ library(here)
 library(tidyverse)
 
 load(here('Exp2Explanation', 'Model', 'Data', 'modelDataSimpleU.rda')) # from getPreds.R: food_preds and path_preds, each 512 of 32
+# Loads some more later down, inc function
 
 # Also uses a var, uvar, defined in semUtilsSimple, but set it again here
 uvars <- c(
@@ -75,12 +76,12 @@ pathlong$noSelect <- 1
 foodlong$noSelect <- 1
 
 
-source(here('Exp2Explanation', 'Model', 'Scripts', 'run_les.R'))
+source(here('Exp2Explanation', 'Model', 'Scripts', 'get_lesions.R'))
 
 TAU1 <- 1
 
-path_ces <- run_ces(pathlong, TAU1)
-food_ces <- run_ces(foodlong, TAU1)
+path_ces <- get_lesions(pathlong, TAU1)
+food_ces <- get_lesions(foodlong, TAU1)
 
 save(
   path_ces,
@@ -88,11 +89,10 @@ save(
   file = here('Exp2Explanation', 'Model', 'Data', 'ces_sepSimpleN.rda')
 )
 
-
 # New section, testing it out, teking a new bit to a separate call script, and 6,7 become fucntions it calls
 
-save(
-  pathlong,
-  foodlong,
-  file = here('Exp2Explanation', 'Model', 'Data', 'preds_long.rda')
-)
+# save(
+#   pathlong,
+#   foodlong,
+#   file = here('Exp2Explanation', 'Model', 'Data', 'preds_long.rda')
+# )

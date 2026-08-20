@@ -1,4 +1,9 @@
-run_ces <- function(d, tau1) {
+# ------------------------------------------
+# ------- Function to get lesioned models -------
+# ---- Like s_hat with tau1 in the collider project -------
+# ------------------------------------------
+
+get_lesions <- function(d, tau1) {
   nodes <- unique(sub("=.*", "", d$node3))
   all_node3 <- paste0(rep(nodes, each = 2), "=", 0:1)
 

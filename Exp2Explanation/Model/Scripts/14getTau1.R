@@ -4,7 +4,7 @@
 #
 source(here('Exp2Explanation', 'Model', 'Scripts', '00fns.R'))
 #load(here('Exp2Explanation', 'Model', 'Data', 'ces_sepSimpleN.Rda'))
-source(here('Exp2Explanation', 'Model', 'Scripts', 'run_les.R'))
+source(here('Exp2Explanation', 'Model', 'Scripts', 'get_lesions.R')) # this runs softmax1 to get 's_hat' from collider Exp1 paper
 source(here('Exp2Explanation', 'Model', 'Scripts', '07reorgPredsGen.R'))
 load(here('Exp2Explanation', 'Model', 'Data', 'preds_long.rda'))
 load(here('Exp2Explanation', 'Annotation', 'Data', 'counts.rda'))
@@ -38,7 +38,7 @@ counts_all <- rbind(
 
 
 fit_at_tau1 <- function(tau1) {
-  reorg_preds(run_ces(pathlong, tau1), run_ces(foodlong, tau1)) |>
+  reorg_preds(get_lesions(pathlong, tau1), get_lesions(foodlong, tau1)) |>
     left_join(counts_all, by = c("choice", "condObs", "node3")) |>
     mutate(count = replace_na(count, 0)) |>
     fit_tau2() |>
@@ -258,25 +258,3 @@ fine_no_p <- map(seq(0.8, 1.4, by = 0.02), fit_at_tau1) |>
   filter(model == "noInf") |>
   select(tau1, ll) |>
   mutate(drop = max(ll) - ll)
-
-# -----------
-
-#ces_long <- reorg_preds(run_ces(pathlong, 1), run_ces(foodlong, 1))
-
-# Old-shape objects, if you want script 08 to run untouched:
-# w <- to_wide(ces_long, "postces")
-# longPizza_ces <- w$LongPizza; shortPizza_ces <- w$ShortPizza
-# longHotdog_ces <- w$LongHotdog; shortHotdog_ces <- w$ShortHotdog
-#
-# # Some checks, delete later
-# path_ces |> summarise(across(c(postces, postns, noInf, noInf_ns), sum))
-#
-# pathlong |>
-#   group_by(condition, uvars) |>
-#   summarise(n = n(),
-#             post_varies  = n_distinct(signif(posterior, 12)) > 1,
-#             prior_varies = n_distinct(signif(prior, 12))     > 1,
-#             .groups = "drop") |>
-#   summarise(groups = n(), mean_rows = mean(n),
-#             n_post_varying = sum(post_varies),
-#             n_prior_varying = sum(prior_varies))
